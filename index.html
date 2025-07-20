@@ -16,17 +16,17 @@
       min-height: 100vh;
     }
 
-a {
-  display: inline-block;
-  width: auto;
-  margin: 100px auto 0; /* 上に余白をとって、左右を中央寄せ */
-  padding: 20px 40px;
-  background-color: #4CAF50;
-  color: white;
-  text-decoration: none;
-  border-radius: 12px;
-  transition: background-color 0.3s;
-}
+    a {
+      display: inline-block;
+      width: auto;
+      margin: 100px auto 0; /* 上に余白をとって、左右を中央寄せ */
+      padding: 20px 40px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: background-color 0.3s;
+    }
 
     a:hover {
       background-color: #45a049;
@@ -44,16 +44,29 @@ a {
     .footer p {
       margin: 4px 0;
     }
+
+    /* スマホや狭い画面用の調整 */
+    @media screen and (max-width: 600px) {
+      a {
+        margin: 30px auto 0; /* 余白を減らす */
+        padding: 16px 32px;
+        font-size: 24px;
+      }
+      .footer {
+        font-size: 24px;
+        padding: 16px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <h1>おうさまいご</h1>
-  <a href="plain.html">プレーン（ひっさつわざなし）</a>
+<a href="plain.html">プレーン（ひっさつわざなし）</a>
 
-  <div class="footer">
-    <p>制作：今中　心悟</p>
-    <p>連絡先：singo8068@yahoo.co.jp</p>
-  </div>
+<div class="footer">
+  <p>制作：今中　心悟</p>
+  <p>連絡先：singo8068@yahoo.co.jp</p>
+</div>
 </body>
 </html>
