@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご（プレーン）</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 0px;
+      background: #eee;
+      font-size: 30px;
+    }
+    canvas {
+      background-color: #93d4f1;
+      border: 2px solid #333;
+    }
+    .controls {
+      margin: 10px;
+    }
+    button {
+      margin: 0 20px;
+      padding: 0px 48px;
+      font-size: 35px;
+    }
+    a {
+      display: inline-block;
+      margin-top: 0px;
+      padding: 0px 40px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    a:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html">メインメニューにもどる</a>
+
+<div>
+  <span id="turn"></span>　　
+  <span id="blackLabel"></span>はあと<span id="blackKingLibs">-</span>　　
+  <span id="whiteLabel"></span>はあと<span id="whiteKingLibs">-</span>
+</div>
+<canvas id="goban" width="800" height="800"></canvas>
+<div class="controls">
+  <button id="passBtn">パス</button>
+  <button id="resetBtn">リセット</button>
+</div>
+
+<script>
+const canvas = document.getElementById("goban");
+const ctx = canvas.getContext("2d");
+const passBtn = document.getElementById("passBtn");
+const resetBtn = document.getElementById("resetBtn");
+const turnDisplay = document.getElementById("turn");
+const blackKingLibsDisplay = document.getElementById("blackKingLibs");
+const whiteKingLibsDisplay = document.getElementById("whiteKingLibs");
+
+const kuronekoImg = new Image();
+kuronekoImg.src = "./bin/kuroneko.png";
+const kurokingImg = new Image();
+kurokingImg.src = "./bin/kuroking.png";
+const sironekoImg = new Image();
+sironekoImg.src = "./bin/sironeko.png";
+const sirokingImg = new Image();
+sirokingImg.src = "./bin/siroking.png";
+
+const SIZE = 9;
+const CELL = canvas.width / SIZE ;
+const OFFSET = CELL/2;
+
+let board = [];
+let drawBoard = [];
+let currentPlayer = "black";
+let aiEnabled = true;
+let blackKing = null;
+let whiteKing = null;
+let gameNow = true;
+
+function initBoard() {
+  gameNow = true;
+  board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  currentPlayer = "black";
+  blackKing = null;
+  whiteKing = null;
+  updateDisplay();
+  updateForbiddenPoints();
+  draw();
+}
+
+function updateDisplay() {
+  const blackLabel = document.getElementById("blackLabel");
+  const whiteLabel = document.getElementById("whiteLabel");
+
+  const blackImg = document.createElement("img");
+  blackImg.src = kuronekoImg.src;
+  blackImg.alt = "くろ";
+  blackImg.style.height = "60px";
+  blackImg.style.verticalAlign = "middle";
+
+  const whiteImg = document.createElement("img");
+  whiteImg.src = sironekoImg.src;
+  whiteImg.alt = "しろ";
+  whiteImg.style.height = "50px";
+  whiteImg.style.verticalAlign = "middle";
+
+  while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
+  if (currentPlayer === "black") {
+    turnDisplay.appendChild(blackImg.cloneNode(true));
+    turnDisplay.appendChild(document.createTextNode("のばん"));
+  } else {
+    turnDisplay.appendChild(whiteImg.cloneNode(true));
+    turnDisplay.appendChild(document.createTextNode("のばん"));
+  }
+
+  while (blackLabel.firstChild) blackLabel.removeChild(blackLabel.firstChild);
+  blackLabel.appendChild(blackImg);
+
+  while (whiteLabel.firstChild) whiteLabel.removeChild(whiteLabel.firstChild);
+  whiteLabel.appendChild(whiteImg);
+
+  blackKingLibsDisplay.textContent = blackKing ? countLiberties(blackKing.x, blackKing.y) + "て" : "-";
+  whiteKingLibsDisplay.textContent = whiteKing ? countLiberties(whiteKing.x, whiteKing.y) + "て" : "-";
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#000";
+
+  for (let i = 0; i < SIZE; i++) {
+    let pos = OFFSET + i * CELL;
+    ctx.beginPath();
+    ctx.moveTo(OFFSET, pos);
+    ctx.lineTo(OFFSET + (SIZE - 1) * CELL, pos);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(pos, OFFSET);
+    ctx.lineTo(pos, OFFSET + (SIZE - 1) * CELL);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      const val = board[y][x];
+      const mark = drawBoard[y][x];
+      const cx = OFFSET + x * CELL;
+      const cy = OFFSET + y * CELL;
+
+      if (val === "black" || val === "white") {
+        if ((blackKing && blackKing.x === x && blackKing.y === y) || (whiteKing && whiteKing.x === x && whiteKing.y === y)) {
+          const img = (val === "black") ? kurokingImg : sirokingImg;
+          ctx.drawImage(img, cx - CELL * 0.55, cy - CELL * 0.55, CELL*1.1, CELL*1.1);
+        } else {
+          const img = (val === "black") ? kuronekoImg : sironekoImg;
+          ctx.drawImage(img, cx - CELL * 0.5, cy - CELL * 0.5, CELL, CELL);
+        }
+      } else if (mark === "forbid_black" || mark === "forbid_white") {
+        ctx.strokeStyle = mark === "forbid_black" ? "#fff" : "#000";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - CELL * 0.3, cy - CELL * 0.3);
+        ctx.lineTo(cx + CELL * 0.3, cy + CELL * 0.3);
+        ctx.moveTo(cx + CELL * 0.3, cy - CELL * 0.3);
+        ctx.lineTo(cx - CELL * 0.3, cy + CELL * 0.3);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+      }
+    }
+  }
+}
+
+function getClosest(x, y) {
+  for (let iy = 0; iy < SIZE; iy++) {
+    for (let ix = 0; ix < SIZE; ix++) {
+      const px = OFFSET + ix * CELL;
+      const py = OFFSET + iy * CELL;
+      if (Math.hypot(x - px, y - py) < CELL * 0.4) {
+        return { x: ix, y: iy };
+      }
+    }
+  }
+  return null;
+}
+
+function getNeighbors(x, y) {
+  return [
+    [x - 1, y], [x + 1, y],
+    [x, y - 1], [x, y + 1],
+  ].filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE);
+}
+
+function hasLiberties(x, y, color, visited = {}) {
+  const key = `${x},${y}`;
+  if (visited[key]) return false;
+  visited[key] = true;
+
+  for (let [nx, ny] of getNeighbors(x, y)) {
+    const val = board[ny][nx];
+    if (val === null) return true;
+    if (val === color && hasLiberties(nx, ny, color, visited)) return true;
+  }
+  return false;
+}
+
+function countLiberties(x, y, visited = {}) {
+  const color = board[y][x];
+  const checked = {};
+  let count = 0;
+
+  function dfs(cx, cy) {
+    const key = `${cx},${cy}`;
+    if (visited[key]) return;
+    visited[key] = true;
+    for (let [nx, ny] of getNeighbors(cx, cy)) {
+      const nkey = `${nx},${ny}`;
+      if (board[ny][nx] === null && !checked[nkey]) {
+        checked[nkey] = true;
+        count++;
+      } else if (board[ny][nx] === color && !visited[`${nx},${ny}`]) {
+        dfs(nx, ny);
+      }
+    }
+  }
+  dfs(x, y);
+  return count;
+}
+
+function removeDead(x, y, color) {
+  const toRemove = [];
+  const visited = {};
+
+  function dfs(cx, cy) {
+    const key = `${cx},${cy}`;
+    if (visited[key]) return;
+    visited[key] = true;
+    toRemove.push([cx, cy]);
+    for (let [nx, ny] of getNeighbors(cx, cy)) {
+      if (board[ny][nx] === color) dfs(nx, ny);
+    }
+  }
+
+  dfs(x, y);
+
+  if (!hasLiberties(x, y, color, {})) {
+    let kingCaptured = null;
+
+    for (let [rx, ry] of toRemove) {
+      if (blackKing && blackKing.x === rx && blackKing.y === ry) kingCaptured = "black";
+      if (whiteKing && whiteKing.x === rx && whiteKing.y === ry) kingCaptured = "white";
+      board[ry][rx] = null;
+      drawBoard[ry][rx] = null;
+    }
+
+    draw();
+
+    if (kingCaptured) {
+      gameNow = false;
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
+          const winImg = document.createElement("img");
+          winImg.src = kingCaptured === "white" ? kuronekoImg.src : sironekoImg.src;
+          winImg.alt = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          winImg.style.height = "60px";
+          winImg.style.verticalAlign = "middle";
+          const winText = document.createTextNode("のかち！");
+          turnDisplay.appendChild(winImg);
+          turnDisplay.appendChild(winText);
+          if (kingCaptured === "black") blackKing = null;
+          if (kingCaptured === "white") whiteKing = null;
+        }, 100);
+      });
+    }
+  }
+}
+
+function placeStone(x, y) {
+  if (board[y][x] !== null) return false;
+  board[y][x] = currentPlayer;
+  if (!blackKing && currentPlayer === "black") blackKing = { x, y };
+  if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
+
+  for (let [nx, ny] of getNeighbors(x, y)) {
+    const target = board[ny][nx];
+    if (target && target !== currentPlayer) {
+      removeDead(nx, ny, target);
+    }
+  }
+
+  if (!hasLiberties(x, y, currentPlayer, {})) {
+    board[y][x] = null;
+    return false;
+  }
+
+  if (!gameNow) return false;
+
+  currentPlayer = currentPlayer === "black" ? "white" : "black";
+  updateForbiddenPoints();
+  updateDisplay();
+  draw();
+  return true;
+}
+
+function updateForbiddenPoints() {
+  drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      if (board[y][x] !== null) continue;
+      board[y][x] = "black";
+      const blackSuicide = !hasLiberties(x, y, "black", {});
+      board[y][x] = "white";
+      const whiteSuicide = !hasLiberties(x, y, "white", {});
+      board[y][x] = null;
+      if (blackSuicide) drawBoard[y][x] = "forbid_black";
+      if (whiteSuicide) drawBoard[y][x] = "forbid_white";
+    }
+  }
+}
+
+function aiMove() {
+  if (!aiEnabled || currentPlayer !== "white" || !gameNow) return;
+  const tengen = Math.floor(SIZE / 2);
+  if (uteruka(tengen, tengen)) { placeStone(tengen, tengen); return; }
+  if (board[tengen][tengen] === "black") {
+    if (uteruka(tengen-1, tengen-1)) { placeStone(tengen-1, tengen-1); return; }
+    if (uteruka(tengen-1, tengen-2)) { placeStone(tengen-1, tengen-2); return; }
+    if (board[tengen-2][tengen-1] === "black" && uteruka(tengen, tengen-1)) { placeStone(tengen, tengen-1); return; }
+  }
+  if (board[tengen][tengen] === "white") {
+    if (uteruka(tengen-1, tengen)) { placeStone(tengen-1, tengen); return; }
+    if (uteruka(tengen+1, tengen)) { placeStone(tengen+1, tengen); return; }
+    if (uteruka(tengen, tengen-1)) { placeStone(tengen, tengen-1); return; }
+  }
+
+  const candidates = [];
+  for (let i = 1; i <= tengen; i++) {
+    for (let y = tengen-i; y <= tengen+i; y++) {
+      for (let x = tengen-i; x <= tengen+i; x++) {
+        if (uteruka(x, y)) {
+          candidates.push({ x, y });
+        }
+      }
+    }
+    if (candidates.length > 0) {
+      const i = Math.floor(Math.random() * candidates.length);
+      const { x, y } = candidates.splice(i, 1)[0];
+      placeStone(x, y);
+      return;
+    }
+  }
+}
+
+function uteruka(x, y) {
+  if (board[y][x] === null && drawBoard[y][x] === null) return true;
+  return false;
+}
+
+canvas.addEventListener("click", (e) => {
+  if (currentPlayer !== "black" || !gameNow) return;
+  const rect = canvas.getBoundingClientRect();
+  const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
+  if (point && placeStone(point.x, point.y)) {
+    setTimeout(aiMove, 300);
+  }
+});
+
+passBtn.addEventListener("click", () => {
+  currentPlayer = currentPlayer === "black" ? "white" : "black";
+  updateForbiddenPoints();
+  updateDisplay();
+  draw();
+  if (currentPlayer === "white") setTimeout(aiMove, 300);
+});
+
+resetBtn.addEventListener("click", () => initBoard());
+
+initBoard();
+</script>
+
+</body>
+</html>
