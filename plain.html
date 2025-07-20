@@ -48,14 +48,14 @@
 </div>
 <canvas id="goban" width="700" height="700"></canvas>
 <div class="controls">
-  <button id="passBtn">パス</button>
+  
   <button id="resetBtn">リセット</button>
 </div>
 
 <script>
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
-const passBtn = document.getElementById("passBtn");
+//const passBtn = document.getElementById("passBtn");<button id="passBtn">パス</button>
 const resetBtn = document.getElementById("resetBtn");
 const turnDisplay = document.getElementById("turn");
 const blackKingLibsDisplay = document.getElementById("blackKingLibs");
@@ -370,14 +370,14 @@ canvas.addEventListener("click", (e) => {
     setTimeout(aiMove, 300);
   }
 });
-
+/*
 passBtn.addEventListener("click", () => {
   currentPlayer = currentPlayer === "black" ? "white" : "black";
   updateForbiddenPoints();
   updateDisplay();
   draw();
   if (currentPlayer === "white") setTimeout(aiMove, 300);
-});
+});*/
 
 resetBtn.addEventListener("click", () => initBoard());
 
