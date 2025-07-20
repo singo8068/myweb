@@ -2,13 +2,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>囲碁</title>
+  <title>おうさまいご（プレーン）</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      padding-top: 20px;
+      padding-top: 0px;
       background: #eee;
+      font-size: 30px;
     }
     canvas {
       background-color: #93d4f1;
@@ -18,20 +19,22 @@
       margin: 10px;
     }
     button {
-      margin: 0 5px;
-      padding: 6px 12px;
+      margin: 0 20px;
+      padding: 10px 48px;
+      font-size: 30px;
     }
   </style>
 </head>
 <body>
-  <canvas id="goban" width="800" height="800"></canvas>
+  <div><span id="turn">黒</span></div>
+  <div>しろはあと<span id="whiteKingLibs">-</span></div>
+  <canvas id="goban" width="700" height="700"></canvas>
   <div class="controls">
     <button id="passBtn">パス</button>
     <button id="resetBtn">リセット</button>
   </div>
-  <div><span id="turn">黒</span></div>
   <div>くろはあと<span id="blackKingLibs">-</span></div>
-  <div>しろはあと<span id="whiteKingLibs">-</span></div>
+  
 
   <script>
     const canvas = document.getElementById("goban");
@@ -222,14 +225,13 @@ function removeDead(x, y, color) {
       // 勝敗メッセージを遅延表示し、表示後に盤面リセットする
       requestAnimationFrame(() => {
         setTimeout(() => {
-          alert(kingCaptured === "black" ? "しろのかち！" : "くろのかち！");
-
+          turnDisplay.textContent = kingCaptured === "black" ? "しろのかち！" : "くろのかち！";
           // 勝敗メッセージが出た後に王様情報を消し、初期化する
           if (kingCaptured === "black") blackKing = null;
           if (kingCaptured === "white") whiteKing = null;
 
-          initBoard();
-          gameNow = true;
+          //initBoard();
+          //gameNow = true;
         }, 100);
       });
     }
@@ -292,8 +294,18 @@ function placeStone(x, y) {
       if (!aiEnabled || currentPlayer !== "white" || !gameNow) return;
       const tengen=Math.floor(SIZE / 2);
       if (uteruka(tengen,tengen)){placeStone(tengen,tengen);return;}
-      const candidates = [];
+      if (board[tengen][tengen]==="black"){
+        if(uteruka(tengen-1,tengen-1)){placeStone(tengen-1,tengen-1);return;}
+        if(uteruka(tengen-1,tengen-2)){placeStone(tengen-1,tengen-2);return;}
+        if(board[tengen-2][tengen-1]==="black"&&uteruka(tengen,tengen-1)){placeStone(tengen,tengen-1);return;}
+      }
+      if (board[tengen][tengen]==="white"){
+        if(uteruka(tengen-1,tengen)){placeStone(tengen-1,tengen);return;}
+        if(uteruka(tengen+1,tengen)){placeStone(tengen+1,tengen);return;}
+        if(uteruka(tengen,tengen-1)){placeStone(tengen,tengen-1);return;}
+      }
 
+      const candidates = [];
       for(let i=1;i<=tengen;i++){
         for (let y = tengen-i; y <= tengen+i; y++) {
           for (let x = tengen-i; x <= tengen+i; x++) {
