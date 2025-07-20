@@ -68,6 +68,7 @@ sirokingImg.src = "./bin/siroking.png";
     let gameNow = true;
 
     function initBoard() {
+      gameNow = true;
       board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
       drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
       currentPlayer = "black";
@@ -346,7 +347,6 @@ canvas.addEventListener("click", (e) => {
     });
 
     resetBtn.addEventListener("click", () => initBoard());
-
     initBoard();
   </script>
 </body>
