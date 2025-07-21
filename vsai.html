@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>おうさまいご（プレーン）</title>
+  <title>おうさまいご</title>
   <style>
     body {
       font-family: sans-serif;
@@ -20,7 +20,7 @@
     }
     button {
       margin: 0 20px;
-      padding: 0px 48px;
+      padding: 0px 0px;
       font-size: 35px;
     }
     a {
@@ -47,18 +47,18 @@
 </div>
 <canvas id="goban" width="700" height="700"></canvas>
 <div>
-<span id="blackLabel"></span>あと<span id="blackKingLibs">-</span>　　
-<span id="whiteLabel"></span>あと<span id="whiteKingLibs">-</span>
+<span id="blackLabel"></span>あと<span id="blackKingLibs">-</span> ため<span id="blackTame">0</span>　　
+<span id="whiteLabel"></span>あと<span id="whiteKingLibs">-</span> ため<span id="whiteTame">1</span>
 </div>
 <div class="controls">
-  
-  <button id="resetBtn">リセット</button>
+  <button id="passBtn">ためる</button>
+  <button id="resetBtn">こうさん</button>
 </div>
 
 <script>
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
-//const passBtn = document.getElementById("passBtn");<button id="passBtn">パス</button>
+const passBtn = document.getElementById("passBtn");
 const resetBtn = document.getElementById("resetBtn");
 const turnDisplay = document.getElementById("turn");
 const blackKingLibsDisplay = document.getElementById("blackKingLibs");
@@ -128,8 +128,8 @@ function updateDisplay() {
   while (whiteLabel.firstChild) whiteLabel.removeChild(whiteLabel.firstChild);
   whiteLabel.appendChild(whiteImg);
 
-  blackKingLibsDisplay.textContent = blackKing ? countLiberties(blackKing.x, blackKing.y) + "て" : "-";
-  whiteKingLibsDisplay.textContent = whiteKing ? countLiberties(whiteKing.x, whiteKing.y) + "て" : "-";
+  blackKingLibsDisplay.textContent = blackKing ? countLiberties(blackKing.x, blackKing.y) + "て" : "-て";
+  whiteKingLibsDisplay.textContent = whiteKing ? countLiberties(whiteKing.x, whiteKing.y) + "て" : "-て";
 }
 
 function draw() {
@@ -373,14 +373,14 @@ canvas.addEventListener("click", (e) => {
     setTimeout(aiMove, 300);
   }
 });
-/*
+
 passBtn.addEventListener("click", () => {
   currentPlayer = currentPlayer === "black" ? "white" : "black";
   updateForbiddenPoints();
   updateDisplay();
   draw();
   if (currentPlayer === "white") setTimeout(aiMove, 300);
-});*/
+});
 
 resetBtn.addEventListener("click", () => initBoard());
 
