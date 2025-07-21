@@ -47,22 +47,32 @@
 </div>
 <canvas id="goban" width="700" height="700"></canvas>
 <div>
-<span id="blackLabel"></span>あと<span id="blackKingLibs">-</span> ため<span id="blackTame">0</span>　　
-<span id="whiteLabel"></span>あと<span id="whiteKingLibs">-</span> ため<span id="whiteTame">1</span>
+<span id="blackLabel"></span>あと<span id="blackKingLibs">-</span> ため<span id="blackTameLibs">0</span>　　
+<span id="whiteLabel"></span>あと<span id="whiteKingLibs">-</span> ため<span id="whiteTameLibs">1</span>
 </div>
-<div class="controls">
+
+<div class="controls" id="mainControls">
+  <button id="niteBtn">２てうち</button>
   <button id="passBtn">ためる</button>
-  <button id="resetBtn">こうさん</button>
+  <button id="resetBtn">リセット</button>
+</div>
+<div class="controls" id="confirmControls" style="display: none;">
+  <button id="confirmBtn">けってい</button>
+  <button id="cancelBtn">やめる</button>
 </div>
 
 <script>
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
+const niteBtn = document.getElementById("niteBtn");
 const passBtn = document.getElementById("passBtn");
 const resetBtn = document.getElementById("resetBtn");
 const turnDisplay = document.getElementById("turn");
 const blackKingLibsDisplay = document.getElementById("blackKingLibs");
 const whiteKingLibsDisplay = document.getElementById("whiteKingLibs");
+const blackTameLibsDisplay = document.getElementById("blackTameLibs");
+const whiteTameLibsDisplay = document.getElementById("whiteTameLibs");
+const winText = document.createTextNode("のかち！");
 
 const kuronekoImg = new Image();
 kuronekoImg.src = "./bin/kuroneko.png";
@@ -83,7 +93,10 @@ let currentPlayer = "black";
 let aiEnabled = true;
 let blackKing = null;
 let whiteKing = null;
+let blackTame = 0;
+let whiteTame = 1;
 let gameNow = true;
+let gameMode="main";
 
 function initBoard() {
   gameNow = true;
@@ -92,6 +105,8 @@ function initBoard() {
   currentPlayer = "black";
   blackKing = null;
   whiteKing = null;
+  blackTame=0;
+  whiteTame=1;
   updateDisplay();
   updateForbiddenPoints();
   draw();
@@ -130,6 +145,8 @@ function updateDisplay() {
 
   blackKingLibsDisplay.textContent = blackKing ? countLiberties(blackKing.x, blackKing.y) + "て" : "-て";
   whiteKingLibsDisplay.textContent = whiteKing ? countLiberties(whiteKing.x, whiteKing.y) + "て" : "-て";
+  blackTameLibsDisplay.textContent = blackTame;
+  whiteTameLibsDisplay.textContent = whiteTame;
 }
 
 function draw() {
@@ -273,7 +290,6 @@ function removeDead(x, y, color) {
           winImg.alt = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
           winImg.style.height = "50px";
           winImg.style.verticalAlign = "middle";
-          const winText = document.createTextNode("のかち！");
           turnDisplay.appendChild(winImg);
           turnDisplay.appendChild(winText);
           if (kingCaptured === "black") blackKing = null;
@@ -369,9 +385,28 @@ canvas.addEventListener("click", (e) => {
   if (currentPlayer !== "black" || !gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
-  if (point && placeStone(point.x, point.y)) {
+  if (point&&gameMode==="main") {
+   if (placeStone(point.x, point.y)) {
     setTimeout(aiMove, 300);
+   }else{
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("はそこにはうてないよ"));
+   }
+
+
   }
+});
+
+niteBtn.addEventListener("click", () => {
+  if (blackTame<2){
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("２てうつにはためが２いるよ"));
+    return;
+  }
+  document.getElementById("mainControls").style.display = "none";
+  document.getElementById("confirmControls").style.display = "block";
+  gameMode="nite"
+  
 });
 
 passBtn.addEventListener("click", () => {
@@ -379,10 +414,26 @@ passBtn.addEventListener("click", () => {
   updateForbiddenPoints();
   updateDisplay();
   draw();
+  blackTame++;
   if (currentPlayer === "white") setTimeout(aiMove, 300);
 });
 
 resetBtn.addEventListener("click", () => initBoard());
+
+  document.getElementById("cancelBtn").addEventListener("click", function () {
+    document.getElementById("confirmControls").style.display = "none";
+    document.getElementById("mainControls").style.display = "block";
+    gameMode="main"
+  });
+
+  document.getElementById("confirmBtn").addEventListener("click", function () {
+    blackTame=blackTame-2;
+  /*updateForbiddenPoints();
+  updateDisplay();
+  draw();
+  if (currentPlayer === "white") setTimeout(aiMove, 300);
+*/
+  });
 
 initBoard();
 </script>
