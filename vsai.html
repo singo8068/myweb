@@ -97,6 +97,7 @@ let blackTame = 0;
 let whiteTame = 1;
 let gameNow = true;
 let gameMode="main";
+let nitesu=0;
 
 function initBoard() {
   gameNow = true;
@@ -312,14 +313,12 @@ function placeStone(x, y) {
   board[y][x] = currentPlayer;
   if (!blackKing && currentPlayer === "black") blackKing = { x, y };
   if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
-
   for (let [nx, ny] of getNeighbors(x, y)) {
     const target = board[ny][nx];
     if (target && target !== currentPlayer) {
       removeDead(nx, ny, target);
     }
   }
-
   if (!hasLiberties(x, y, currentPlayer, {})) {
     board[y][x] = null;
     return false;
@@ -327,6 +326,11 @@ function placeStone(x, y) {
 
   if (!gameNow) return false;
 
+  if(gameMode==="nite"){
+   gameMode="main";
+//alert(gameMode);
+   return;
+  }
   currentPlayer = currentPlayer === "black" ? "white" : "black";
   updateForbiddenPoints();
   updateDisplay();
@@ -344,6 +348,7 @@ function updateForbiddenPoints() {
       board[y][x] = "white";
       const whiteSuicide = !hasLiberties(x, y, "white", {});
       board[y][x] = null;
+      drawBoard[y][x] =null;
       if (blackSuicide) drawBoard[y][x] = "forbid_black";
       if (whiteSuicide) drawBoard[y][x] = "forbid_white";
     }
@@ -400,7 +405,8 @@ canvas.addEventListener("click", (e) => {
     turnDisplay.appendChild(document.createTextNode("はそこにはうてないよ"));
    }
   }
-  if (point&&gameMode==="nite"&&board[point.y][point.x]===null) {
+  if (point&&gameMode==="nite"&&board[point.y][point.x]===null&nitesu<2) {
+    nitesu++;
     drawBoard[point.y][point.x]="kouho_"+currentPlayer;
     draw();
   }
@@ -415,7 +421,8 @@ niteBtn.addEventListener("click", () => {
   }
   document.getElementById("mainControls").style.display = "none";
   document.getElementById("confirmControls").style.display = "block";
-  gameMode="nite"
+  gameMode="nite";
+  nitesu=0;
 });
 
 passBtn.addEventListener("click", () => {
@@ -435,19 +442,47 @@ passBtn.addEventListener("click", () => {
 
 resetBtn.addEventListener("click", () => initBoard());
 
-  document.getElementById("cancelBtn").addEventListener("click", function () {
+document.getElementById("cancelBtn").addEventListener("click", function () {
     document.getElementById("confirmControls").style.display = "none";
     document.getElementById("mainControls").style.display = "block";
-    gameMode="main"
+    updateForbiddenPoints();
+    draw();
+    gameMode="main";
   });
 
-  document.getElementById("confirmBtn").addEventListener("click", function () {
-    blackTame=blackTame-2;
-  /*updateForbiddenPoints();
-  updateDisplay();
-  draw();
-  if (currentPlayer === "white") setTimeout(aiMove, 300);
-*/
+document.getElementById("confirmBtn").addEventListener("click", function () {
+ if(gameMode==="nite"){
+  if(nitesu<2){
+   turnDisplay.removeChild(turnDisplay.lastChild);
+   turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
+   return;
+  }
+  let p=1;
+  blackTame=blackTame-2;
+  document.getElementById("confirmControls").style.display = "none";
+  document.getElementById("mainControls").style.display = "block";
+  for (let y = 0; y < SIZE; y++) {
+   for (let x = 0; x < SIZE; x++) {
+    if(drawBoard[y][x]==="kouho_"+currentPlayer){
+     if(p===1){
+      x1=x;
+      y1=y;
+      p++;
+    }else{
+      board[y][x]=currentPlayer;
+      x2=x;
+      y2=y;
+     }
+    }
+   }
+  }
+ }
+ nitesu=0;
+ placeStone(x1, y1);
+ board[y2][x2]=null;
+ //alert(gameMode);
+ placeStone(x2, y2); 
+ setTimeout(aiMove, 300);
   });
 
 initBoard();
