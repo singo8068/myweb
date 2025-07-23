@@ -333,7 +333,7 @@ function placeStone(x, y) {
 //alert(gameMode);
    return;
   }
-  currentPlayer = currentPlayer === "black" ? "white" : "black";
+  if(gameMode==="main")currentPlayer = currentPlayer === "black" ? "white" : "black";
   updateForbiddenPoints();
   updateDisplay();
   draw();
@@ -412,6 +412,23 @@ canvas.addEventListener("click", (e) => {
     drawBoard[point.y][point.x]="kouho_"+currentPlayer;
     draw();
   }
+  if (point&&gameMode==="osero"&&(drawBoard[point.y][point.x]==="kouho_black"||drawBoard[point.y][point.x]==="kouho_white")){
+   board[point.y][point.x]=currentPlayer;
+   oseroGaesi(point.x,point.y);
+   blackTame=blackTame-5;
+   for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+     if(board[y][x]===currentPlayer){
+      board[y][x]=null;
+      placeStone(x, y);
+     }
+    }
+   }
+  gameMode="main";
+  document.getElementById("confirmControls").style.display = "none";
+  document.getElementById("mainControls").style.display = "block";
+  setTimeout(aiMove, 300);
+  }
 });
 
 niteBtn.addEventListener("click", () => {
@@ -446,18 +463,54 @@ oseBtn.addEventListener("click", () => {
 
 function oseroCheck(x,y){
  for (let [nx, ny] of getNeighbors(x, y)) {
-  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null){
+  let isKing=tekingka(nx,ny);
+  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null&&isKing===false){
    for(let i = 1;i<SIZE;i++){
-    px=nx*(i+1)-x*i;
-    py=ny*(i+1)-y*i;
+    let px=nx*(i+1)-x*i;
+    let py=ny*(i+1)-y*i;
     if(px >= 0 && py >= 0 && px < SIZE && py < SIZE){
      if(board[py][px]===currentPlayer)return "kouho_"+currentPlayer;
      if(board[py][px]===null)break;
+     if(tekingka(px,py))break;
     }
    }
   }
  }
  return null;
+}
+function oseroGaesi(x,y){
+ for (let [nx, ny] of getNeighbors(x, y)) {
+  let isKing=tekingka(nx,ny);
+  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null&&isKing===false){
+   for(let i = 1;i<SIZE;i++){
+    let px=nx*(i+1)-x*i;
+    let py=ny*(i+1)-y*i;
+    if(px >= 0 && py >= 0 && px < SIZE && py < SIZE){
+     if(board[py][px]===currentPlayer)kaesiSyori(x,y,nx,ny);
+     if(board[py][px]===null)break;
+     if(tekingka(px,py))break;
+    }
+   }
+  }
+ }
+}
+function kaesiSyori(x,y,nx,ny){
+ for(let i = 0;i<SIZE;i++){
+  let px=nx*(i+1)-x*i;
+  let py=ny*(i+1)-y*i;
+   //alert(board[py][px]);
+  if(board[py][px]===currentPlayer)return;
+  board[py][px]=currentPlayer;
+ }
+}
+
+function tekingka(x,y){
+ if(currentPlayer==="black"){
+  if(x===whiteKing.x&&y===whiteKing.y)return true;
+ }else{
+  if(x===blackKing.x&&y===blackKing.y)return true;
+ }
+ return false;
 }
 
 passBtn.addEventListener("click", () => {
@@ -515,7 +568,6 @@ document.getElementById("confirmBtn").addEventListener("click", function () {
  nitesu=0;
  placeStone(x1, y1);
  board[y2][x2]=null;
- //alert(gameMode);
  placeStone(x2, y2); 
  setTimeout(aiMove, 300);
   });
