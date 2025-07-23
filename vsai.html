@@ -53,6 +53,7 @@
 
 <div class="controls" id="mainControls">
   <button id="niteBtn">２てうち</button>
+  <button id="oseBtn">オセロがえし</button>
   <button id="passBtn">ためる</button>
   <button id="resetBtn">リセット</button>
 </div>
@@ -65,6 +66,7 @@
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
 const niteBtn = document.getElementById("niteBtn");
+const oseBtn = document.getElementById("oseBtn");
 const passBtn = document.getElementById("passBtn");
 const resetBtn = document.getElementById("resetBtn");
 const turnDisplay = document.getElementById("turn");
@@ -414,7 +416,6 @@ canvas.addEventListener("click", (e) => {
 
 niteBtn.addEventListener("click", () => {
   if (blackTame<2){
-    //while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
     turnDisplay.removeChild(turnDisplay.lastChild);
     turnDisplay.appendChild(document.createTextNode("２てうつにはためが２いるよ"));
     return;
@@ -424,6 +425,40 @@ niteBtn.addEventListener("click", () => {
   gameMode="nite";
   nitesu=0;
 });
+oseBtn.addEventListener("click", () => {
+  if (blackTame<5){
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("オセロがえしにはためが５いるよ"));
+    return;
+  }
+  document.getElementById("mainControls").style.display = "none";
+  document.getElementById("confirmControls").style.display = "block";
+  gameMode="osero";
+  for (let y = 0; y < SIZE; y++) {
+   for (let x = 0; x < SIZE; x++) {
+    if(board[y][x]===null){
+     drawBoard[y][x]=oseroCheck(x,y);
+     draw();
+    }
+   }
+  }
+});
+
+function oseroCheck(x,y){
+ for (let [nx, ny] of getNeighbors(x, y)) {
+  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null){
+   for(let i = 1;i<SIZE;i++){
+    px=nx*(i+1)-x*i;
+    py=ny*(i+1)-y*i;
+    if(px >= 0 && py >= 0 && px < SIZE && py < SIZE){
+     if(board[py][px]===currentPlayer)return "kouho_"+currentPlayer;
+     if(board[py][px]===null)break;
+    }
+   }
+  }
+ }
+ return null;
+}
 
 passBtn.addEventListener("click", () => {
   if (!blackKing || !whiteKing) {
