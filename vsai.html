@@ -61,6 +61,9 @@
   <button id="confirmBtn">けってい</button>
   <button id="cancelBtn">やめる</button>
 </div>
+<div class="controls" id="saigoControls" style="display: none;">
+  <button id="resetBtn2">リセット</button>
+</div>
 
 <script>
 const canvas = document.getElementById("goban");
@@ -102,6 +105,8 @@ let gameMode="main";
 let nitesu=0;
 
 function initBoard() {
+  document.getElementById("mainControls").style.display = "block";
+  document.getElementById("saigoControls").style.display = "none";
   gameNow = true;
   board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
   drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
@@ -298,6 +303,8 @@ function removeDead(x, y, color) {
           const winImg = document.createElement("img");
           winImg.src = kingCaptured === "white" ? kurokingImg.src : sirokingImg.src;
           winImg.alt = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          document.getElementById("mainControls").style.display = "none";
+          document.getElementById("saigoControls").style.display = "block";
           winImg.style.height = "50px";
           winImg.style.verticalAlign = "middle";
           turnDisplay.appendChild(winImg);
@@ -529,6 +536,7 @@ passBtn.addEventListener("click", () => {
 });
 
 resetBtn.addEventListener("click", () => initBoard());
+resetBtn2.addEventListener("click", () => initBoard());
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
     document.getElementById("confirmControls").style.display = "none";
