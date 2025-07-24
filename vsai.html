@@ -40,10 +40,13 @@
 <body>
 
 <a href="index.html">メインメニューにもどる</a>
+<div id="effectText" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+  font-size: 70px; font-weight: bold; color: black; text-align: center; pointer-events: none; white-space: pre-line;
+  background-color: white;">
+</div>
 
 <div>
-  <span id="turn"></span>　　
-  
+  <span id="turn"></span>
 </div>
 <canvas id="goban" width="700" height="700"></canvas>
 <div>
@@ -402,7 +405,7 @@ function uteruka(x, y) {
   return false;
 }
 
-canvas.addEventListener("click", (e) => {
+canvas.addEventListener("click", async(e) => {
   if (currentPlayer !== "black" || !gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
@@ -420,6 +423,7 @@ canvas.addEventListener("click", (e) => {
     draw();
   }
   if (point&&gameMode==="osero"&&(drawBoard[point.y][point.x]==="kouho_black"||drawBoard[point.y][point.x]==="kouho_white")){
+　 await showEffectText("ひっさつ\nオセロがえし\nはつどう");
    board[point.y][point.x]=currentPlayer;
    oseroGaesi(point.x,point.y);
    blackTame=blackTame-5;
@@ -546,13 +550,14 @@ document.getElementById("cancelBtn").addEventListener("click", function () {
     gameMode="main";
   });
 
-document.getElementById("confirmBtn").addEventListener("click", function () {
+document.getElementById("confirmBtn").addEventListener("click", async function () {
  if(gameMode==="nite"){
   if(nitesu<2){
    turnDisplay.removeChild(turnDisplay.lastChild);
    turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
    return;
   }
+  await showEffectText("ひっさつ\n２てうち\nはつどう");
   let p=1;
   blackTame=blackTame-2;
   document.getElementById("confirmControls").style.display = "none";
@@ -579,6 +584,18 @@ document.getElementById("confirmBtn").addEventListener("click", function () {
  placeStone(x2, y2); 
  setTimeout(aiMove, 300);
   });
+async function showEffectText(text, duration = 2000) {
+  const effectDiv = document.getElementById("effectText");
+  effectDiv.textContent = text;
+  effectDiv.style.display = "block";
+  setTimeout(() => {
+    effectDiv.style.display = "none";
+  }, duration);
+  await delay(duration);
+}
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 initBoard();
 </script>
