@@ -19,7 +19,7 @@
     a {
       display: inline-block;
       width: auto;
-      margin: 100px auto 0; /* 上に余白をとって、左右を中央寄せ */
+      margin: 100px auto 0;
       padding: 20px 40px;
       background-color: #4CAF50;
       color: white;
@@ -30,6 +30,22 @@
 
     a:hover {
       background-color: #45a049;
+    }
+
+    /* フッター内のリンクは通常のテキストリンクに */
+    .footer a {
+      display: inline;
+      margin: 0;
+      padding: 0;
+      background: none;
+      color: #333;
+      text-decoration: underline;
+      border-radius: 0;
+      font-size: 28px;
+    }
+
+    .footer a:hover {
+      color: #000;
     }
 
     .footer {
@@ -45,10 +61,9 @@
       margin: 4px 0;
     }
 
-    /* スマホや狭い画面用の調整 */
     @media screen and (max-width: 600px) {
       a {
-        margin: 30px auto 0; /* 余白を減らす */
+        margin: 30px auto 0;
         padding: 16px 32px;
         font-size: 24px;
       }
@@ -56,18 +71,21 @@
         font-size: 24px;
         padding: 16px;
       }
+      .footer a {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 <body>
 
 <h1>おうさまいご</h1>
-<h2>AIとうつ</h2>
-<a href="plain.html">ひっさつわざなし</a>
-<a href="vsai.html">ひっさつわざあり（かいはつちゅう）</a>
+<a href="rule.html">ルールせつめい</a>
+<a href="vsai.html">ロボットとうつ</a>
 
 <div class="footer">
   <p>制作：今中　心悟</p>
+  <p><a href="https://x.com/singo15hllwyh" target="_blank">Xもフォローしてね</a></p>
   <p>連絡先：singo8068@yahoo.co.jp</p>
 </div>
 </body>

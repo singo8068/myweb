@@ -106,6 +106,7 @@ let whiteTame = 1;
 let gameNow = true;
 let gameMode="main";
 let nitesu=0;
+let koPoint = null;
 
 function initBoard() {
   document.getElementById("mainControls").style.display = "block";
@@ -288,20 +289,23 @@ function removeDead(x, y, color) {
 
   if (!hasLiberties(x, y, color, {})) {
     let kingCaptured = null;
-
+    let lastRemoved = null;
     for (let [rx, ry] of toRemove) {
       if (blackKing && blackKing.x === rx && blackKing.y === ry) kingCaptured = "black";
       if (whiteKing && whiteKing.x === rx && whiteKing.y === ry) kingCaptured = "white";
       board[ry][rx] = null;
       drawBoard[ry][rx] = null;
+      lastRemoved = [rx, ry];
     }
-
+    koPoint = (toRemove.length === 1) ? lastRemoved : null;
     draw();
 
     if (kingCaptured) {
       gameNow = false;
       requestAnimationFrame(() => {
-        setTimeout(() => {
+      setTimeout(async () => {
+          const winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          await showEffectText(winMessage, 4000);
           while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
           const winImg = document.createElement("img");
           winImg.src = kingCaptured === "white" ? kurokingImg.src : sirokingImg.src;
@@ -322,6 +326,9 @@ function removeDead(x, y, color) {
 
 function placeStone(x, y) {
   if (board[y][x] !== null) return false;
+  if (koPoint && koPoint[0] === x && koPoint[1] === y) {
+    return false;
+  }
   board[y][x] = currentPlayer;
   if (!blackKing && currentPlayer === "black") blackKing = { x, y };
   if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
@@ -337,7 +344,7 @@ function placeStone(x, y) {
   }
 
   if (!gameNow) return false;
-
+  koPoint = null; 
   if(gameMode==="nite"){
    gameMode="main";
 //alert(gameMode);
@@ -423,7 +430,7 @@ canvas.addEventListener("click", async(e) => {
     draw();
   }
   if (point&&gameMode==="osero"&&(drawBoard[point.y][point.x]==="kouho_black"||drawBoard[point.y][point.x]==="kouho_white")){
-　 await showEffectText("ひっさつ\nオセロがえし\nはつどう");
+　 await showEffectText("ひっさつ\nオセロがえし\nはつどう！！",2000);
    board[point.y][point.x]=currentPlayer;
    oseroGaesi(point.x,point.y);
    blackTame=blackTame-5;
@@ -524,13 +531,13 @@ function tekingka(x,y){
  return false;
 }
 
-passBtn.addEventListener("click", () => {
+passBtn.addEventListener("click", async() => {
   if (!blackKing || !whiteKing) {
    turnDisplay.removeChild(turnDisplay.lastChild);
    turnDisplay.appendChild(document.createTextNode("１てめはためれないよ"));
    return;
   }
-
+　await showEffectText("きあいを\nためるよ！",1000);
   currentPlayer = currentPlayer === "black" ? "white" : "black";
   updateForbiddenPoints();
   updateDisplay();
@@ -557,7 +564,7 @@ document.getElementById("confirmBtn").addEventListener("click", async function (
    turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
    return;
   }
-  await showEffectText("ひっさつ\n２てうち\nはつどう");
+  await showEffectText("ひっさつ\n２てうち\nはつどう！",2000);
   let p=1;
   blackTame=blackTame-2;
   document.getElementById("confirmControls").style.display = "none";
@@ -584,10 +591,11 @@ document.getElementById("confirmBtn").addEventListener("click", async function (
  placeStone(x2, y2); 
  setTimeout(aiMove, 300);
   });
-async function showEffectText(text, duration = 2000) {
+async function showEffectText(text, duration) {
   const effectDiv = document.getElementById("effectText");
   effectDiv.textContent = text;
   effectDiv.style.display = "block";
+effectDiv.style.opacity = "0.7";
   setTimeout(() => {
     effectDiv.style.display = "none";
   }, duration);
