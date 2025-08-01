@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 0px;
+      background: #eee;
+      font-size: 30px;
+    }
+    canvas {
+      background-color: #93d4f1;
+      border: 2px solid #333;
+    }
+    .controls {
+      margin: 10px;
+    }
+    button {
+      margin: 0 20px;
+      padding: 0px 0px;
+      font-size: 35px;
+    }
+    a {
+      display: inline-block;
+      margin-top: 0px;
+      padding: 0px 40px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    a:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html">メインメニューにもどる</a>
+<div id="effectText" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+  font-size: 70px; font-weight: bold; color: black; text-align: center; pointer-events: none; white-space: pre-line;
+  background-color: white;">
+</div>
+
+<div>
+  <span id="turn"></span>
+</div>
+<canvas id="goban" width="700" height="700"></canvas>
+<div>
+<span id="blackLabel"></span>あと<span id="blackKingLibs">-</span> ため<span id="blackTameLibs">0</span>　　
+<span id="whiteLabel"></span>あと<span id="whiteKingLibs">-</span> ため<span id="whiteTameLibs">1</span>
+</div>
+
+<div class="controls" id="mainControls">
+  <button id="niteBtn">２てうち</button>
+  <button id="oseBtn">オセロがえし</button>
+  <button id="passBtn">ためる</button>
+  <button id="resetBtn">リセット</button>
+</div>
+<div class="controls" id="confirmControls" style="display: none;">
+  <button id="confirmBtn">けってい</button>
+  <button id="cancelBtn">やめる</button>
+</div>
+<div class="controls" id="saigoControls" style="display: none;">
+  <button id="resetBtn2">リセット</button>
+</div>
+
+<script>
+const canvas = document.getElementById("goban");
+const ctx = canvas.getContext("2d");
+const niteBtn = document.getElementById("niteBtn");
+const oseBtn = document.getElementById("oseBtn");
+const passBtn = document.getElementById("passBtn");
+const resetBtn = document.getElementById("resetBtn");
+const turnDisplay = document.getElementById("turn");
+const blackKingLibsDisplay = document.getElementById("blackKingLibs");
+const whiteKingLibsDisplay = document.getElementById("whiteKingLibs");
+const blackTameLibsDisplay = document.getElementById("blackTameLibs");
+const whiteTameLibsDisplay = document.getElementById("whiteTameLibs");
+const winText = document.createTextNode("のかち！");
+
+const kuronekoImg = new Image();
+kuronekoImg.src = "./bin/kuroneko.png";
+const kurokingImg = new Image();
+kurokingImg.src = "./bin/kuroking.png";
+const sironekoImg = new Image();
+sironekoImg.src = "./bin/sironeko.png";
+const sirokingImg = new Image();
+sirokingImg.src = "./bin/siroking.png";
+
+const SIZE = 9;
+const CELL = canvas.width / SIZE ;
+const OFFSET = CELL/2;
+
+let board = [];
+let drawBoard = [];
+let currentPlayer = "black";
+let blackKing = null;
+let whiteKing = null;
+let blackTame = 0;
+let whiteTame = 1;
+let gameNow = true;
+let gameMode="main";
+let nitesu=0;
+let koPoint = null;
+
+function initBoard() {
+  document.getElementById("mainControls").style.display = "block";
+  document.getElementById("saigoControls").style.display = "none";
+  gameNow = true;
+  board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  currentPlayer = "black";
+  blackKing = null;
+  whiteKing = null;
+  blackTame=0;
+  whiteTame=1;
+  updateDisplay();
+  updateForbiddenPoints();
+  draw();
+}
+
+function updateDisplay() {
+  const blackLabel = document.getElementById("blackLabel");
+  const whiteLabel = document.getElementById("whiteLabel");
+
+  const blackImg = document.createElement("img");
+  blackImg.src = kurokingImg.src;
+  blackImg.alt = "くろ";
+  blackImg.style.height = "50px";
+  blackImg.style.verticalAlign = "middle";
+
+  const whiteImg = document.createElement("img");
+  whiteImg.src = sirokingImg.src;
+  whiteImg.alt = "しろ";
+  whiteImg.style.height = "50px";
+  whiteImg.style.verticalAlign = "middle";
+
+  while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
+  if (currentPlayer === "black") {
+    turnDisplay.appendChild(blackImg.cloneNode(true));
+    turnDisplay.appendChild(document.createTextNode("のばんだよ"));
+  } else {
+    turnDisplay.appendChild(whiteImg.cloneNode(true));
+    turnDisplay.appendChild(document.createTextNode("のばんだよ"));
+  }
+
+  while (blackLabel.firstChild) blackLabel.removeChild(blackLabel.firstChild);
+  blackLabel.appendChild(blackImg);
+
+  while (whiteLabel.firstChild) whiteLabel.removeChild(whiteLabel.firstChild);
+  whiteLabel.appendChild(whiteImg);
+
+  blackKingLibsDisplay.textContent = blackKing ? countLiberties(blackKing.x, blackKing.y) + "て" : "-て";
+  whiteKingLibsDisplay.textContent = whiteKing ? countLiberties(whiteKing.x, whiteKing.y) + "て" : "-て";
+  blackTameLibsDisplay.textContent = blackTame;
+  whiteTameLibsDisplay.textContent = whiteTame;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#000";
+
+  for (let i = 0; i < SIZE; i++) {
+    let pos = OFFSET + i * CELL;
+    ctx.beginPath();
+    ctx.moveTo(OFFSET, pos);
+    ctx.lineTo(OFFSET + (SIZE - 1) * CELL, pos);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(pos, OFFSET);
+    ctx.lineTo(pos, OFFSET + (SIZE - 1) * CELL);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      const val = board[y][x];
+      const mark = drawBoard[y][x];
+      const cx = OFFSET + x * CELL;
+      const cy = OFFSET + y * CELL;
+
+      if (val === "black" || val === "white") {
+        if ((blackKing && blackKing.x === x && blackKing.y === y) || (whiteKing && whiteKing.x === x && whiteKing.y === y)) {
+          const img = (val === "black") ? kurokingImg : sirokingImg;
+          ctx.drawImage(img, cx - CELL * 0.55, cy - CELL * 0.55, CELL*1.1, CELL*1.1);
+        } else {
+          const img = (val === "black") ? kuronekoImg : sironekoImg;
+          ctx.drawImage(img, cx - CELL * 0.5, cy - CELL * 0.5, CELL, CELL);
+        }
+      } else if (mark === "forbid_black" || mark === "forbid_white") {
+        ctx.strokeStyle = mark === "forbid_black" ? "#fff" : "#000";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - CELL * 0.3, cy - CELL * 0.3);
+        ctx.lineTo(cx + CELL * 0.3, cy + CELL * 0.3);
+        ctx.moveTo(cx + CELL * 0.3, cy - CELL * 0.3);
+        ctx.lineTo(cx - CELL * 0.3, cy + CELL * 0.3);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+      }else if (mark === "kouho_black" || mark === "kouho_white") {
+        const cx = OFFSET + x * CELL;
+        const cy = OFFSET + y * CELL;
+        ctx.beginPath();
+        ctx.arc(cx, cy, CELL * 0.3, 0, Math.PI * 2);
+        ctx.fillStyle = mark === "kouho_white" ? "#fff" : "#000";
+        ctx.fill();
+      }
+    }
+  }
+}
+
+function getClosest(x, y) {
+  for (let iy = 0; iy < SIZE; iy++) {
+    for (let ix = 0; ix < SIZE; ix++) {
+      const px = OFFSET + ix * CELL;
+      const py = OFFSET + iy * CELL;
+      if (Math.hypot(x - px, y - py) < CELL * 0.4) {
+        return { x: ix, y: iy };
+      }
+    }
+  }
+  return null;
+}
+
+function getNeighbors(x, y) {
+  return [
+    [x - 1, y], [x + 1, y],
+    [x, y - 1], [x, y + 1],
+  ].filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE);
+}
+
+function hasLiberties(x, y, color, visited = {}) {
+  const key = `${x},${y}`;
+  if (visited[key]) return false;
+  visited[key] = true;
+
+  for (let [nx, ny] of getNeighbors(x, y)) {
+    const val = board[ny][nx];
+    if (val === null) return true;
+    if (val === color && hasLiberties(nx, ny, color, visited)) return true;
+  }
+  return false;
+}
+
+function countLiberties(x, y, visited = {}) {
+  const color = board[y][x];
+  const checked = {};
+  let count = 0;
+
+  function dfs(cx, cy) {
+    const key = `${cx},${cy}`;
+    if (visited[key]) return;
+    visited[key] = true;
+    for (let [nx, ny] of getNeighbors(cx, cy)) {
+      const nkey = `${nx},${ny}`;
+      if (board[ny][nx] === null && !checked[nkey]) {
+        checked[nkey] = true;
+        count++;
+      } else if (board[ny][nx] === color && !visited[`${nx},${ny}`]) {
+        dfs(nx, ny);
+      }
+    }
+  }
+  dfs(x, y);
+  return count;
+}
+
+function removeDead(x, y, color) {
+  const toRemove = [];
+  const visited = {};
+
+  function dfs(cx, cy) {
+    const key = `${cx},${cy}`;
+    if (visited[key]) return;
+    visited[key] = true;
+    toRemove.push([cx, cy]);
+    for (let [nx, ny] of getNeighbors(cx, cy)) {
+      if (board[ny][nx] === color) dfs(nx, ny);
+    }
+  }
+
+  dfs(x, y);
+
+  if (!hasLiberties(x, y, color, {})) {
+    let kingCaptured = null;
+    let lastRemoved = null;
+    for (let [rx, ry] of toRemove) {
+      if (blackKing && blackKing.x === rx && blackKing.y === ry) kingCaptured = "black";
+      if (whiteKing && whiteKing.x === rx && whiteKing.y === ry) kingCaptured = "white";
+      board[ry][rx] = null;
+      drawBoard[ry][rx] = null;
+      lastRemoved = [rx, ry];
+    }
+    koPoint = (toRemove.length === 1) ? lastRemoved : null;
+    draw();
+
+    if (kingCaptured) {
+      gameNow = false;
+      requestAnimationFrame(() => {
+      setTimeout(async () => {
+          const winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          await showEffectText(winMessage, 4000);
+          while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
+          const winImg = document.createElement("img");
+          winImg.src = kingCaptured === "white" ? kurokingImg.src : sirokingImg.src;
+          winImg.alt = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          document.getElementById("mainControls").style.display = "none";
+          document.getElementById("saigoControls").style.display = "block";
+          winImg.style.height = "50px";
+          winImg.style.verticalAlign = "middle";
+          turnDisplay.appendChild(winImg);
+          turnDisplay.appendChild(winText);
+          if (kingCaptured === "black") blackKing = null;
+          if (kingCaptured === "white") whiteKing = null;
+        }, 100);
+      });
+    }
+  }
+}
+
+function placeStone(x, y) {
+  if (board[y][x] !== null) return false;
+  if (koPoint && koPoint[0] === x && koPoint[1] === y) {
+    return false;
+  }
+  board[y][x] = currentPlayer;
+  if (!blackKing && currentPlayer === "black") blackKing = { x, y };
+  if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
+  for (let [nx, ny] of getNeighbors(x, y)) {
+    const target = board[ny][nx];
+    if (target && target !== currentPlayer) {
+      removeDead(nx, ny, target);
+    }
+  }
+  if (!hasLiberties(x, y, currentPlayer, {})) {
+    board[y][x] = null;
+    return false;
+  }
+
+  if (!gameNow) return false;
+  koPoint = null; 
+  if(gameMode==="nite"){
+   gameMode="main";
+//alert(gameMode);
+   return;
+  }
+  if(gameMode==="main")currentPlayer = currentPlayer === "black" ? "white" : "black";
+  updateForbiddenPoints();
+  updateDisplay();
+  draw();
+  return true;
+}
+
+function updateForbiddenPoints() {
+  drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      if (board[y][x] !== null) continue;
+      board[y][x] = "black";
+      const blackSuicide = !hasLiberties(x, y, "black", {});
+      board[y][x] = "white";
+      const whiteSuicide = !hasLiberties(x, y, "white", {});
+      board[y][x] = null;
+      drawBoard[y][x] =null;
+      if (blackSuicide) drawBoard[y][x] = "forbid_black";
+      if (whiteSuicide) drawBoard[y][x] = "forbid_white";
+    }
+  }
+}
+
+
+
+function uteruka(x, y) {
+  if (board[y][x] === null && drawBoard[y][x] === null) return true;
+  return false;
+}
+
+canvas.addEventListener("click", async (e) => {
+  if (!gameNow) return;
+  const rect = canvas.getBoundingClientRect();
+  const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
+
+  if (point && gameMode === "main") {
+    if (!placeStone(point.x, point.y)) {
+      turnDisplay.removeChild(turnDisplay.lastChild);
+      turnDisplay.appendChild(document.createTextNode("はそこにはうてないよ"));
+    }
+  }
+
+  if (point && gameMode === "nite" && board[point.y][point.x] === null && nitesu < 2) {
+    nitesu++;
+    drawBoard[point.y][point.x] = "kouho_" + currentPlayer;
+    draw();
+  }
+
+  if (
+    point &&gameMode === "osero" &&
+    (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
+  ) {
+    await showEffectText("ひっさつ\nオセロがえし\nはつどう！！", 2000);
+    board[point.y][point.x] = currentPlayer;
+    oseroGaesi(point.x, point.y);
+    if (currentPlayer === "black") blackTame -= 5;
+    else whiteTame -= 5;
+    currentPlayer = currentPlayer === "black" ? "white" : "black";
+    for (let y = 0; y < SIZE; y++) {
+      for (let x = 0; x < SIZE; x++) {
+        if (board[y][x] === currentPlayer) {
+          board[y][x] = null;
+          placeStone(x, y);
+        }
+      }
+    }
+
+    gameMode = "main";
+    document.getElementById("confirmControls").style.display = "none";
+    document.getElementById("mainControls").style.display = "block";
+  }
+});
+
+niteBtn.addEventListener("click", () => {
+  if (currentPlayer === "black"&&blackTame<2){
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("２てうつにはためが２いるよ"));
+    return;
+  }
+  if (currentPlayer === "white"&&whiteTame<2){
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("２てうつにはためが２いるよ"));
+    return;
+  }
+  document.getElementById("mainControls").style.display = "none";
+  document.getElementById("confirmControls").style.display = "block";
+  gameMode="nite";
+  nitesu=0;
+});
+oseBtn.addEventListener("click", () => {
+  if (currentPlayer === "black"&&blackTame<5){
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("オセロがえしにはためが５いるよ"));
+    return;
+  }
+  if (currentPlayer === "white"&&whiteTame<5){
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("オセロがえしにはためが５いるよ"));
+    return;
+  }
+  document.getElementById("mainControls").style.display = "none";
+  document.getElementById("confirmControls").style.display = "block";
+  gameMode="osero";
+  for (let y = 0; y < SIZE; y++) {
+   for (let x = 0; x < SIZE; x++) {
+    if(board[y][x]===null){
+     drawBoard[y][x]=oseroCheck(x,y);
+     draw();
+    }
+   }
+  }
+});
+
+function oseroCheck(x,y){
+ for (let [nx, ny] of getNeighbors(x, y)) {
+  let isKing=tekingka(nx,ny);
+  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null&&isKing===false){
+   for(let i = 1;i<SIZE;i++){
+    let px=nx*(i+1)-x*i;
+    let py=ny*(i+1)-y*i;
+    if(px >= 0 && py >= 0 && px < SIZE && py < SIZE){
+     if(board[py][px]===currentPlayer)return "kouho_"+currentPlayer;
+     if(board[py][px]===null)break;
+     if(tekingka(px,py))break;
+    }
+   }
+  }
+ }
+ return null;
+}
+function oseroGaesi(x,y){
+ for (let [nx, ny] of getNeighbors(x, y)) {
+  let isKing=tekingka(nx,ny);
+  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null&&isKing===false){
+   for(let i = 1;i<SIZE;i++){
+    let px=nx*(i+1)-x*i;
+    let py=ny*(i+1)-y*i;
+    if(px >= 0 && py >= 0 && px < SIZE && py < SIZE){
+     if(board[py][px]===currentPlayer)kaesiSyori(x,y,nx,ny);
+     if(board[py][px]===null)break;
+     if(tekingka(px,py))break;
+    }
+   }
+  }
+ }
+}
+function kaesiSyori(x,y,nx,ny){
+ for(let i = 0;i<SIZE;i++){
+  let px=nx*(i+1)-x*i;
+  let py=ny*(i+1)-y*i;
+   //alert(board[py][px]);
+  if(board[py][px]===currentPlayer)return;
+  board[py][px]=currentPlayer;
+ }
+}
+
+function tekingka(x,y){
+ if(currentPlayer==="black"){
+  if(x===whiteKing.x&&y===whiteKing.y)return true;
+ }else{
+  if(x===blackKing.x&&y===blackKing.y)return true;
+ }
+ return false;
+}
+
+passBtn.addEventListener("click", async () => {
+  if (!blackKing || !whiteKing) {
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("１てめはためれないよ"));
+    return;
+  }
+  await showEffectText("きあいを\nためるよ！", 1000);
+
+  if (currentPlayer === "black") blackTame++;
+  else whiteTame++;
+
+  currentPlayer = currentPlayer === "black" ? "white" : "black";
+  updateForbiddenPoints();
+  updateDisplay();
+  draw();
+});
+
+resetBtn.addEventListener("click", () => initBoard());
+resetBtn2.addEventListener("click", () => initBoard());
+
+document.getElementById("cancelBtn").addEventListener("click", function () {
+    document.getElementById("confirmControls").style.display = "none";
+    document.getElementById("mainControls").style.display = "block";
+    updateForbiddenPoints();
+    draw();
+    gameMode="main";
+  });
+
+document.getElementById("confirmBtn").addEventListener("click", async function () {
+ if(gameMode==="nite"){
+  if(nitesu<2){
+   turnDisplay.removeChild(turnDisplay.lastChild);
+   turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
+   return;
+  }
+  await showEffectText("ひっさつ\n２てうち\nはつどう！",2000);
+  let p=1;
+  if (currentPlayer === "black"){blackTame=blackTame-2;}
+  if (currentPlayer === "white"){whiteTame=whiteTame-2;}
+  document.getElementById("confirmControls").style.display = "none";
+  document.getElementById("mainControls").style.display = "block";
+  for (let y = 0; y < SIZE; y++) {
+   for (let x = 0; x < SIZE; x++) {
+    if(drawBoard[y][x]==="kouho_"+currentPlayer){
+     if(p===1){
+      x1=x;
+      y1=y;
+      p++;
+    }else{
+      board[y][x]=currentPlayer;
+      x2=x;
+      y2=y;
+     }
+    }
+   }
+  }
+ }
+ nitesu=0;
+ placeStone(x1, y1);
+ board[y2][x2]=null;
+ placeStone(x2, y2); 
+  });
+async function showEffectText(text, duration) {
+  const effectDiv = document.getElementById("effectText");
+  effectDiv.textContent = text;
+  effectDiv.style.display = "block";
+effectDiv.style.opacity = "0.7";
+  setTimeout(() => {
+    effectDiv.style.display = "none";
+  }, duration);
+  await delay(duration);
+}
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+initBoard();
+</script>
+
+</body>
+</html>
