@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>じゃんけん</title>
+</head>
+<body>
+  <h1>じゃんけん</h1>
+  <button onclick="sendHand('グー')">グー</button>
+  <button onclick="sendHand('チョキ')">チョキ</button>
+  <button onclick="sendHand('パー')">パー</button>
+  <p id="status">相手を待っています...</p>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const status = document.getElementById('status');
+
+    function sendHand(hand) {
+      socket.emit('hand', hand);
+      status.textContent = '送信済み：' + hand;
+    }
+
+    socket.on('result', (data) => {
+      status.textContent = `あなた：${data.yourHand}　相手：${data.oppHand} → ${data.result}`;
+    });
+
+    socket.on('message', msg => {
+      alert(msg);
+    });
+  </script>
+</body>
+</html>
