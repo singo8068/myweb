@@ -362,17 +362,38 @@ function updateForbiddenPoints() {
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       if (board[y][x] !== null) continue;
-      board[y][x] = "black";
-      const blackSuicide = !hasLiberties(x, y, "black", {});
-      board[y][x] = "white";
-      const whiteSuicide = !hasLiberties(x, y, "white", {});
-      board[y][x] = null;
-      drawBoard[y][x] =null;
+
+      let blackSuicide = true;
+      let whiteSuicide = true;
+
+      if (hasLiberties(x, y, "black", {})) {
+        blackSuicide = false;
+      } else {
+        // 隣接する白石が1手で取れる場合 → 黒は打てる
+        for (let [nx, ny] of getNeighbors(x, y)) {
+          if (board[ny][nx] === "white" && countLiberties(nx, ny) === 1) {
+            blackSuicide = false;
+            break;
+          }
+        }
+      }
+      if (hasLiberties(x, y, "white", {})) {
+        whiteSuicide = false;
+      } else {
+        // 隣接する黒石が1手で取れる場合 → 白は打てる
+        for (let [nx, ny] of getNeighbors(x, y)) {
+          if (board[ny][nx] === "black" && countLiberties(nx, ny) === 1) {
+            whiteSuicide = false;
+            break;
+          }
+        }
+      }
       if (blackSuicide) drawBoard[y][x] = "forbid_black";
       if (whiteSuicide) drawBoard[y][x] = "forbid_white";
     }
   }
 }
+
 
 function aiMove() {
   if (!aiEnabled || currentPlayer !== "white" || !gameNow) return;
