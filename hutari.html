@@ -40,7 +40,7 @@
 <body>
 
 <a href="index.html">メインメニューにもどる</a>
-<div id="effectText" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+<div id="effectText" style="display:none; position:absolute; top:45%; left:50%; transform:translate(-50%, -50%);
   font-size: 70px; font-weight: bold; color: black; text-align: center; pointer-events: none; white-space: pre-line;
   background-color: white;">
 </div>
@@ -58,7 +58,7 @@
   <button id="niteBtn">２てうち</button>
   <button id="oseBtn">オセロがえし</button>
   <button id="passBtn">ためる</button>
-  <button id="resetBtn">リセット</button>
+  <button id="resetBtn">こうさん</button>
 </div>
 <div class="controls" id="confirmControls" style="display: none;">
   <button id="confirmBtn">けってい</button>
@@ -109,6 +109,7 @@ let koPoint = null;
 let koBlack = null; // 白の手番時に禁止すべき場所
 let koWhite = null; // 黒の手番時に禁止すべき場所
 let prevKoPoint = null; 
+let winMessage;
 function initBoard() {
   document.getElementById("mainControls").style.display = "block";
   document.getElementById("saigoControls").style.display = "none";
@@ -322,7 +323,7 @@ function removeDead(x, y, color) {
       gameNow = false;
       requestAnimationFrame(() => {
       setTimeout(async () => {
-          const winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
           await showEffectText(winMessage, 4000);
           while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
           const winImg = document.createElement("img");
@@ -375,7 +376,6 @@ function placeStone(x, y) {
 
   if (!gameNow) return false;
 
-  // この手でできた koPoint を次ターン用に保存
   prevKoPoint = koPoint;
 
   if (gameMode === "nite") {
@@ -597,8 +597,14 @@ passBtn.addEventListener("click", async () => {
   draw();
 });
 
-resetBtn.addEventListener("click", () => initBoard());
-resetBtn2.addEventListener("click", () => initBoard());
+resetBtn.addEventListener("click", async function () {
+ winMessage = currentPlayer === "white" ? "くろのかち！" : "しろのかち！";
+ await showEffectText(winMessage, 3000);
+ initBoard()});
+resetBtn2.addEventListener("click", async function () {
+ winMessage = currentPlayer === "white" ? "くろのかち！" : "しろのかち！";
+ await showEffectText(winMessage, 3000);
+ initBoard()});
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
     document.getElementById("confirmControls").style.display = "none";
