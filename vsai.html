@@ -56,7 +56,7 @@
 
 <div class="controls" id="mainControls">
   <button id="niteBtn">２てうち</button>
-  <button id="oseBtn">オセロがえし</button>
+  <button id="oseBtn">リバース</button>
   <button id="passBtn">ためる</button>
   <button id="resetBtn">リセット</button>
 </div>
@@ -451,7 +451,7 @@ canvas.addEventListener("click", async(e) => {
     draw();
   }
   if (point&&gameMode==="osero"&&(drawBoard[point.y][point.x]==="kouho_black"||drawBoard[point.y][point.x]==="kouho_white")){
-　 await showEffectText("ひっさつ\nオセロがえし\nはつどう！！",2000);
+　 await showEffectText("ひっさつ\nリバース\nはつどう！！",2000);
    board[point.y][point.x]=currentPlayer;
    oseroGaesi(point.x,point.y);
    blackTame=blackTame-5;
@@ -484,7 +484,7 @@ niteBtn.addEventListener("click", () => {
 oseBtn.addEventListener("click", () => {
   if (blackTame<5){
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("オセロがえしにはためが５いるよ"));
+    turnDisplay.appendChild(document.createTextNode("リバースにはためが５いるよ"));
     return;
   }
   document.getElementById("mainControls").style.display = "none";
