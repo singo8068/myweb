@@ -133,6 +133,9 @@ let koWhite = null; // 黒の手番時に禁止すべき場所
 let prevKoPoint = null; 
 let winMessage;
 let undoHistory = [];
+let blackYasumi=0;
+let whiteYasumi=0;
+let kaesisu=0;
 function initBoard() {
   undoHistory = [];
   document.getElementById("mainControls").style.display = "block";
@@ -380,7 +383,9 @@ function saveState() {
     koWhite: koWhite ? [...koWhite] : null,
     koPoint: koPoint ? [...koPoint] : null,
     prevKoPoint: prevKoPoint ? [...prevKoPoint] : null,
-    nitesu
+    nitesu,
+    blackYasumi,
+    whiteYasumi
   });
 }
 
@@ -423,7 +428,7 @@ saveState();}
   prevKoPoint = koPoint;
 
   if (gameMode === "main") {
-    currentPlayer = currentPlayer === "black" ? "white" : "black";
+    playerChange();
   }
 
   updateForbiddenPoints();
@@ -506,13 +511,12 @@ canvas.addEventListener("click", async (e) => {
     point &&gameMode === "osero" &&
     (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
-saveState();
-    await showEffectText("ひっさつ\nリバース\nはつどう！", 2000);
+    saveState();
+    await showEffectText("ひっさつ\nリバース\nはつどう！", 1500);
+    document.getElementById("mainControls").style.display = "none";
     board[point.y][point.x] = currentPlayer;
     oseroGaesi(point.x, point.y);
-    if (currentPlayer === "black") blackTame -= 5;
-    else whiteTame -= 5;
-    currentPlayer = currentPlayer === "black" ? "white" : "black";
+    playerChange();
     for (let y = 0; y < SIZE; y++) {
       for (let x = 0; x < SIZE; x++) {
         if (board[y][x] === currentPlayer) {
@@ -520,6 +524,18 @@ saveState();
           placeStone(x, y);
         }
       }
+    }
+    gameNow=false;
+    await delay(1000);
+    if (currentPlayer === "white") {
+     blackTame -= 5;
+     blackYasumi=kaesisu;
+     await showEffectText(kaesisu+"つリバース\nしたので\nくろは"+kaesisu+"かい\nやすみます", 2000);
+    }
+    if (currentPlayer === "black") {
+     whiteTame -= 5;
+     whiteYasumi=kaesisu;
+     await showEffectText(kaesisu+"つリバース\nしたので\nしろは"+kaesisu+"かい\nやすみます", 2000);
     }
     gameMode = "main";
   }
@@ -583,6 +599,7 @@ function oseroCheck(x,y){
  return null;
 }
 function oseroGaesi(x,y){
+ kaesisu=0;
  for (let [nx, ny] of getNeighbors(x, y)) {
   let isKing=tekingka(nx,ny);
   if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null&&isKing===false){
@@ -605,6 +622,7 @@ function kaesiSyori(x,y,nx,ny){
    //alert(board[py][px]);
   if(board[py][px]===currentPlayer)return;
   board[py][px]=currentPlayer;
+  kaesisu++;
  }
 }
 
@@ -629,7 +647,7 @@ saveState();
   if (currentPlayer === "black") blackTame++;
   else whiteTame++;
 
-  currentPlayer = currentPlayer === "black" ? "white" : "black";
+  playerChange();
   updateForbiddenPoints();
   updateDisplay();
   draw();
@@ -685,7 +703,7 @@ saveState();
  placeStone(x1, y1);
  board[y2][x2]=null;
  placeStone(x2, y2); 
- currentPlayer = currentPlayer === "black" ? "white" : "black";
+ playerChange();
  gameMode="main";
  updateDisplay();
   });
@@ -703,6 +721,19 @@ effectDiv.style.opacity = "0.7";
   await delay(duration);
   document.getElementById("mainControls").style.display = "block";
   gameNow=true;
+}
+async function playerChange(){
+ if (currentPlayer === "white"&&blackYasumi>0) {
+  await showEffectText("くろはあと\n"+blackYasumi+"かい\nやすみます", 1500);
+  blackYasumi--;
+  return;
+ }
+ if (currentPlayer === "black"&&whiteYasumi>0) {
+  await showEffectText("しろはあと\n"+whiteYasumi+"かい\nやすみます", 1500);
+  whiteYasumi--;
+  return;
+ }
+ currentPlayer = currentPlayer === "black" ? "white" : "black";
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -727,6 +758,8 @@ document.getElementById("undoBtn").addEventListener("click", () => {
   koPoint = lastState.koPoint ? [...lastState.koPoint] : null;
   prevKoPoint = lastState.prevKoPoint ? [...lastState.prevKoPoint] : null;
   nitesu = lastState.nitesu;
+  blackYasumi = lastState.blackYasumi;
+  whiteYasumi = lastState.whiteYasumi;
 
   updateForbiddenPoints();
   updateDisplay();
