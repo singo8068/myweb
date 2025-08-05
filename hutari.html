@@ -58,6 +58,7 @@
   <button id="niteBtn">２てうち</button>
   <button id="oseBtn">リバース</button>
   <button id="passBtn">ためる</button>
+  <button id="undoBtn">まった</button>
   <button id="resetBtn">こうさん</button>
 </div>
 <div class="controls" id="confirmControls" style="display: none;">
@@ -110,7 +111,9 @@ let koBlack = null; // 白の手番時に禁止すべき場所
 let koWhite = null; // 黒の手番時に禁止すべき場所
 let prevKoPoint = null; 
 let winMessage;
+let undoHistory = [];
 function initBoard() {
+  undoHistory = [];
   document.getElementById("mainControls").style.display = "block";
   document.getElementById("saigoControls").style.display = "none";
   gameNow = true;
@@ -342,6 +345,22 @@ function removeDead(x, y, color) {
     }
   }
 }
+function saveState() {
+  undoHistory.push({
+    board: board.map(row => [...row]),
+    drawBoard: drawBoard.map(row => [...row]),
+    currentPlayer,
+    blackKing: blackKing ? { ...blackKing } : null,
+    whiteKing: whiteKing ? { ...whiteKing } : null,
+    blackTame,
+    whiteTame,
+    koBlack: koBlack ? [...koBlack] : null,
+    koWhite: koWhite ? [...koWhite] : null,
+    koPoint: koPoint ? [...koPoint] : null,
+    prevKoPoint: prevKoPoint ? [...prevKoPoint] : null,
+    nitesu
+  });
+}
 
 function placeStone(x, y) {
   if (board[y][x] !== null) return false;
@@ -351,6 +370,9 @@ function placeStone(x, y) {
       (currentPlayer === "white" && koWhite && koWhite[0] === x && koWhite[1] === y)) {
     return false;
   }
+if (gameMode === "main") {
+saveState();}
+
     koBlack = null;
     koWhite = null;
 
@@ -377,11 +399,6 @@ function placeStone(x, y) {
   if (!gameNow) return false;
 
   prevKoPoint = koPoint;
-
-  if (gameMode === "nite") {
-    gameMode = "main";
-    return;
-  }
 
   if (gameMode === "main") {
     currentPlayer = currentPlayer === "black" ? "white" : "black";
@@ -467,6 +484,9 @@ canvas.addEventListener("click", async (e) => {
     point &&gameMode === "osero" &&
     (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
+    document.getElementById("confirmControls").style.display = "none";
+    document.getElementById("mainControls").style.display = "block";
+saveState();
     await showEffectText("ひっさつ\nリバース\nはつどう！！", 2000);
     board[point.y][point.x] = currentPlayer;
     oseroGaesi(point.x, point.y);
@@ -481,10 +501,8 @@ canvas.addEventListener("click", async (e) => {
         }
       }
     }
-
     gameMode = "main";
-    document.getElementById("confirmControls").style.display = "none";
-    document.getElementById("mainControls").style.display = "block";
+
   }
 });
 
@@ -586,6 +604,7 @@ passBtn.addEventListener("click", async () => {
     turnDisplay.appendChild(document.createTextNode("１てめはためれないよ"));
     return;
   }
+saveState();
   await showEffectText("きあいを\nためるよ！", 1000);
 
   if (currentPlayer === "black") blackTame++;
@@ -621,12 +640,13 @@ document.getElementById("confirmBtn").addEventListener("click", async function (
    turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
    return;
   }
+  document.getElementById("confirmControls").style.display = "none";
+  document.getElementById("mainControls").style.display = "block";
+saveState();
   await showEffectText("ひっさつ\n２てうち\nはつどう！",2000);
   let p=1;
   if (currentPlayer === "black"){blackTame=blackTame-2;}
   if (currentPlayer === "white"){whiteTame=whiteTame-2;}
-  document.getElementById("confirmControls").style.display = "none";
-  document.getElementById("mainControls").style.display = "block";
   for (let y = 0; y < SIZE; y++) {
    for (let x = 0; x < SIZE; x++) {
     if(drawBoard[y][x]==="kouho_"+currentPlayer){
@@ -647,6 +667,7 @@ document.getElementById("confirmBtn").addEventListener("click", async function (
  placeStone(x1, y1);
  board[y2][x2]=null;
  placeStone(x2, y2); 
+ gameMode="main";
   });
 async function showEffectText(text, duration) {
   const effectDiv = document.getElementById("effectText");
@@ -661,6 +682,32 @@ effectDiv.style.opacity = "0.7";
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+document.getElementById("undoBtn").addEventListener("click", () => {
+  if (undoHistory.length === 0) {
+    turnDisplay.removeChild(turnDisplay.lastChild);
+    turnDisplay.appendChild(document.createTextNode("まったはできないよ"));
+    return;
+  }
+
+  const lastState = undoHistory.pop();
+  board = lastState.board.map(row => [...row]);
+  drawBoard = lastState.drawBoard.map(row => [...row]);
+  currentPlayer = lastState.currentPlayer;
+  blackKing = lastState.blackKing ? { ...lastState.blackKing } : null;
+  whiteKing = lastState.whiteKing ? { ...lastState.whiteKing } : null;
+  blackTame = lastState.blackTame;
+  whiteTame = lastState.whiteTame;
+  koBlack = lastState.koBlack ? [...lastState.koBlack] : null;
+  koWhite = lastState.koWhite ? [...lastState.koWhite] : null;
+  koPoint = lastState.koPoint ? [...lastState.koPoint] : null;
+  prevKoPoint = lastState.prevKoPoint ? [...lastState.prevKoPoint] : null;
+  nitesu = lastState.nitesu;
+
+  updateForbiddenPoints();
+  updateDisplay();
+  draw();
+});
+
 
 initBoard();
 </script>
