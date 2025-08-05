@@ -361,6 +361,7 @@ function removeDead(x, y, color) {
           turnDisplay.appendChild(winText);
           if (kingCaptured === "black") blackKing = null;
           if (kingCaptured === "white") whiteKing = null;
+          gameNow = false;
         }, 100);
       });
     }
@@ -505,8 +506,6 @@ canvas.addEventListener("click", async (e) => {
     point &&gameMode === "osero" &&
     (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
-    document.getElementById("confirmControls").style.display = "none";
-    document.getElementById("mainControls").style.display = "block";
 saveState();
     await showEffectText("ひっさつ\nリバース\nはつどう！", 2000);
     board[point.y][point.x] = currentPlayer;
@@ -523,7 +522,6 @@ saveState();
       }
     }
     gameMode = "main";
-
   }
 });
 
@@ -640,10 +638,11 @@ saveState();
 resetBtn.addEventListener("click", async function () {
  winMessage = currentPlayer === "white" ? "くろのかち！" : "しろのかち！";
  await showEffectText(winMessage, 3000);
- initBoard()});
+ document.getElementById("mainControls").style.display = "none";
+ document.getElementById("saigoControls").style.display = "block";
+ gameNow=false;
+ });
 resetBtn2.addEventListener("click", async function () {
- winMessage = currentPlayer === "white" ? "くろのかち！" : "しろのかち！";
- await showEffectText(winMessage, 3000);
  initBoard()});
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
@@ -661,8 +660,6 @@ document.getElementById("confirmBtn").addEventListener("click", async function (
    turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
    return;
   }
-  document.getElementById("confirmControls").style.display = "none";
-  document.getElementById("mainControls").style.display = "block";
 saveState();
   await showEffectText("ひっさつ\n２てうち\nはつどう！",2000);
   let p=1;
@@ -688,9 +685,14 @@ saveState();
  placeStone(x1, y1);
  board[y2][x2]=null;
  placeStone(x2, y2); 
+ currentPlayer = currentPlayer === "black" ? "white" : "black";
  gameMode="main";
+ updateDisplay();
   });
 async function showEffectText(text, duration) {
+  gameNow=false;
+  document.getElementById("confirmControls").style.display = "none";
+  document.getElementById("mainControls").style.display = "none";
   const effectDiv = document.getElementById("effectText");
   effectDiv.textContent = text;
   effectDiv.style.display = "block";
@@ -699,6 +701,8 @@ effectDiv.style.opacity = "0.7";
     effectDiv.style.display = "none";
   }, duration);
   await delay(duration);
+  document.getElementById("mainControls").style.display = "block";
+  gameNow=true;
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
