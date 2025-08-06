@@ -40,12 +40,9 @@
 <body>
 
 <a href="index.html">メインメニューにもどる</a>
-
-
 <div>
   <span id="turn"></span>
 </div>
-
 <div style="position: relative; display: inline-block;">
   <canvas id="goban" width="650" height="650"></canvas>
   <div id="effectText"
@@ -69,7 +66,6 @@
     ">
   </div>
 </div>
-
 <div>
 <span id="blackLabel"></span>あと<span id="blackKingLibs">-</span> ため<span id="blackTameLibs">0</span>　　
 <span id="whiteLabel"></span>あと<span id="whiteKingLibs">-</span> ため<span id="whiteTameLibs">1</span>
@@ -516,7 +512,7 @@ canvas.addEventListener("click", async (e) => {
     document.getElementById("mainControls").style.display = "none";
     board[point.y][point.x] = currentPlayer;
     oseroGaesi(point.x, point.y);
-    playerChange();
+    currentPlayer = currentPlayer === "black" ? "white" : "black";
     for (let y = 0; y < SIZE; y++) {
       for (let x = 0; x < SIZE; x++) {
         if (board[y][x] === currentPlayer) {
@@ -525,19 +521,21 @@ canvas.addEventListener("click", async (e) => {
         }
       }
     }
+    currentPlayer = currentPlayer === "black" ? "white" : "black";
     gameNow=false;
     await delay(1000);
-    if (currentPlayer === "white") {
+    if (currentPlayer === "black") {
      blackTame -= 5;
      blackYasumi=kaesisu;
      await showEffectText(kaesisu+"つリバース\nしたので\nくろは"+kaesisu+"かい\nやすみます", 2000);
     }
-    if (currentPlayer === "black") {
+    if (currentPlayer === "white") {
      whiteTame -= 5;
      whiteYasumi=kaesisu;
      await showEffectText(kaesisu+"つリバース\nしたので\nしろは"+kaesisu+"かい\nやすみます", 2000);
     }
     gameMode = "main";
+    playerChange();
   }
 });
 
@@ -726,11 +724,15 @@ async function playerChange(){
  if (currentPlayer === "white"&&blackYasumi>0) {
   await showEffectText("くろはあと\n"+blackYasumi+"かい\nやすみます", 1500);
   blackYasumi--;
+  if(whiteYasumi>0){currentPlayer = "black";playerChange();}
+  updateDisplay();
   return;
  }
  if (currentPlayer === "black"&&whiteYasumi>0) {
   await showEffectText("しろはあと\n"+whiteYasumi+"かい\nやすみます", 1500);
   whiteYasumi--;
+  if(blackYasumi>0){currentPlayer = "white";playerChange();}
+  updateDisplay();
   return;
  }
  currentPlayer = currentPlayer === "black" ? "white" : "black";
