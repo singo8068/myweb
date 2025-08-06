@@ -461,6 +461,12 @@ function placeStone(x, y) {
 
 function updateForbiddenPoints() {
   drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+if (koBlack && currentPlayer === "black") {
+  drawBoard[koBlack[1]][koBlack[0]] = "ko_black";
+}
+if (koWhite && currentPlayer === "white") {
+  drawBoard[koWhite[1]][koWhite[0]] = "ko_white";
+}
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       if (board[y][x] !== null) continue;
@@ -494,12 +500,6 @@ function updateForbiddenPoints() {
       if (whiteSuicide) drawBoard[y][x] = "forbid_white";
     }
   }
-if (koBlack && currentPlayer === "black") {
-  drawBoard[koBlack[1]][koBlack[0]] = "ko_black";
-}
-if (koWhite && currentPlayer === "white") {
-  drawBoard[koWhite[1]][koWhite[0]] = "ko_white";
-}
 }
 
 
