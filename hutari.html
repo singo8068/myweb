@@ -305,7 +305,10 @@ function countLiberties(x, y, visited = {}) {
 function removeDead(x, y, color) {
   const toRemove = [];
   const visited = {};
+  let lastRemoved = null;
+  let kingCaptured = null;
   koPoint = null;
+
   function dfs(cx, cy) {
     const key = `${cx},${cy}`;
     if (visited[key]) return;
@@ -319,8 +322,6 @@ function removeDead(x, y, color) {
   dfs(x, y);
 
   if (!hasLiberties(x, y, color, {})) {
-    let kingCaptured = null;
-    let lastRemoved = null;
     for (let [rx, ry] of toRemove) {
       if (blackKing && blackKing.x === rx && blackKing.y === ry) kingCaptured = "black";
       if (whiteKing && whiteKing.x === rx && whiteKing.y === ry) kingCaptured = "white";
@@ -329,23 +330,12 @@ function removeDead(x, y, color) {
       lastRemoved = [rx, ry];
     }
 
-  if (toRemove.length === 1) {
-    if (currentPlayer === "black") {
-      koWhite = lastRemoved; // 白に禁止させる
-      koBlack = null;
-    } else {
-      koBlack = lastRemoved; // 黒に禁止させる
-      koWhite = null;
-    }
-  } else {
-    koBlack = null;
-    koWhite = null;
-  }
     draw();
+
     if (kingCaptured) {
       gameNow = false;
       requestAnimationFrame(() => {
-      setTimeout(async () => {
+        setTimeout(async () => {
           winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
           await showEffectText(winMessage, 4000);
           while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
@@ -364,8 +354,13 @@ function removeDead(x, y, color) {
         }, 100);
       });
     }
+
+    return toRemove.length === 1 ? lastRemoved : null;
   }
+
+  return null;
 }
+
 function saveState() {
   undoHistory.push({
     board: board.map(row => [...row]),
@@ -388,35 +383,62 @@ function saveState() {
 function placeStone(x, y) {
   if (board[y][x] !== null) return false;
 
-  // 👇ここでコウの禁止点を判定
   if ((currentPlayer === "black" && koBlack && koBlack[0] === x && koBlack[1] === y) ||
       (currentPlayer === "white" && koWhite && koWhite[0] === x && koWhite[1] === y)) {
     return false;
   }
-if (gameMode === "main") {
-saveState();}
+  if (gameMode === "main") {saveState();}
 
-    koBlack = null;
-    koWhite = null;
+  koBlack = null;
+  koWhite = null;
 
   board[y][x] = currentPlayer;
 
   if (!blackKing && currentPlayer === "black") blackKing = { x, y };
   if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
 
-  koPoint = null; // 現在の手での新しいコウを初期化
+  koPoint = null;
 
-  // 石を取る処理（この中で koPoint が更新される可能性あり）
+  let captured = [];
+
   for (let [nx, ny] of getNeighbors(x, y)) {
     const target = board[ny][nx];
     if (target && target !== currentPlayer) {
-      removeDead(nx, ny, target); // この中で koPoint が更新される
+      const koCandidate = removeDead(nx, ny, target);
+      if (koCandidate) captured.push(koCandidate);
     }
   }
 
   if (!hasLiberties(x, y, currentPlayer, {})) {
     board[y][x] = null;
     return false;
+  }
+
+  if (captured.length === 1) {
+    // このときだけコウの可能性を検討
+    const [koX, koY] = captured[0];
+
+    // 置いた石の連結数を調べる
+    const visited = {};
+    let ownCount = 0;
+    function dfsCount(cx, cy) {
+      const key = `${cx},${cy}`;
+      if (visited[key]) return;
+      visited[key] = true;
+      ownCount++;
+      for (let [nx, ny] of getNeighbors(cx, cy)) {
+        if (board[ny][nx] === currentPlayer) dfsCount(nx, ny);
+      }
+    }
+    dfsCount(x, y);
+
+    if (ownCount === 1) {
+      if (currentPlayer === "black") {
+        koWhite = [koX, koY];
+      } else {
+        koBlack = [koX, koY];
+      }
+    }
   }
 
   if (!gameNow) return false;
@@ -433,6 +455,7 @@ saveState();}
 
   return true;
 }
+
 
 
 
