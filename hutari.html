@@ -112,6 +112,7 @@ sirokingImg.src = "./bin/siroking.png";
 const SIZE = 9;
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
+const MAXTEKAZU=100;
 
 let board = [];
 let drawBoard = [];
@@ -132,6 +133,7 @@ let undoHistory = [];
 let blackYasumi=0;
 let whiteYasumi=0;
 let kaesisu=0;
+
 function initBoard() {
   undoHistory = [];
   document.getElementById("mainControls").style.display = "block";
@@ -186,7 +188,7 @@ function updateDisplay() {
   whiteTameLibsDisplay.textContent = whiteTame;
 }
 
-function draw() {
+async function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "#000";
 
@@ -244,6 +246,7 @@ function draw() {
       }
     }
   }
+ hantei();
 }
 
 function getClosest(x, y) {
@@ -336,18 +339,18 @@ function removeDead(x, y, color) {
       gameNow = false;
       requestAnimationFrame(() => {
         setTimeout(async () => {
-          winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
-          await showEffectText(winMessage, 4000);
           while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
           const winImg = document.createElement("img");
           winImg.src = kingCaptured === "white" ? kurokingImg.src : sirokingImg.src;
           winImg.alt = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
-          document.getElementById("mainControls").style.display = "none";
-          document.getElementById("saigoControls").style.display = "block";
           winImg.style.height = "50px";
           winImg.style.verticalAlign = "middle";
           turnDisplay.appendChild(winImg);
           turnDisplay.appendChild(winText);
+          winMessage = kingCaptured === "white" ? "くろのかち！" : "しろのかち！";
+          await showEffectText(winMessage, 4000);
+          document.getElementById("mainControls").style.display = "none";
+          document.getElementById("saigoControls").style.display = "block";
           if (kingCaptured === "black") blackKing = null;
           if (kingCaptured === "white") whiteKing = null;
           gameNow = false;
@@ -675,6 +678,14 @@ saveState();
 });
 
 resetBtn.addEventListener("click", async function () {
+          while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
+          const winImg = document.createElement("img");
+          winImg.src = currentPlayer === "white" ? kurokingImg.src : sirokingImg.src;
+          winImg.alt = currentPlayer === "white" ? "くろのかち！" : "しろのかち！";
+          winImg.style.height = "50px";
+          winImg.style.verticalAlign = "middle";
+          turnDisplay.appendChild(winImg);
+          turnDisplay.appendChild(winText);
  winMessage = currentPlayer === "white" ? "くろのかち！" : "しろのかち！";
  await showEffectText(winMessage, 3000);
  document.getElementById("mainControls").style.display = "none";
@@ -762,6 +773,33 @@ async function playerChange(){
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function hantei(){
+  if (undoHistory.length < MAXTEKAZU)return;
+  await showEffectText(MAXTEKAZU+"てうっても\nしょうぶが\nつかないので\nはんていするよ", 4000);
+  let blackCount=0;
+  let whiteCount=0;
+  for (let y = 0; y < SIZE; y++) {
+   for (let x = 0; x < SIZE; x++) {
+    if(board[y][x]==="black")blackCount++;
+    if(board[y][x]==="white")whiteCount++;
+   }
+  }
+          while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
+          const winImg = document.createElement("img");
+          winImg.src = blackCount>whiteCount ? kurokingImg.src : sirokingImg.src;
+          winImg.alt = blackCount>whiteCount ? "くろのかち！" : "しろのかち！";
+          winImg.style.height = "50px";
+          winImg.style.verticalAlign = "middle";
+          turnDisplay.appendChild(winImg);
+          turnDisplay.appendChild(winText);
+  let msg="くろが"+blackCount+"\nしろが"+whiteCount+"\nなので\n";
+  if(blackCount>whiteCount)msg=msg+"くろのかち！";
+  else msg=msg+"しろのかち！";
+  await showEffectText(msg, 3000);
+  gameNow=false;
+  document.getElementById("mainControls").style.display = "none";
+  document.getElementById("saigoControls").style.display = "block";
 }
 document.getElementById("undoBtn").addEventListener("click", () => {
   if (undoHistory.length === 0) {
