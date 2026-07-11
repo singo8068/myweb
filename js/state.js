@@ -1,9 +1,15 @@
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
-const niteBtn = document.getElementById("niteBtn");
+const pawaBtn = document.getElementById("pawaBtn");
 const oseBtn = document.getElementById("oseBtn");
 const passBtn = document.getElementById("passBtn");
 const resetBtn = document.getElementById("resetBtn");
+const undoBtn = document.getElementById("undoBtn");
+passBtn.style.backgroundColor="#BBBBBB";
+undoBtn.style.backgroundColor="#BBBBBB";
+oseBtn.style.backgroundColor="#BBBBBB";
+pawaBtn.style.backgroundColor="#BBBBBB";
+
 const turnDisplay = document.getElementById("turn");
 const blackKingLibsDisplay = document.getElementById("blackKingLibs");
 const whiteKingLibsDisplay = document.getElementById("whiteKingLibs");
@@ -20,7 +26,6 @@ sironekoImg.src = "./bin/sironeko.png";
 const sirokingImg = new Image();
 sirokingImg.src = "./bin/siroking.png";
 
-const SIZE = 9;
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
 const MAXTEKAZU=150;
@@ -44,3 +49,4 @@ let undoHistory = [];
 let blackYasumi=0;
 let whiteYasumi=0;
 let kaesisu=0;
+let pawatorisu=0;

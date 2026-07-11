@@ -28,7 +28,7 @@ function hasLiberties(x, y, color, visited = {}) {
     if (val === null) return true;
     if (val === color && hasLiberties(nx, ny, color, visited)) return true;
   }
-  return false;
+  return;
 }
 
 function countLiberties(x, y, visited = {}) {
@@ -59,7 +59,6 @@ function removeDead(x, y, color) {
   const visited = {};
   let lastRemoved = null;
   let kingCaptured = null;
-  koPoint = null;
 
   function dfs(cx, cy) {
     const key = `${cx},${cy}`;

@@ -1,8 +1,6 @@
 
 function updateDisplay() {
-  const blackLabel = document.getElementById("blackLabel");
-  const whiteLabel = document.getElementById("whiteLabel");
-
+//上のメッセージ作成
   const blackImg = document.createElement("img");
   blackImg.src = kurokingImg.src;
   blackImg.alt = "くろ";
@@ -19,23 +17,34 @@ function updateDisplay() {
   if (currentPlayer === "black") {
     turnDisplay.appendChild(blackImg.cloneNode(true));
     turnDisplay.appendChild(document.createTextNode("のばんだよ"));
+    if(blackTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#BBBBBB";}
+    if(blackTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#BBBBBB";}
   } else {
     turnDisplay.appendChild(whiteImg.cloneNode(true));
     turnDisplay.appendChild(document.createTextNode("のばんだよ"));
+    if(whiteTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#BBBBBB";}
+    if(whiteTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#BBBBBB";}
   }
 
+  const blackLabel = document.getElementById("blackLabel");
+  const whiteLabel = document.getElementById("whiteLabel");
   while (blackLabel.firstChild) blackLabel.removeChild(blackLabel.firstChild);
   blackLabel.appendChild(blackImg);
 
   while (whiteLabel.firstChild) whiteLabel.removeChild(whiteLabel.firstChild);
   whiteLabel.appendChild(whiteImg);
 
-  blackKingLibsDisplay.textContent = blackKing ? countLiberties(blackKing.x, blackKing.y) + "て" : "-て";
-  whiteKingLibsDisplay.textContent = whiteKing ? countLiberties(whiteKing.x, whiteKing.y) + "て" : "-て";
   blackTameLibsDisplay.textContent = blackTame;
   whiteTameLibsDisplay.textContent = whiteTame;
-}
+  if (undoHistory.length > 0){undoBtn.style.backgroundColor="#FFFFFF";
+  }else{undoBtn.style.backgroundColor="#BBBBBB";
+  }
+  if (undoHistory.length > 1){passBtn.style.backgroundColor="#66FF66";
+  }else{passBtn.style.backgroundColor="#BBBBBB";
+  }
 
+}
+//盤面描写
 async function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "#000";
@@ -78,10 +87,15 @@ async function draw() {
         ctx.lineTo(cx - CELL * 0.3, cy + CELL * 0.3);
         ctx.stroke();
         ctx.lineWidth = 1;
-      } else if (mark === "ko_black" || mark === "ko_white") {
-        ctx.strokeStyle = mark === "ko_white" ? "#000" : "#fff";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(cx - CELL * 0.25, cy - CELL * 0.25, CELL * 0.5, CELL * 0.5);
+      } else if (mark === "forbid_both") {
+        ctx.strokeStyle = "#f00";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(cx - CELL * 0.3, cy - CELL * 0.3);
+        ctx.lineTo(cx + CELL * 0.3, cy + CELL * 0.3);
+        ctx.moveTo(cx + CELL * 0.3, cy - CELL * 0.3);
+        ctx.lineTo(cx - CELL * 0.3, cy + CELL * 0.3);
+        ctx.stroke();
         ctx.lineWidth = 1;
 
       }else if (mark === "kouho_black" || mark === "kouho_white") {
@@ -98,43 +112,28 @@ async function draw() {
 }
 function updateForbiddenPoints() {
   drawBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
-if (koBlack && currentPlayer === "black") {
-  drawBoard[koBlack[1]][koBlack[0]] = "ko_black";
-}
-if (koWhite && currentPlayer === "white") {
-  drawBoard[koWhite[1]][koWhite[0]] = "ko_white";
-}
+      let blackSuicide = true;
+      let whiteSuicide = true;
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       if (board[y][x] !== null) continue;
 
-      let blackSuicide = true;
-      let whiteSuicide = true;
 
-      if (hasLiberties(x, y, "black", {})) {
-        blackSuicide = false;
-      } else {
-        // 隣接する白石が1手で取れる場合 → 黒は打てる
-        for (let [nx, ny] of getNeighbors(x, y)) {
-          if (board[ny][nx] === "white" && countLiberties(nx, ny) === 1) {
-            blackSuicide = false;
-            break;
-          }
-        }
-      }
-      if (hasLiberties(x, y, "white", {})) {
-        whiteSuicide = false;
-      } else {
-        // 隣接する黒石が1手で取れる場合 → 白は打てる
-        for (let [nx, ny] of getNeighbors(x, y)) {
-          if (board[ny][nx] === "black" && countLiberties(nx, ny) === 1) {
-            whiteSuicide = false;
-            break;
-          }
-        }
-      }
+
+      board[y][x] = "black";
+      blackSuicide = !hasLiberties(x, y, "black", {});
+      board[y][x] = null;
+
+      board[y][x] = "white";
+      whiteSuicide = !hasLiberties(x, y, "white", {});
+      board[y][x] = null;
+
       if (blackSuicide) drawBoard[y][x] = "forbid_black";
       if (whiteSuicide) drawBoard[y][x] = "forbid_white";
+      if (blackSuicide&&whiteSuicide) drawBoard[y][x] = "forbid_both";
+
     }
   }
 }
+
+

@@ -1,87 +1,45 @@
-
-function saveState() {
-  undoHistory.push({
-    board: board.map(row => [...row]),
-    drawBoard: drawBoard.map(row => [...row]),
-    currentPlayer,
-    blackKing: blackKing ? { ...blackKing } : null,
-    whiteKing: whiteKing ? { ...whiteKing } : null,
-    blackTame,
-    whiteTame,
-    koBlack: koBlack ? [...koBlack] : null,
-    koWhite: koWhite ? [...koWhite] : null,
-    koPoint: koPoint ? [...koPoint] : null,
-    prevKoPoint: prevKoPoint ? [...prevKoPoint] : null,
-    nitesu,
-    blackYasumi,
-    whiteYasumi
-  });
-}
-
 function placeStone(x, y) {
   if (board[y][x] !== null) return false;
-
-  if ((currentPlayer === "black" && koBlack && koBlack[0] === x && koBlack[1] === y) ||
-      (currentPlayer === "white" && koWhite && koWhite[0] === x && koWhite[1] === y)) {
-    return false;
-  }
   if (gameMode === "main") {saveState();}
-
-  koBlack = null;
-  koWhite = null;
 
   board[y][x] = currentPlayer;
 
   if (!blackKing && currentPlayer === "black") blackKing = { x, y };
   if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
 
-  koPoint = null;
-
-  let captured = [];
-
+ if (gameMode === "pawa") {
+  let extraStone = null;
+  let singleCaptureCount = 0;
   for (let [nx, ny] of getNeighbors(x, y)) {
     const target = board[ny][nx];
     if (target && target !== currentPlayer) {
-      const koCandidate = removeDead(nx, ny, target);
-      if (koCandidate) captured.push(koCandidate);
+        const pos = removeDead(nx, ny, target);
+        if (pos) {
+            singleCaptureCount++;
+            extraStone = pos;
+        }
     }
   }
+ if (singleCaptureCount === 1) {
+    const [rx, ry] = extraStone;
+    board[ry][rx] = currentPlayer;
+ }
+}
 
   if (!hasLiberties(x, y, currentPlayer, {})) {
     board[y][x] = null;
     return false;
   }
 
-  if (captured.length === 1) {
-    // このときだけコウの可能性を検討
-    const [koX, koY] = captured[0];
+  const enemy = currentPlayer === "black" ? "white" : "black";
 
-    // 置いた石の連結数を調べる
-    const visited = {};
-    let ownCount = 0;
-    function dfsCount(cx, cy) {
-      const key = `${cx},${cy}`;
-      if (visited[key]) return;
-      visited[key] = true;
-      ownCount++;
-      for (let [nx, ny] of getNeighbors(cx, cy)) {
-        if (board[ny][nx] === currentPlayer) dfsCount(nx, ny);
-      }
+  for (const [nx, ny] of getNeighbors(x, y)) {
+    if (board[ny][nx] === enemy) {
+        removeDead(nx, ny, enemy);
     }
-    dfsCount(x, y);
-
-    if (ownCount === 1) {
-      if (currentPlayer === "black") {
-        koWhite = [koX, koY];
-      } else {
-        koBlack = [koX, koY];
-      }
-    }
-  }
+}
 
   if (!gameNow) return false;
-
-  prevKoPoint = koPoint;
 
   if (gameMode === "main") {
     playerChange();
@@ -112,21 +70,31 @@ canvas.addEventListener("click", async (e) => {
     }
   }
 
-  if (point && gameMode === "nite" && board[point.y][point.x] === null && nitesu < 2) {
-    nitesu++;
-    drawBoard[point.y][point.x] = "kouho_" + currentPlayer;
+  if (point && gameMode === "pawa" &&
+     (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
+  ) {
+    saveState();
+    await showEffectText("パワーうち\nはつどう！", 1500);
+    pawatorisu=0;
+    placeStone(point.x, point.y);
     draw();
+    if (currentPlayer === "black") blackTame = blackTame - 1;
+    if (currentPlayer === "white") whiteTame = whiteTame - 1;
+
+    gameMode = "main";
+    playerChange();
+    updateDisplay();
+
   }
 
-  if (
-    point &&gameMode === "osero" &&
+  if (point &&gameMode === "osero" &&
     (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
     saveState();
-    await showEffectText("ひっさつ\nリバース\nはつどう！", 1500);
-    document.getElementById("mainControls").style.display = "none";
+    await showEffectText("リバース\nはつどう！", 1500);
     board[point.y][point.x] = currentPlayer;
     oseroGaesi(point.x, point.y);
+//リバースした後、リバースした側のプレイヤーの石が取り上げられないか調べる。
     currentPlayer = currentPlayer === "black" ? "white" : "black";
     for (let y = 0; y < SIZE; y++) {
       for (let x = 0; x < SIZE; x++) {
@@ -137,20 +105,15 @@ canvas.addEventListener("click", async (e) => {
       }
     }
     currentPlayer = currentPlayer === "black" ? "white" : "black";
-    gameNow=false;
-    await delay(1000);
     if (currentPlayer === "black") {
-     blackTame -= 5;
-     blackYasumi=kaesisu;
-     await showEffectText(kaesisu+"つリバース\nしたので\nくろは"+kaesisu+"かい\nやすみます", 2000);
+     blackTame = blackTame - 2 - kaesisu * 2;
     }
     if (currentPlayer === "white") {
-     whiteTame -= 5;
-     whiteYasumi=kaesisu;
-     await showEffectText(kaesisu+"つリバース\nしたので\nしろは"+kaesisu+"かい\nやすみます", 2000);
+     whiteTame = whiteTame - 2 - kaesisu * 2;
     }
     gameMode = "main";
     playerChange();
+    updateDisplay();
   }
 });
 
@@ -195,42 +158,6 @@ document.getElementById("cancelBtn").addEventListener("click", function () {
     gameMode="main";
   });
 
-document.getElementById("confirmBtn").addEventListener("click", async function () {
- if(gameMode==="nite"){
-  if(nitesu<2){
-   turnDisplay.removeChild(turnDisplay.lastChild);
-   turnDisplay.appendChild(document.createTextNode("２かしょえらんでね"));
-   return;
-  }
-saveState();
-  await showEffectText("ひっさつ\n２てうち\nはつどう！",2000);
-  let p=1;
-  if (currentPlayer === "black"){blackTame=blackTame-2;}
-  if (currentPlayer === "white"){whiteTame=whiteTame-2;}
-  for (let y = 0; y < SIZE; y++) {
-   for (let x = 0; x < SIZE; x++) {
-    if(drawBoard[y][x]==="kouho_"+currentPlayer){
-     if(p===1){
-      x1=x;
-      y1=y;
-      p++;
-    }else{
-      board[y][x]=currentPlayer;
-      x2=x;
-      y2=y;
-     }
-    }
-   }
-  }
- }
- nitesu=0;
- placeStone(x1, y1);
- board[y2][x2]=null;
- placeStone(x2, y2); 
- playerChange();
- gameMode="main";
- updateDisplay();
-  });
 async function showEffectText(text, duration) {
   gameNow=false;
   document.getElementById("confirmControls").style.display = "none";
@@ -247,21 +174,7 @@ effectDiv.style.opacity = "0.7";
   gameNow=true;
 }
 async function playerChange(){
- if (currentPlayer === "white"&&blackYasumi>0) {
-  await showEffectText("くろはあと\n"+blackYasumi+"かい\nやすみます", 1500);
-  blackYasumi--;
-  if(whiteYasumi>0){currentPlayer = "black";playerChange();}
-  updateDisplay();
-  return;
- }
- if (currentPlayer === "black"&&whiteYasumi>0) {
-  await showEffectText("しろはあと\n"+whiteYasumi+"かい\nやすみます", 1500);
-  whiteYasumi--;
-  if(blackYasumi>0){currentPlayer = "white";playerChange();}
-  updateDisplay();
-  return;
- }
- currentPlayer = currentPlayer === "black" ? "white" : "black";
+  currentPlayer = currentPlayer === "black" ? "white" : "black";
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -295,13 +208,12 @@ async function syouhai(isBlackWin){
  document.getElementById("saigoControls").style.display = "block";
  gameNow=false;
 }
-document.getElementById("undoBtn").addEventListener("click", () => {
+undoBtn.addEventListener("click", () => {
   if (undoHistory.length === 0) {
     turnDisplay.removeChild(turnDisplay.lastChild);
     turnDisplay.appendChild(document.createTextNode("まったはできないよ"));
     return;
   }
-
   const lastState = undoHistory.pop();
   board = lastState.board.map(row => [...row]);
   drawBoard = lastState.drawBoard.map(row => [...row]);
@@ -310,16 +222,18 @@ document.getElementById("undoBtn").addEventListener("click", () => {
   whiteKing = lastState.whiteKing ? { ...lastState.whiteKing } : null;
   blackTame = lastState.blackTame;
   whiteTame = lastState.whiteTame;
-  koBlack = lastState.koBlack ? [...lastState.koBlack] : null;
-  koWhite = lastState.koWhite ? [...lastState.koWhite] : null;
-  koPoint = lastState.koPoint ? [...lastState.koPoint] : null;
-  prevKoPoint = lastState.prevKoPoint ? [...lastState.prevKoPoint] : null;
-  nitesu = lastState.nitesu;
-  blackYasumi = lastState.blackYasumi;
-  whiteYasumi = lastState.whiteYasumi;
-
   updateForbiddenPoints();
   updateDisplay();
   draw();
 });
-
+function saveState() {
+  undoHistory.push({
+    board: board.map(row => [...row]),
+    drawBoard: drawBoard.map(row => [...row]),
+    currentPlayer,
+    blackKing: blackKing ? { ...blackKing } : null,
+    whiteKing: whiteKing ? { ...whiteKing } : null,
+    blackTame,
+    whiteTame
+  });
+}
