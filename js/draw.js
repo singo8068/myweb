@@ -17,13 +17,13 @@ function updateDisplay() {
   if (currentPlayer === "black") {
     turnDisplay.appendChild(blackImg.cloneNode(true));
     turnDisplay.appendChild(document.createTextNode("のばんだよ"));
-    if(blackTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#BBBBBB";}
-    if(blackTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#BBBBBB";}
+    if(blackTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#DDDDDD";}
+    if(blackTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#DDDDDD";}
   } else {
     turnDisplay.appendChild(whiteImg.cloneNode(true));
     turnDisplay.appendChild(document.createTextNode("のばんだよ"));
-    if(whiteTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#BBBBBB";}
-    if(whiteTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#BBBBBB";}
+    if(whiteTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#DDDDDD";}
+    if(whiteTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#DDDDDD";}
   }
 
   const blackLabel = document.getElementById("blackLabel");
@@ -36,11 +36,13 @@ function updateDisplay() {
 
   blackTameLibsDisplay.textContent = blackTame;
   whiteTameLibsDisplay.textContent = whiteTame;
-  if (undoHistory.length > 0){undoBtn.style.backgroundColor="#FFFFFF";
-  }else{undoBtn.style.backgroundColor="#BBBBBB";
-  }
+ if(ISNET===false){
+   if (undoHistory.length > 0){undoBtn.style.backgroundColor="#AAAAFF";
+   }else{undoBtn.style.backgroundColor="#DDDDDD";
+   }
+ }
   if (undoHistory.length > 1){passBtn.style.backgroundColor="#66FF66";
-  }else{passBtn.style.backgroundColor="#BBBBBB";
+  }else{passBtn.style.backgroundColor="#DDDDDD";
   }
 
 }

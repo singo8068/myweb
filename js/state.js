@@ -1,14 +1,24 @@
+document.querySelectorAll("button").forEach(button => {
+    button.style.border = "0px solid black";
+    button.style.borderRadius = "15px";
+    button.style.padding = "0";
+    button.style.fontSize = "30px"; 
+});
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
 const pawaBtn = document.getElementById("pawaBtn");
 const oseBtn = document.getElementById("oseBtn");
 const passBtn = document.getElementById("passBtn");
 const resetBtn = document.getElementById("resetBtn");
+if(ISNET){
+}else{
 const undoBtn = document.getElementById("undoBtn");
-passBtn.style.backgroundColor="#BBBBBB";
-undoBtn.style.backgroundColor="#BBBBBB";
-oseBtn.style.backgroundColor="#BBBBBB";
-pawaBtn.style.backgroundColor="#BBBBBB";
+}
+passBtn.style.backgroundColor="#DDDDDD";
+undoBtn.style.backgroundColor="#DDDDDD";
+oseBtn.style.backgroundColor="#DDDDDD";
+pawaBtn.style.backgroundColor="#DDDDDD";
+resetBtn.style.backgroundColor="#FFFFFF";
 
 const turnDisplay = document.getElementById("turn");
 const blackKingLibsDisplay = document.getElementById("blackKingLibs");
