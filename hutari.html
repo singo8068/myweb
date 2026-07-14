@@ -3,26 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>おうさまいご</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding-top: 0px;
-      background: #eee;
-      font-size: 30px;
-    }
-    canvas {
-      background-color: #93d4f1;
-      border: 2px solid #333;
-    }
-    .controls {
-      margin: 10px;
-    }
-    button {
-      margin: 0 20px;
-      padding: 0px 0px;
-      font-size: 35px;
-    }
+<link rel="stylesheet" href="css/style.css">
+<style>
     a {
       display: inline-block;
       margin-top: 0px;
@@ -32,10 +14,7 @@
       text-decoration: none;
       border-radius: 6px;
     }
-    a:hover {
-      background-color: #45a049;
-    }
-  </style>
+</style>
 </head>
 <body>
 
@@ -86,7 +65,8 @@
 </div>
 
 <script>
-const SIZE = 9;
+const params = new URLSearchParams(location.search);
+const SIZE = Number(params.get("size")) || 9;
 const ISNET = false;
 </script>
 <script src="js/state.js"></script>

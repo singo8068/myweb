@@ -3,86 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <title>おうさまいご　メインメニュー</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding-top: 0px;
-      background: #eee;
-      font-size: 30px;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    a {
-      display: inline-block;
-      width: auto;
-      margin: 100px auto 0;
-      padding: 20px 40px;
-      background-color: #4CAF50;
-      color: white;
-      text-decoration: none;
-      border-radius: 12px;
-      transition: background-color 0.3s;
-    }
-
-    a:hover {
-      background-color: #45a049;
-    }
-
-    /* フッター内のリンクは通常のテキストリンクに */
-    .footer a {
-      display: inline;
-      margin: 0;
-      padding: 0;
-      background: none;
-      color: #333;
-      text-decoration: underline;
-      border-radius: 0;
-      font-size: 28px;
-    }
-
-    .footer a:hover {
-      color: #000;
-    }
-
-    .footer {
-      margin-top: auto;
-      background-color: #ddd;
-      padding: 20px;
-      font-size: 32px;
-      color: #333;
-      border-top: 1px solid #ccc;
-    }
-
-    .footer p {
-      margin: 4px 0;
-    }
-
-    @media screen and (max-width: 600px) {
-      a {
-        margin: 30px auto 0;
-        padding: 16px 32px;
-        font-size: 24px;
-      }
-      .footer {
-        font-size: 24px;
-        padding: 16px;
-      }
-      .footer a {
-        font-size: 22px;
-      }
-    }
-  </style>
+<link rel="stylesheet" href="css/style.css">
+<style>
+a { display: inline-block; width: auto; margin: 100px auto 0; padding: 20px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
+</style>
 </head>
 <body>
 
 <h1>おうさまいご</h1>
+<br/>
 <a href="rule.html">ルールせつめい</a>
-<a href="hutari.html">ふたりであそぶ</a>
-
+<br/>
+<a href="hutari.html?size=6">６×６<br/>ふたりであそぶ</a>
+<br/>
+<a href="hutari.html?size=9">９×９<br/>ふたりであそぶ</a>
+<br/>
+<a href="hutari.html?size=11">１１×１１<br/>ふたりであそぶ</a>
+<br/>
+<br/>
 <div class="footer">
   <p>制作：今中　心悟</p>
   <p>連絡先：singo8068@yahoo.co.jp</p>

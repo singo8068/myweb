@@ -3,6 +3,9 @@ document.querySelectorAll("button").forEach(button => {
     button.style.borderRadius = "15px";
     button.style.padding = "0";
     button.style.fontSize = "30px"; 
+    button.style.color = "black";
+    button.style.webkitAppearance = "none";
+    button.style.appearance = "none";
 });
 const canvas = document.getElementById("goban");
 const ctx = canvas.getContext("2d");
