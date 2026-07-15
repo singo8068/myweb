@@ -28,6 +28,7 @@ const blackKingLibsDisplay = document.getElementById("blackKingLibs");
 const whiteKingLibsDisplay = document.getElementById("whiteKingLibs");
 const blackTameLibsDisplay = document.getElementById("blackTameLibs");
 const whiteTameLibsDisplay = document.getElementById("whiteTameLibs");
+const tesuLibsDisplay = document.getElementById("tesuLibs");
 const winText = document.createTextNode("のかち！");
 
 const kuronekoImg = new Image();
@@ -41,7 +42,11 @@ sirokingImg.src = "./bin/siroking.png";
 
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
-const MAXTEKAZU=150;
+let MAXTEKAZU
+if(SIZE===6){MAXTEKAZU=50;}
+if(SIZE===9){MAXTEKAZU=120;}
+if(SIZE===11){MAXTEKAZU=180;}
+
 
 let board = [];
 let drawBoard = [];

@@ -36,6 +36,7 @@ function updateDisplay() {
 
   blackTameLibsDisplay.textContent = blackTame;
   whiteTameLibsDisplay.textContent = whiteTame;
+  tesuLibsDisplay.textContent = undoHistory.length;
  if(ISNET===false){
    if (undoHistory.length > 0){undoBtn.style.backgroundColor="#AAAAFF";
    }else{undoBtn.style.backgroundColor="#DDDDDD";
@@ -51,6 +52,21 @@ async function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "#000";
 
+  // 星を描く関数
+  function drawDot(x, y) {
+    ctx.beginPath();
+    ctx.arc(
+      OFFSET + x * CELL,
+      OFFSET + y * CELL,
+      5,
+      0,
+      Math.PI * 2
+    );
+    ctx.fillStyle = "#000";
+    ctx.fill();
+  }
+
+
   for (let i = 0; i < SIZE; i++) {
     let pos = OFFSET + i * CELL;
     ctx.beginPath();
@@ -62,6 +78,17 @@ async function draw() {
     ctx.moveTo(pos, OFFSET);
     ctx.lineTo(pos, OFFSET + (SIZE - 1) * CELL);
     ctx.stroke();
+  }
+
+  // 星を描く
+  if (SIZE === 9) {
+    drawDot(4, 4);
+  } else if (SIZE === 11) {
+    drawDot(2, 2);
+    drawDot(8, 2);
+    drawDot(5, 5);
+    drawDot(2, 8);
+    drawDot(8, 8);
   }
 
   for (let y = 0; y < SIZE; y++) {

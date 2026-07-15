@@ -180,6 +180,7 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function hantei(){
+//console.log=MAXTEKAZU;
   if (undoHistory.length < MAXTEKAZU)return;
   await showEffectText(MAXTEKAZU+"てうっても\nしょうぶが\nつかないので\nはんていするよ", 3000);
   let blackCount=0;
