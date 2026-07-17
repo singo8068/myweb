@@ -36,7 +36,7 @@ function updateDisplay() {
 
   blackTameLibsDisplay.textContent = blackTame;
   whiteTameLibsDisplay.textContent = whiteTame;
-  tesuLibsDisplay.textContent = undoHistory.length;
+  tesuLibsDisplay.textContent = MAXTEKAZU-undoHistory.length;
  if(ISNET===false){
    if (undoHistory.length > 0){undoBtn.style.backgroundColor="#AAAAFF";
    }else{undoBtn.style.backgroundColor="#DDDDDD";

@@ -42,10 +42,10 @@ sirokingImg.src = "./bin/siroking.png";
 
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
-let MAXTEKAZU
-if(SIZE===6){MAXTEKAZU=50;}
-if(SIZE===9){MAXTEKAZU=120;}
-if(SIZE===11){MAXTEKAZU=180;}
+let MAXTEKAZU=0;
+if(SIZE===6)MAXTEKAZU=50;
+if(SIZE===9)MAXTEKAZU=120;
+if(SIZE===11)MAXTEKAZU=180;
 
 
 let board = [];
