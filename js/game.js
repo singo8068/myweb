@@ -145,9 +145,10 @@ saveState();
 });
 
 resetBtn.addEventListener("click", async function () {
- syouhai(currentPlayer === "white");
+ syouhai("こうさんで",currentPlayer === "white");
  });
 resetBtn2.addEventListener("click", async function () {
+ document.getElementById("effectText").style.display = "none";
  initBoard()});
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
@@ -191,10 +192,10 @@ async function hantei(){
     if(board[y][x]==="white")whiteCount++;
    }
   }
-  await showEffectText("くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので", 3000);
-  syouhai(blackCount>whiteCount);
+  //await showEffectText( 3000);
+  syouhai("くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので",blackCount>whiteCount);
 }
-async function syouhai(isBlackWin){
+async function syouhai(maetext,isBlackWin){
  while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
  const winImg = document.createElement("img");
  winImg.src = isBlackWin ? kurokingImg.src : sirokingImg.src;
@@ -204,7 +205,11 @@ async function syouhai(isBlackWin){
  turnDisplay.appendChild(winImg);
  turnDisplay.appendChild(winText);
  winMessage = isBlackWin ? "くろのかち！" : "しろのかち！";
- await showEffectText(winMessage, 3000);
+  const effectDiv = document.getElementById("effectText");
+  effectDiv.textContent = maetext+"\n"+winMessage;
+  effectDiv.style.display = "block";
+ effectDiv.style.opacity = "0.7";
+
  document.getElementById("mainControls").style.display = "none";
  document.getElementById("saigoControls").style.display = "block";
  gameNow=false;

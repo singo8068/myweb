@@ -87,7 +87,7 @@ function removeDead(x, y, color) {
       gameNow = false;
       requestAnimationFrame(() => {
         setTimeout(async () => {
-　　　　  syouhai(kingCaptured === "white");
+　　　　  syouhai("おうさまがとられたので",kingCaptured === "white");
         }, 100);
       });
     }
