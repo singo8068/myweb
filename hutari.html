@@ -36,8 +36,8 @@
 </div>
 <div>
 あと<span id="tesuLibs">0</span>て　　
-<span id="blackLabel"></span><span id="blackKingLibs"></span> ため<span id="blackTameLibs">0</span>　　
-<span id="whiteLabel"></span><span id="whiteKingLibs"></span> ため<span id="whiteTameLibs">1</span>
+<span id="blackLabel"></span><span id="blackKingLibs"></span><span id="blackTimeLibs">60</span> ため<span id="blackTameLibs">0</span>　　
+<span id="whiteLabel"></span><span id="whiteKingLibs"></span><span id="whiteTimeLibs">60</span> ため<span id="whiteTameLibs">1</span>
 </div>
 
 <div class="controls" id="mainControls">
@@ -57,6 +57,14 @@
 <script>
 const params = new URLSearchParams(location.search);
 const SIZE = Number(params.get("size")) || 9;
+const MAJI = params.get("maji") === "true";
+if (MAJI) {
+    document.getElementById("undoBtn").remove();
+}else {
+document.getElementById("blackTimeLibs").remove();
+document.getElementById("whiteTimeLibs").remove();
+}
+
 const ISNET = false;
 </script>
 <script src="js/state.js"></script>

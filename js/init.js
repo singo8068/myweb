@@ -10,6 +10,8 @@ function initBoard() {
   whiteKing = null;
   blackTame=0;
   whiteTame=1;
+  blackTime = 600; 
+  whiteTime = 600;
   updateDisplay();
   updateForbiddenPoints();
   draw();

@@ -13,12 +13,16 @@ const pawaBtn = document.getElementById("pawaBtn");
 const oseBtn = document.getElementById("oseBtn");
 const passBtn = document.getElementById("passBtn");
 const resetBtn = document.getElementById("resetBtn");
-if(ISNET){
+const blackTimeLibsDisplay = document.getElementById("blackTimeLibs");
+const whiteTimeLibsDisplay = document.getElementById("whiteTimeLibs");
+let blackTime = 600; 
+let whiteTime = 600;
+if(MAJI){
 }else{
 const undoBtn = document.getElementById("undoBtn");
+undoBtn.style.backgroundColor="#DDDDDD";
 }
 passBtn.style.backgroundColor="#DDDDDD";
-undoBtn.style.backgroundColor="#DDDDDD";
 oseBtn.style.backgroundColor="#DDDDDD";
 pawaBtn.style.backgroundColor="#DDDDDD";
 resetBtn.style.backgroundColor="#FFFFFF";

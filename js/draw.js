@@ -37,7 +37,7 @@ function updateDisplay() {
   blackTameLibsDisplay.textContent = blackTame;
   whiteTameLibsDisplay.textContent = whiteTame;
   tesuLibsDisplay.textContent = MAXTEKAZU-undoHistory.length;
- if(ISNET===false){
+ if(MAJI===false){
    if (undoHistory.length > 0){undoBtn.style.backgroundColor="#AAAAFF";
    }else{undoBtn.style.backgroundColor="#DDDDDD";
    }
@@ -45,6 +45,10 @@ function updateDisplay() {
   if (undoHistory.length > 1){passBtn.style.backgroundColor="#66FF66";
   }else{passBtn.style.backgroundColor="#DDDDDD";
   }
+if (MAJI) {
+    blackTimeLibsDisplay.textContent = blackTime;
+    whiteTimeLibsDisplay.textContent = whiteTime;
+}
 
 }
 //盤面描写

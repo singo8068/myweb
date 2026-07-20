@@ -175,7 +175,14 @@ effectDiv.style.opacity = "0.7";
   gameNow=true;
 }
 async function playerChange(){
-  currentPlayer = currentPlayer === "black" ? "white" : "black";
+ if(currentPlayer === "black"){
+  currentPlayer =  "white";
+  blackTime=blackTime+100;
+ }else{
+  currentPlayer =  "black";
+  whiteTime=whiteTime+100;
+ }
+  
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -214,6 +221,34 @@ async function syouhai(maetext,isBlackWin){
  document.getElementById("saigoControls").style.display = "block";
  gameNow=false;
 }
+
+function saveState() {
+  undoHistory.push({
+    board: board.map(row => [...row]),
+    drawBoard: drawBoard.map(row => [...row]),
+    currentPlayer,
+    blackKing: blackKing ? { ...blackKing } : null,
+    whiteKing: whiteKing ? { ...whiteKing } : null,
+    blackTame,
+    whiteTame
+  });
+}
+setInterval(() => {
+ if(gameNow===false)return;
+    if (currentPlayer === "black") {
+        blackTime--;
+    } else {
+        whiteTime--;
+    }
+    updateDisplay();
+    if (blackTime <= 0) {
+         syouhai("じかんぎれで",false);
+    }
+    if (whiteTime <= 0) {
+         syouhai("じかんぎれで",true);
+    }
+}, 100);
+
 undoBtn.addEventListener("click", () => {
   if (undoHistory.length === 0) {
     turnDisplay.removeChild(turnDisplay.lastChild);
@@ -232,14 +267,3 @@ undoBtn.addEventListener("click", () => {
   updateDisplay();
   draw();
 });
-function saveState() {
-  undoHistory.push({
-    board: board.map(row => [...row]),
-    drawBoard: drawBoard.map(row => [...row]),
-    currentPlayer,
-    blackKing: blackKing ? { ...blackKing } : null,
-    whiteKing: whiteKing ? { ...whiteKing } : null,
-    blackTame,
-    whiteTame
-  });
-}
