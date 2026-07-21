@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="index.html">メインメニューにもどる</a>
+<div>
+  <span id="turn"></span>
+</div>
+<div style="position: relative; display: inline-block;">
+  <canvas id="goban" width="650" height="650"></canvas>
+  <div id="effectText"
+    style="
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      font-size: 70px;
+      font-weight: bold;
+      color: black;
+      text-align: center;
+      pointer-events: none;
+      white-space: pre-line;
+      background-color: white;
+      opacity: 0.8;
+      padding: 20px;
+      border-radius: 10px;
+    ">
+  </div>
+</div>
+<div>
+あと<span id="tesuLibs">0</span>て　　
+<span id="blackLabel"></span><span id="blackKingLibs"></span><span id="blackTimeLibs">60</span> ため<span id="blackTameLibs">0</span>　　
+<span id="whiteLabel"></span><span id="whiteKingLibs"></span><span id="whiteTimeLibs">60</span> ため<span id="whiteTameLibs">1</span>
+</div>
+
+<div class="controls" id="mainControls">
+  <button id="pawaBtn">パワーうち</button>
+  <button id="oseBtn">リバース</button>
+  <button id="passBtn">ためる</button>
+  <button id="undoBtn">まった</button>
+  <button id="resetBtn">こうさん</button>
+</div>
+<div class="controls" id="confirmControls" style="display: none;">
+  <button id="cancelBtn">やめる</button>
+</div>
+<div class="controls" id="saigoControls" style="display: none;">
+  <button id="resetBtn2">リセット</button>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const SIZE = Number(params.get("size")) || 9;
+const MAJI = params.get("maji") === "true";
+if (MAJI) {
+    document.getElementById("undoBtn").remove();
+}else {
+document.getElementById("blackTimeLibs").remove();
+document.getElementById("whiteTimeLibs").remove();
+}
+
+const ISNET = false;
+</script>
+<script src="js/state.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/game.js"></script>
+<script src="js/igosyori.js"></script>
+<script src="js/tokugi.js"></script>
+<script src="js/init.js"></script>
+
+
+</body>
+</html>
+
