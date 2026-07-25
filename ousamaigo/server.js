@@ -7,11 +7,15 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static("public"));
+
+app.use(express.static("public", {
+    index: false
+}));
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "matiai.html"));
 });
+
 
 let rooms = [];
 
