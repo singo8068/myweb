@@ -113,9 +113,9 @@ socket.on("roomList", rooms => {
         const div = document.createElement("div");
         div.className = "room";
         div.innerHTML = `
-            ${room.name}"　　"
+            <div>${room.name}：
             ${room.size}×${room.size}
-            <button onclick="joinRoom('${room.id}')">さんか</button>
+            <button onclick="joinRoom('${room.id}')">さんか</button></div>
         `;
         roomsDiv.appendChild(div);
     });
