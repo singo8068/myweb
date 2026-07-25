@@ -234,7 +234,8 @@ function saveState() {
   });
 }
 setInterval(() => {
- if(gameNow===false)return;
+ if(!MAJI)return;
+ if(!gameNow)return;
     if (currentPlayer === "black") {
         blackTime--;
     } else {
