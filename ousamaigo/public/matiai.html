@@ -1,23 +1,127 @@
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>オンラインまちあいしつ</title>
+<meta charset="UTF-8">
+
+<title>まちあいしつ</title>
+
 <link rel="stylesheet" href="css/style.css">
+<style>
+
+body{
+    font-family:sans-serif;
+    text-align:center;
+}
+
+#rooms{
+    width:400px;
+    margin:auto;
+}
+
+.room{
+    border:2px solid black;
+    border-radius:10px;
+    margin:10px;
+    padding:10px;
+}
+
+input,select{
+    font-size:20px;
+}
+
+    button:hover {
+      background-color: #45a049;
+    }
+    button {
+      display: inline-block;
+      margin-top: 0px;
+      padding: 0px 10px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size:20px;
+    }
+
+</style>
+
 </head>
 
 <body>
 <div class="section">
   <a href="index.html" class="back">メニューにもどる</a>
 </div>
-<h2>まちあいしつだよ</h2>
+<h2>まちあいしつ</h2>
 
-<div class="section">
-  <div class="title">⚫ どうやって あそぶの？</div>
-  <div>
-　　あいての「おうさまねこ」を とったら かち！
-  </div>
+<div>
+
+おおきさ
+
+<select id="size">
+<option value="6">６×６</option>
+<option value="9">９×９</option>
+<option value="11">１１×１１</option>
+</select>
+<button onclick="createRoom()">ぼしゅうする</button>
 </div>
-<<br>
+<hr>
+<div id="rooms"></div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket=io();
+const roomsDiv=document.getElementById("rooms");
+
+socket.on("roomList",rooms=>{
+    roomsDiv.innerHTML="";
+    rooms.forEach(room=>{
+        const div=document.createElement("div");
+        div.className="room";
+        div.innerHTML=`
+        <h3>${room.name}</h3>
+        ${room.size}×${room.size}
+        <br><br>
+        <button onclick="joinRoom('${room.id}')">さんか</button>
+        `;
+        roomsDiv.appendChild(div);
+    });
+});
+
+function createRoom(){
+    socket.emit("createRoom",{
+        name:"ゲスト",
+        size:Number(document.getElementById("size").value)
+    });
+}
+
+function joinRoom(id){
+    socket.emit("joinRoom",id);
+}
+
+socket.on("startGame",room=>{
+    location.href="hutari.html?size="+room.size;
+});
+
+socket.on("roomList", rooms => {
+    roomsDiv.innerHTML = "";
+    if (rooms.length === 0) {
+        roomsDiv.innerHTML = "<p>ぼしゅうちゅうのひとはいません。</p>";
+        return;
+    }
+    rooms.forEach(room => {
+        const div = document.createElement("div");
+        div.className = "room";
+        div.innerHTML = `
+            <h3>${room.name}</h3>
+            ${room.size}×${room.size}
+            <br><br>
+            <button onclick="joinRoom('${room.id}')">さんか</button>
+        `;
+        roomsDiv.appendChild(div);
+    });
+});
+</script>
+
 </body>
 </html>
