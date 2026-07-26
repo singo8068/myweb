@@ -62,11 +62,11 @@ canvas.addEventListener("click", async (e) => {
   if (!gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
-
+  uemsg="はそこにはうてないよ";
   if (point && gameMode === "main") {
     if (!placeStone(point.x, point.y)) {
       turnDisplay.removeChild(turnDisplay.lastChild);
-      turnDisplay.appendChild(document.createTextNode("はそこにはうてないよ"));
+      turnDisplay.appendChild(document.createTextNode(uemsg));
     }
   }
 
@@ -128,8 +128,9 @@ function tekingka(x,y){
 
 passBtn.addEventListener("click", async () => {
   if (!blackKing || !whiteKing) {
+    uemsg="１てめはためれないよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("１てめはためれないよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
   }
 saveState();
@@ -182,7 +183,7 @@ async function playerChange(){
   currentPlayer =  "black";
   whiteTime=whiteTime+100;
  }
-  
+ uemsg="のばんだよ";
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -252,8 +253,9 @@ setInterval(() => {
 
 undoBtn.addEventListener("click", () => {
   if (undoHistory.length === 0) {
+    uemsg="まったはできないよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("まったはできないよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
   }
   const lastState = undoHistory.pop();

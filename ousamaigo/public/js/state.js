@@ -72,3 +72,5 @@ let blackYasumi=0;
 let whiteYasumi=0;
 let kaesisu=0;
 let pawatorisu=0;
+let uemsg="のばんだよ";
+

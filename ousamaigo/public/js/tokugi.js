@@ -1,13 +1,15 @@
 
 pawaBtn.addEventListener("click", () => {
   if (currentPlayer === "black"&&blackTame<1){
+    uemsg="パワーうちにはパワーが１いるよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("パワーうちにはためが１いるよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
   }
   if (currentPlayer === "white"&&whiteTame<1){
+    uemsg="パワーうちにはパワーが１いるよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("パワーうちにはためが１いるよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
   }
   document.getElementById("mainControls").style.display = "none";
@@ -34,16 +36,18 @@ oseBtn.addEventListener("click", () => {
   if (currentPlayer === "black"){
    su=blackTame;
    if(su<4){
+    uemsg="リバースにはパワーが４いるよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("リバースにはためが４いるよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
    }
   }
   if (currentPlayer === "white"){
    su=whiteTame;
    if(su<4){
+    uemsg="リバースにはパワーが４いるよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode("リバースにはためが４いるよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
    }
   }

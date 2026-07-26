@@ -16,12 +16,12 @@ function updateDisplay() {
   while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
   if (currentPlayer === "black") {
     turnDisplay.appendChild(blackImg.cloneNode(true));
-    turnDisplay.appendChild(document.createTextNode("のばんだよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     if(blackTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#DDDDDD";}
     if(blackTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#DDDDDD";}
   } else {
     turnDisplay.appendChild(whiteImg.cloneNode(true));
-    turnDisplay.appendChild(document.createTextNode("のばんだよ"));
+    turnDisplay.appendChild(document.createTextNode(uemsg));
     if(whiteTame>=1){pawaBtn.style.backgroundColor="#FF6666";}else{pawaBtn.style.backgroundColor="#DDDDDD";}
     if(whiteTame>=4){oseBtn.style.backgroundColor="#FF6666";}else{oseBtn.style.backgroundColor="#DDDDDD";}
   }
