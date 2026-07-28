@@ -26,7 +26,8 @@ io.on("connection", (socket) => {
 
     // 募集する
     socket.on("createRoom", room => {
-        room.id = socket.id;
+        room.roomId = socket.id;
+        room.hostId = socket.id;
         rooms.push(room);
         io.emit("roomList", rooms);
     });
@@ -34,25 +35,45 @@ io.on("connection", (socket) => {
     // 参加する
     socket.on("joinRoom", id => {
 
-        const room = rooms.find(r => r.id === id);
+        const room = rooms.find(r => r.roomId === id);
 
         if (!room) return;
 
-        socket.join(id);
-        io.sockets.sockets.get(id)?.join(id);
+socket.join(room.roomId);
 
-        io.to(id).emit("startGame", room);
+const hostSocket = io.sockets.sockets.get(room.hostId);
+hostSocket?.join(room.roomId);
 
-        rooms = rooms.filter(r => r.id !== id);
+// ランダムで色を決める
+const hostColor = Math.random() < 0.5 ? "black" : "white";
+const guestColor = hostColor === "black" ? "white" : "black";
+
+// それぞれに違う情報を送る
+hostSocket?.emit("startGame", {
+    roomId: room.roomId,
+    size: room.size,
+    color: hostColor
+});
+
+socket.emit("startGame", {
+    roomId: room.roomId,
+    size: room.size,
+    color: guestColor
+});
+
+        rooms = rooms.filter(r => r.roomId !== room.roomId);
         io.emit("roomList", rooms);
     });
 
     // 切断
-    socket.on("disconnect", () => {
-        rooms = rooms.filter(r => r.id !== socket.id);
-        io.emit("roomList", rooms);
-    });
-
+socket.on("disconnect", () => {
+    rooms = rooms.filter(r => r.hostId !== socket.id);
+    io.emit("roomList", rooms);
+});
+//ねこうち
+   socket.on("putStone", data => {
+    socket.to(data.roomId).emit("putStone", data);
+   });
 });
 
 const PORT = process.env.PORT || 3000;
