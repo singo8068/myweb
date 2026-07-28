@@ -64,35 +64,36 @@ input,select{
 <option value="9">９×９</option>
 <option value="11">１１×１１</option>
 </select>
-<button onclick="createRoom()">ぼしゅうする</button>
+<button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
 </div>
+<p id="status"></p>
 <hr>
 <div id="rooms"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket=io();
 const roomsDiv=document.getElementById("rooms");
-
-socket.on("roomList",rooms=>{
-    roomsDiv.innerHTML="";
-    rooms.forEach(room=>{
-        const div=document.createElement("div");
-        div.className="room";
-        div.innerHTML=`
-        <h3>${room.name}</h3>
-        ${room.size}×${room.size}
-        <br><br>
-        <button onclick="joinRoom('${room.id}')">さんか</button>
-        `;
-        roomsDiv.appendChild(div);
-    });
-});
+let waiting = false;
 
 function createRoom(){
+
+    if(waiting) return;
+
+    waiting = true;
+
+    document.getElementById("status").textContent =
+        "ぼしゅうちゅうです…";
+
+    document.getElementById("createBtn").disabled = true;
+
     socket.emit("createRoom",{
+
         name:"ゲスト",
+
         size:Number(document.getElementById("size").value)
+
     });
+
 }
 
 function joinRoom(id){
@@ -100,25 +101,52 @@ function joinRoom(id){
 }
 
 socket.on("startGame",room=>{
-    location.href="hutari.html?size="+room.size;
+
+    waiting = false;
+
+    document.getElementById("status").textContent="";
+
+    document.getElementById("createBtn").disabled=false;
+
+location.href =
+`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}`;
+
 });
 
 socket.on("roomList", rooms => {
+
     roomsDiv.innerHTML = "";
+
     if (rooms.length === 0) {
         roomsDiv.innerHTML = "<p>ぼしゅうちゅうのひとはいません。</p>";
         return;
     }
+
     rooms.forEach(room => {
+
         const div = document.createElement("div");
         div.className = "room";
+
+        let buttonHtml;
+
+        if (room.hostId === socket.id) {
+            buttonHtml = "<b>ぼしゅうちゅう…</b>";
+        } else {
+            buttonHtml = `<button onclick="joinRoom('${room.roomId}')">さんか</button>`;
+        }
+
         div.innerHTML = `
-            <div>${room.name}：
-            ${room.size}×${room.size}
-            <button onclick="joinRoom('${room.id}')">さんか</button></div>
+            <div>
+                ${room.name}：
+                ${room.size}×${room.size}
+                ${buttonHtml}
+            </div>
         `;
+
         roomsDiv.appendChild(div);
+
     });
+
 });
 </script>
 

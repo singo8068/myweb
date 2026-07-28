@@ -58,14 +58,22 @@
 const params = new URLSearchParams(location.search);
 const SIZE = Number(params.get("size")) || 9;
 const MAJI = params.get("maji") === "true";
+
+let roomId = params.get("room");
+let myColor = params.get("color");
+
+const ISNET = !!roomId;
 if (MAJI) {
     document.getElementById("undoBtn").remove();
-}else {
-document.getElementById("blackTimeLibs").remove();
-document.getElementById("whiteTimeLibs").remove();
+} else {
+    document.getElementById("blackTimeLibs").remove();
+    document.getElementById("whiteTimeLibs").remove();
 }
+</script>
 
-const ISNET = false;
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = ISNET ? io() : null;
 </script>
 <script src="js/state.js"></script>
 <script src="js/draw.js"></script>
