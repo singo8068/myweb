@@ -1,4 +1,4 @@
-function placeStone(x, y) {
+function placeStone(x, y, fromNetwork = false, changeTurn = true){
   if (board[y][x] !== null) return false;
   if (gameMode === "main") {saveState();}
 
@@ -41,9 +41,20 @@ function placeStone(x, y) {
 
   if (!gameNow) return false;
 
-  if (gameMode === "main") {
-    playerChange();
-  }
+if (gameMode === "main") {
+
+    if (ISNET && !fromNetwork) {
+        socket.emit("putStone", {
+            roomId,
+            x,
+            y
+        });
+    }
+
+    if (changeTurn) {
+        playerChange();
+    }
+}
 
   updateForbiddenPoints();
   updateDisplay();
@@ -59,16 +70,18 @@ function uteruka(x, y) {
 }
 
 canvas.addEventListener("click", async (e) => {
+if (ISNET && currentPlayer !== myColor) return;
   if (!gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
+
+if (point && gameMode === "main") {
+    if (!placeStone(point.x, point.y,false)) {
+        turnDisplay.removeChild(turnDisplay.lastChild);
+        turnDisplay.appendChild(document.createTextNode(uemsg));
+    } 
+}
   uemsg="はそこにはうてないよ";
-  if (point && gameMode === "main") {
-    if (!placeStone(point.x, point.y)) {
-      turnDisplay.removeChild(turnDisplay.lastChild);
-      turnDisplay.appendChild(document.createTextNode(uemsg));
-    }
-  }
 
   if (point && gameMode === "pawa" &&
      (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
@@ -76,7 +89,7 @@ canvas.addEventListener("click", async (e) => {
     saveState();
     await showEffectText("パワーうち\nはつどう！", 1500);
     pawatorisu=0;
-    placeStone(point.x, point.y);
+    placeStone(point.x, point.y,false,false);
     draw();
     if (currentPlayer === "black") blackTame = blackTame - 1;
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
@@ -100,7 +113,7 @@ canvas.addEventListener("click", async (e) => {
       for (let x = 0; x < SIZE; x++) {
         if (board[y][x] === currentPlayer) {
           board[y][x] = null;
-          placeStone(x, y);
+          placeStone(x, y,false,false);
         }
       }
     }
@@ -270,3 +283,9 @@ undoBtn.addEventListener("click", () => {
   updateDisplay();
   draw();
 });
+
+if (ISNET) {
+    socket.on("putStone", data => {
+        placeStone(data.x, data.y,true);
+    });
+}
