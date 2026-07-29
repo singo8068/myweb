@@ -74,6 +74,9 @@ if (MAJI) {
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = ISNET ? io() : null;
+if(ISNET){
+    socket.emit("joinGameRoom", roomId);
+}
 </script>
 <script src="js/state.js"></script>
 <script src="js/draw.js"></script>
