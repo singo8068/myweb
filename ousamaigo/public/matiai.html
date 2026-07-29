@@ -65,6 +65,7 @@ input,select{
 <option value="11">１１×１１</option>
 </select>
 <button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
+<button id="cancelBtn" onclick="cancelRoom()" disabled>ぼしゅうをやめる</button>
 </div>
 <p id="status"></p>
 <hr>
@@ -81,35 +82,32 @@ function createRoom(){
 
     waiting = true;
 
-    document.getElementById("status").textContent =
-        "ぼしゅうちゅうです…";
+    document.getElementById("status").textContent = "ぼしゅうちゅうです…";
 
     document.getElementById("createBtn").disabled = true;
+    document.getElementById("cancelBtn").disabled = false;
 
     socket.emit("createRoom",{
-
         name:"ゲスト",
-
         size:Number(document.getElementById("size").value)
-
     });
-
 }
 
 function joinRoom(id){
     socket.emit("joinRoom",id);
 }
 
-socket.on("startGame",room=>{
+socket.on("startGame", room => {
 
     waiting = false;
 
-    document.getElementById("status").textContent="";
+    document.getElementById("status").textContent = "";
 
-    document.getElementById("createBtn").disabled=false;
+    document.getElementById("createBtn").disabled = false;
+    document.getElementById("cancelBtn").disabled = true;
 
-location.href =
-`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}`;
+    location.href =
+`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}&maji=true`;
 
 });
 
@@ -148,6 +146,19 @@ socket.on("roomList", rooms => {
     });
 
 });
+function cancelRoom(){
+
+    if(!waiting) return;
+
+    waiting = false;
+
+    document.getElementById("status").textContent = "";
+
+    document.getElementById("createBtn").disabled = false;
+    document.getElementById("cancelBtn").disabled = true;
+
+    socket.emit("cancelRoom");
+}
 </script>
 
 </body>
