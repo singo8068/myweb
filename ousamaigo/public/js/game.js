@@ -44,6 +44,7 @@ function placeStone(x, y, fromNetwork = false, changeTurn = true){
 if (gameMode === "main") {
 
     if (ISNET && !fromNetwork) {
+console.log("送信", roomId, x, y);
         socket.emit("putStone", {
             roomId,
             x,
@@ -285,6 +286,7 @@ undoBtn.addEventListener("click", () => {
 });
 
 if (ISNET) {
+    console.log("受信", data);
     socket.on("putStone", data => {
         placeStone(data.x, data.y,true);
     });
