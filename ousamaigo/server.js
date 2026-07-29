@@ -75,7 +75,10 @@ socket.on("cancelRoom", () => {
     rooms = rooms.filter(room => room.hostId !== socket.id);
     io.emit("roomList", rooms);
 });
-
+socket.on("joinGameRoom", roomId => {
+    socket.join(roomId);
+    console.log("game join", socket.id, roomId);
+});
 //ねこうち
    socket.on("putStone", data => {
     console.log("putStone:", socket.id, data);
