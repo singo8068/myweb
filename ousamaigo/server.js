@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 let rooms = [];
 
 io.on("connection", (socket) => {
-
+console.log("connect:", socket.id);
     // 接続したら募集一覧を送る
     socket.emit("roomList", rooms);
 
@@ -67,6 +67,7 @@ socket.emit("startGame", {
 
     // 切断
 socket.on("disconnect", () => {
+    console.log("disconnect:", socket.id);
     rooms = rooms.filter(r => r.hostId !== socket.id);
     io.emit("roomList", rooms);
 });
@@ -77,6 +78,7 @@ socket.on("cancelRoom", () => {
 
 //ねこうち
    socket.on("putStone", data => {
+    console.log("putStone:", socket.id, data);
     socket.to(data.roomId).emit("putStone", data);
    });
 });
