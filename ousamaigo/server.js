@@ -40,7 +40,7 @@ console.log("connect:", socket.id);
         if (!room) return;
 
 socket.join(room.roomId);
-
+console.log(io.sockets.adapter.rooms.get(room.roomId));
 const hostSocket = io.sockets.sockets.get(room.hostId);
 hostSocket?.join(room.roomId);
 
