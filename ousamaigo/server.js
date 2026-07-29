@@ -70,6 +70,11 @@ socket.on("disconnect", () => {
     rooms = rooms.filter(r => r.hostId !== socket.id);
     io.emit("roomList", rooms);
 });
+socket.on("cancelRoom", () => {
+    rooms = rooms.filter(room => room.hostId !== socket.id);
+    io.emit("roomList", rooms);
+});
+
 //ねこうち
    socket.on("putStone", data => {
     socket.to(data.roomId).emit("putStone", data);
