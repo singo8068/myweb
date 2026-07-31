@@ -80,10 +80,17 @@ socket.on("joinGameRoom", roomId => {
     console.log("game join", socket.id, roomId);
 });
 //ねこうち
-   socket.on("putStone", data => {
+socket.on("putStone", data => {
     console.log("putStone:", socket.id, data);
+
+    console.log("members:",
+        io.sockets.adapter.rooms.get(data.roomId)
+    );
+
     socket.to(data.roomId).emit("putStone", data);
-   });
+
+    console.log("emit finished");
+});
 });
 
 const PORT = process.env.PORT || 3000;
