@@ -286,8 +286,8 @@ undoBtn.addEventListener("click", () => {
 });
 
 if (ISNET) {
-    console.log("受信", data);
     socket.on("putStone", data => {
+        console.log("受信", data);
         placeStone(data.x, data.y,true);
     });
 }
