@@ -265,6 +265,14 @@ setInterval(() => {
     }
 }, 100);
 
+
+if (ISNET) {
+    socket.on("putStone", data => {
+        console.log("受信", data);
+        placeStone(data.x, data.y,true);
+    });
+}
+
 undoBtn.addEventListener("click", () => {
   if (undoHistory.length === 0) {
     uemsg="まったはできないよ";
@@ -284,10 +292,3 @@ undoBtn.addEventListener("click", () => {
   updateDisplay();
   draw();
 });
-
-if (ISNET) {
-    socket.on("putStone", data => {
-        console.log("受信", data);
-        placeStone(data.x, data.y,true);
-    });
-}
