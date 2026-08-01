@@ -81,15 +81,15 @@ socket.on("joinGameRoom", roomId => {
 });
 //ねこうち
 socket.on("putStone", data => {
-    console.log("putStone:", socket.id, data);
-
-    console.log("members:",
-        io.sockets.adapter.rooms.get(data.roomId)
-    );
-
     socket.to(data.roomId).emit("putStone", data);
-
-    console.log("emit finished");
+});
+//ためる
+socket.on("tameru", data => {
+    socket.to(data.roomId).emit("tameru", data);
+});
+//リバース
+socket.on("reverse", data => {
+    socket.to(data.roomId).emit("reverse", data);
 });
 });
 
