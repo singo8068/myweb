@@ -157,6 +157,12 @@ function tekingka(x,y){
 
 passBtn.addEventListener("click", passMove);
 async function passMove(fromNetwork = false) {
+console.log("passMove実行", {
+  ISNET,
+  fromNetwork,
+  roomId
+});
+
   if (!blackKing || !whiteKing) {
     uemsg="１てめはためれないよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
