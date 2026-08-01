@@ -8,6 +8,7 @@ function placeStone(x, y, fromNetwork = false, changeTurn = true){
   if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
 
  if (gameMode === "pawa") {
+if (ISNET && fromNetwork)console.log("受信パワー", roomId, x, y);
   let extraStone = null;
   let singleCaptureCount = 0;
   for (let [nx, ny] of getNeighbors(x, y)) {
