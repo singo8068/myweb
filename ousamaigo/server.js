@@ -87,6 +87,10 @@ socket.on("putStone", data => {
 socket.on("tameru", data => {
     socket.to(data.roomId).emit("tameru", data);
 });
+//パワーうち
+socket.on("pawa", data => {
+    socket.to(data.roomId).emit("pawa", data);
+});
 //リバース
 socket.on("reverse", data => {
     socket.to(data.roomId).emit("reverse", data);
