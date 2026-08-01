@@ -113,6 +113,16 @@ if (point && gameMode === "main") {
     await showEffectText("リバース\nはつどう！", 1500);
     board[point.y][point.x] = currentPlayer;
     oseroGaesi(point.x, point.y);
+
+if (ISNET) {
+socket.emit("reverse", {
+  roomId,
+  x: point.x,
+  y: point.y,
+  color: currentPlayer
+});
+}
+
 //リバースした後、リバースした側のプレイヤーの石が取り上げられないか調べる。
     currentPlayer = currentPlayer === "black" ? "white" : "black";
     for (let y = 0; y < SIZE; y++) {
@@ -145,24 +155,30 @@ function tekingka(x,y){
  return false;
 }
 
-passBtn.addEventListener("click", async () => {
+passBtn.addEventListener("click", passMove);
+async function passMove(fromNetwork = false) {
   if (!blackKing || !whiteKing) {
     uemsg="１てめはためれないよ";
     turnDisplay.removeChild(turnDisplay.lastChild);
     turnDisplay.appendChild(document.createTextNode(uemsg));
     return;
   }
-saveState();
-  await showEffectText("きあいを\nためるよ！", 1000);
-
+　saveState();
   if (currentPlayer === "black") blackTame++;
   else whiteTame++;
-
+    if (ISNET && !fromNetwork) {
+        socket.emit("tameru", {
+            roomId
+        });
+    }
+  await showEffectText("きあいを\nためるよ！", 1000);
   playerChange();
   updateForbiddenPoints();
   updateDisplay();
   draw();
-});
+}
+
+
 
 resetBtn.addEventListener("click", async function () {
  syouhai("こうさんで",currentPlayer === "white");
@@ -194,7 +210,7 @@ effectDiv.style.opacity = "0.7";
   document.getElementById("mainControls").style.display = "block";
   gameNow=true;
 }
-async function playerChange(){
+function playerChange(){
  if(currentPlayer === "black"){
   currentPlayer =  "white";
   blackTime=blackTime+100;
@@ -203,8 +219,11 @@ async function playerChange(){
   whiteTime=whiteTime+100;
  }
 if(ISNET){
+  document.getElementById("mainControls").style.display = "block";
  if(myColor===currentPlayer){uemsg="じぶんのばんだよ";
- }else{uemsg="あいてのばんだよ";
+ }else{
+  document.getElementById("mainControls").style.display = "none";
+uemsg="あいてのばんだよ";
  }
 }else{
 　uemsg="のばんだよ";
@@ -294,6 +313,20 @@ if (ISNET) {
         console.log("受信", data);
         placeStone(data.x, data.y,true);
     });
+    socket.on("tameru", data => {
+        console.log("受信", data);
+        passMove(true);
+    });
+socket.on("reverse", async data=>{
+    await showEffectText("リバース\nはつどう！", 1500);
+   board[data.y][data.x] = data.color;
+   oseroGaesi(data.x,data.y);
+   gameMode = "main";
+   playerChange();
+   updateForbiddenPoints();
+   updateDisplay();
+   draw();
+});
 }
 
 if(!MAJI){
