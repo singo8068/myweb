@@ -155,7 +155,9 @@ function tekingka(x,y){
  return false;
 }
 
-passBtn.addEventListener("click", passMove);
+passBtn.addEventListener("click", () => {
+    passMove();
+});
 async function passMove(fromNetwork = false) {
 console.log("passMove実行", {
   ISNET,
