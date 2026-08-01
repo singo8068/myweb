@@ -167,8 +167,8 @@ async function passMove(fromNetwork = false) {
   if (currentPlayer === "black") blackTame++;
   else whiteTame++;
     if (ISNET && !fromNetwork) {
-        socket.emit("tameru", {
 console.log("ためる送信", roomId);
+        socket.emit("tameru", {
             roomId
         });
     }
