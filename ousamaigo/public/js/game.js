@@ -334,8 +334,11 @@ if (ISNET) {
         console.log("受信", data);
         placeStone(data.x, data.y,true);
     });
-    socket.on("pawa", data => {
+    socket.on("pawa", async data=>{
         console.log("ぱわ受信", data);
+    await showEffectText("パワーうち\nはつどう！", 1500);
+    if (currentPlayer === "black") blackTame = blackTame - 1;
+    if (currentPlayer === "white") whiteTame = whiteTame - 1;
 	gameMode="pawa";
         placeStone(data.x, data.y,true);
     });
