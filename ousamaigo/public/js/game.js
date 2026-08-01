@@ -85,7 +85,9 @@ if (point && gameMode === "main") {
         turnDisplay.appendChild(document.createTextNode(uemsg));
     } 
 }
-  uemsg="はそこにはうてないよ";
+ if (!ISNET)uemsg="はそこにはうてないよ";
+ if (ISNET && currentPlayer === myColor)uemsg="はそこにはうてないよ";
+
 
   if (point && gameMode === "pawa" &&
      (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
@@ -276,7 +278,8 @@ setInterval(() => {
     } else {
         whiteTime--;
     }
-    updateDisplay();
+blackTimeLibsDisplay.textContent = blackTime;
+whiteTimeLibsDisplay.textContent = whiteTime;
     if (blackTime <= 0) {
          syouhai("じかんぎれで",false);
     }
