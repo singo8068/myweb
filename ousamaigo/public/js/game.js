@@ -41,7 +41,7 @@ function placeStone(x, y, fromNetwork = false, changeTurn = true){
 
   if (!gameNow) return false;
 
-if (gameMode === "main") {
+if (gameMode === "main"||gameMode === "pawa") {
 
     if (ISNET && !fromNetwork) {
 console.log("送信", roomId, x, y);
@@ -110,9 +110,7 @@ if (point && gameMode === "main") {
     (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
     saveState();
-    await showEffectText("リバース\nはつどう！", 1500);
-    board[point.y][point.x] = currentPlayer;
-    oseroGaesi(point.x, point.y);
+
 
 if (ISNET) {
 socket.emit("reverse", {
@@ -122,7 +120,9 @@ socket.emit("reverse", {
   color: currentPlayer
 });
 }
-
+    await showEffectText("リバース\nはつどう！", 1500);
+    board[point.y][point.x] = currentPlayer;
+    oseroGaesi(point.x, point.y);
 //リバースした後、リバースした側のプレイヤーの石が取り上げられないか調べる。
     currentPlayer = currentPlayer === "black" ? "white" : "black";
     for (let y = 0; y < SIZE; y++) {
@@ -330,6 +330,12 @@ socket.on("reverse", async data=>{
     await showEffectText("リバース\nはつどう！", 1500);
    board[data.y][data.x] = data.color;
    oseroGaesi(data.x,data.y);
+    if (currentPlayer === "black") {
+     blackTame = blackTame - 2 - kaesisu * 2;
+    }
+    if (currentPlayer === "white") {
+     whiteTame = whiteTame - 2 - kaesisu * 2;
+    }
    gameMode = "main";
    playerChange();
    updateForbiddenPoints();
