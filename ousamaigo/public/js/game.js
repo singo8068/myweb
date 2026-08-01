@@ -1,4 +1,4 @@
-function placeStone(x, y, fromNetwork = false, changeTurn = true){
+async function placeStone(x, y, fromNetwork = false, changeTurn = true){
   if (board[y][x] !== null) return false;
   if (gameMode === "main") {saveState();}
 
@@ -64,6 +64,7 @@ console.log("ぱわ送信", roomId, x, y);
             y
         });
     }
+    await showEffectText("パワーうち\nはつどう！", 1500);
     if (changeTurn) {
         playerChange();
     }
@@ -105,7 +106,6 @@ if (point && gameMode === "main") {
      (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
     saveState();
-    await showEffectText("パワーうち\nはつどう！", 1500);
     pawatorisu=0;
     placeStone(point.x, point.y,false,false);
     draw();
@@ -336,7 +336,6 @@ if (ISNET) {
     });
     socket.on("pawa", async data=>{
         console.log("ぱわ受信", data);
-    await showEffectText("パワーうち\nはつどう！", 1500);
     if (currentPlayer === "black") blackTame = blackTame - 1;
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
 	gameMode="pawa";
