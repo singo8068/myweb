@@ -1,4 +1,4 @@
-function initBoard() {
+async function initBoard() {
   undoHistory = [];
   document.getElementById("mainControls").style.display = "block";
   document.getElementById("saigoControls").style.display = "none";
@@ -15,6 +15,14 @@ function initBoard() {
   updateDisplay();
   updateForbiddenPoints();
   draw();
+if (ISNET) {
+    await showEffectText(
+        myColor === "black"
+            ? "きみは●くろ●だよ！"
+            : "きみは〇しろ〇だよ！",
+        2000
+    );
+}
 }
 
 

@@ -197,7 +197,14 @@ async function playerChange(){
   currentPlayer =  "black";
   whiteTime=whiteTime+100;
  }
- uemsg="のばんだよ";
+if(ISNET){
+ if(myColor==="black"){uemsg="じぶんのばんだよ";
+ }else{uemsg="あいてのばんだよ";
+ }
+}else{
+　uemsg="のばんだよ";
+}
+
 }
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -220,13 +227,23 @@ async function hantei(){
 async function syouhai(maetext,isBlackWin){
  while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
  const winImg = document.createElement("img");
+
  winImg.src = isBlackWin ? kurokingImg.src : sirokingImg.src;
  winImg.alt = isBlackWin ? "くろのかち！" : "しろのかち！";
  winImg.style.height = "50px";
  winImg.style.verticalAlign = "middle";
  turnDisplay.appendChild(winImg);
  turnDisplay.appendChild(winText);
+if(ISNET){
+  if(myColor==="black"){
+  winMessage = isBlackWin ? "きみのかち！" : "きみのまけ";
+ }else{
+  winMessage = isBlackWin ? "きみのまけ" : "きみのかち！";
+
+ }
+}else{
  winMessage = isBlackWin ? "くろのかち！" : "しろのかち！";
+}
   const effectDiv = document.getElementById("effectText");
   effectDiv.textContent = maetext+"\n"+winMessage;
   effectDiv.style.display = "block";
@@ -273,6 +290,7 @@ if (ISNET) {
     });
 }
 
+if(!MAJI){
 undoBtn.addEventListener("click", () => {
   if (undoHistory.length === 0) {
     uemsg="まったはできないよ";
@@ -292,3 +310,5 @@ undoBtn.addEventListener("click", () => {
   updateDisplay();
   draw();
 });
+}
+
