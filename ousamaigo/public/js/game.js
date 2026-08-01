@@ -71,7 +71,10 @@ function uteruka(x, y) {
 }
 
 canvas.addEventListener("click", async (e) => {
-if (ISNET && currentPlayer !== myColor) return;
+if (ISNET && currentPlayer !== myColor) {
+  uemsg="あいてのばんだよ";
+return;
+}
   if (!gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
@@ -198,7 +201,7 @@ async function playerChange(){
   whiteTime=whiteTime+100;
  }
 if(ISNET){
- if(myColor==="black"){uemsg="じぶんのばんだよ";
+ if(myColor===currentPlayer){uemsg="じぶんのばんだよ";
  }else{uemsg="あいてのばんだよ";
  }
 }else{
