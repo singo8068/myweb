@@ -168,6 +168,7 @@ async function passMove(fromNetwork = false) {
   else whiteTame++;
     if (ISNET && !fromNetwork) {
         socket.emit("tameru", {
+console.log("ためる送信", roomId);
             roomId
         });
     }
