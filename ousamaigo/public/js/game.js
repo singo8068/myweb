@@ -42,8 +42,7 @@ if (ISNET && fromNetwork)console.log("受信パワー", roomId, x, y);
 
   if (!gameNow) return false;
 
-if (gameMode === "main"||gameMode === "pawa") {
-
+if (gameMode === "main") {
     if (ISNET && !fromNetwork) {
 console.log("送信", roomId, x, y);
         socket.emit("putStone", {
@@ -52,7 +51,19 @@ console.log("送信", roomId, x, y);
             y
         });
     }
-
+    if (changeTurn) {
+        playerChange();
+    }
+}
+if (gameMode === "pawa") {
+    if (ISNET && !fromNetwork) {
+console.log("ぱわ送信", roomId, x, y);
+        socket.emit("pawa", {
+            roomId,
+            x,
+            y
+        });
+    }
     if (changeTurn) {
         playerChange();
     }
@@ -321,6 +332,11 @@ whiteTimeLibsDisplay.textContent = whiteTime;
 if (ISNET) {
     socket.on("putStone", data => {
         console.log("受信", data);
+        placeStone(data.x, data.y,true);
+    });
+    socket.on("pawa", data => {
+        console.log("ぱわ受信", data);
+	gameMode="pawa";
         placeStone(data.x, data.y,true);
     });
     socket.on("tameru", data => {
