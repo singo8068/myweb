@@ -333,6 +333,9 @@ if (ISNET) {
     socket.on("putStone", data => {
         console.log("受信", data);
         placeStone(data.x, data.y,true);
+socket.emit("ack", {
+    messageId: data.messageId
+});
     });
     socket.on("pawa", async data=>{
         console.log("ぱわ受信", data);
@@ -340,10 +343,16 @@ if (ISNET) {
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
 	gameMode="pawa";
         placeStone(data.x, data.y,true);
+socket.emit("ack", {
+    messageId: data.messageId
+});
     });
     socket.on("tameru", data => {
         console.log("受信", data);
         passMove(true);
+socket.emit("ack", {
+    messageId: data.messageId
+});
     });
 socket.on("reverse", async data=>{
     await showEffectText("リバース\nはつどう！", 1500);
@@ -360,6 +369,9 @@ socket.on("reverse", async data=>{
    updateForbiddenPoints();
    updateDisplay();
    draw();
+socket.emit("ack", {
+    messageId: data.messageId
+});
 });
 }
 
