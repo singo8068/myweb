@@ -10,8 +10,8 @@ async function initBoard() {
   whiteKing = null;
   blackTame=0;
   whiteTame=1;
-  blackTime = 600; 
-  whiteTime = 600;
+  blackTime = 60000; 
+  whiteTime = 60000;
   updateDisplay();
   updateForbiddenPoints();
   draw();
