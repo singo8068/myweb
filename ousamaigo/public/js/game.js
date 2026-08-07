@@ -234,10 +234,10 @@ effectDiv.style.opacity = "0.7";
 function playerChange(){
  if(currentPlayer === "black"){
   currentPlayer =  "white";
-  blackTime=blackTime+100;
+  blackTime=blackTime+10000;
  }else{
   currentPlayer =  "black";
-  whiteTime=whiteTime+100;
+  whiteTime=whiteTime+10000;
  }
 if(ISNET){
   document.getElementById("mainControls").style.display = "block";
@@ -314,12 +314,12 @@ setInterval(() => {
  if(!MAJI)return;
  if(!gameNow)return;
     if (currentPlayer === "black") {
-        blackTime--;
-    } else {
-        whiteTime--;
-    }
-blackTimeLibsDisplay.textContent = blackTime;
-whiteTimeLibsDisplay.textContent = whiteTime;
+   blackTime -= 100;
+ } else {
+   whiteTime -= 100;
+ }
+ blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
+ whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
     if (blackTime <= 0) {
          syouhai("じかんぎれで",false);
     }
@@ -373,6 +373,16 @@ socket.emit("ack", {
     messageId: data.messageId
 });
 });
+
+socket.on("timeSync", data => {
+    blackTime = data.blackTime;
+    whiteTime = data.whiteTime;
+    currentPlayer = data.turn;
+
+    blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
+    whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
+});
+
 }
 
 if(!MAJI){
