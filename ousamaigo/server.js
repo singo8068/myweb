@@ -6,7 +6,8 @@ const path = require("path");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-
+const crypto = require("crypto");
+const BYOYOMI_ADD = 10000;
 
 app.use(express.static("public", {
     index: false
@@ -18,19 +19,69 @@ app.get("/", (req, res) => {
 
 
 let rooms = [];
+
 function sendGameData(socket, room,eventName, data) {
     if (!room) return;
 
-    // 今後ここで
-    // ・持ち時間更新
-    // ・ACK管理
-    // ・ログ
-    // ・再送管理
-    // などを追加
+const now = Date.now();
+const elapsed = Math.max(0, now - room.lastUpdate);
 
-    socket.to(data.roomId).emit(eventName, data);
+if (room.turn === "black") {
+    room.blackTime = room.blackTime - elapsed + BYOYOMI_ADD;
+    room.turn = "white";
+} else {
+    room.whiteTime = room.whiteTime - elapsed + BYOYOMI_ADD;
+    room.turn = "black";
 }
+
+room.lastUpdate = now;
+io.to(room.roomId).emit("timeSync", {
+    blackTime: room.blackTime,
+    whiteTime: room.whiteTime,
+    turn: room.turn
+});
+sendWithRetry(socket.to(data.roomId), eventName, data);
+}
+const waitingAck = new Map();
+
+function sendWithRetry(target, eventName, data) {
+
+    const sendData = {
+        ...data,
+        messageId: crypto.randomUUID()
+    };
+
+    // 初回送信
+    target.emit(eventName, sendData);
+
+    function retry(delay) {
+        const timer = setTimeout(() => {
+
+            if (!waitingAck.has(sendData.messageId)) return;
+
+            target.emit(eventName, sendData);
+
+            retry(delay + 300);
+
+        }, delay);
+
+        waitingAck.set(sendData.messageId, timer);
+    }
+
+    retry(300);
+}
+
+
+
 io.on("connection", (socket) => {
+socket.on("ack", data => {
+    const timer = waitingAck.get(data.messageId);
+
+    if (!timer) return;
+
+    clearTimeout(timer);
+    waitingAck.delete(data.messageId);
+});
 console.log("connect:", socket.id);
     // 接続したら募集一覧を送る
     socket.emit("roomList", rooms);
