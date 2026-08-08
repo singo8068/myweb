@@ -18,7 +18,8 @@ app.get("/", (req, res) => {
 });
 
 
-let rooms = [];
+let rooms = [];       // 募集中
+let gameRooms = [];   // 対戦中
 
 function sendGameData(socket, room,eventName, data) {
     if (!room) return;
@@ -116,6 +117,15 @@ const guestColor = hostColor === "black" ? "white" : "black";
 
 // それぞれに違う情報を送る
 room.lastUpdate=Date.now()+ 2000;
+    // ★ 募集中から削除
+    rooms = rooms.filter(r => r.roomId !== room.roomId);
+
+    // ★ 対戦中へ移動
+    gameRooms.push(room);
+
+    // 募集一覧を更新
+    io.emit("roomList", rooms);
+
 hostSocket?.emit("startGame", {
     roomId: room.roomId,
     size: room.size,
@@ -127,9 +137,6 @@ socket.emit("startGame", {
     size: room.size,
     color: guestColor
 });
-
-        //rooms = rooms.filter(r => r.roomId !== room.roomId);
-        //io.emit("roomList", rooms);
     });
 
     // 切断
@@ -154,8 +161,11 @@ const gameEvents = [
 ];
 gameEvents.forEach(eventName => {
     socket.on(eventName, data => {
-const room = rooms.find(r => r.roomId === data.roomId);
+const room = gameRooms.find(r => r.roomId === data.roomId);
 console.log("Serverが受信");
+console.log("data.roomId =", data.roomId);
+console.log("gameRooms =", gameRooms);
+console.log("room =", room);
         sendGameData(socket, room,eventName, data);
     });
 });
