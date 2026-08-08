@@ -128,8 +128,8 @@ socket.emit("startGame", {
     color: guestColor
 });
 
-        rooms = rooms.filter(r => r.roomId !== room.roomId);
-        io.emit("roomList", rooms);
+        //rooms = rooms.filter(r => r.roomId !== room.roomId);
+        //io.emit("roomList", rooms);
     });
 
     // 切断
