@@ -86,6 +86,13 @@ function uteruka(x, y) {
 }
 
 canvas.addEventListener("click", async (e) => {
+    console.log("クリック判定", {
+        ISNET,
+        currentPlayer,
+        myColor,
+        gameNow,
+        gameMode
+    });
 if (ISNET && currentPlayer !== myColor) {
   uemsg="あいてのばんだよ";
 return;
@@ -347,9 +354,7 @@ if (ISNET) {
 socket.on("putStone", data => {
     console.log("受信", data);
     placeStone(data.x, data.y, true, false, data.color);
-
-    playerChange(false);
-
+playerChange(false);  
     socket.emit("ack", {
         messageId: data.messageId
     });
@@ -358,15 +363,13 @@ socket.on("putStone", data => {
 socket.on("pawa", async data=>{
     console.log("ぱわ受信", data);
 
-    if (currentPlayer === "black") blackTame = blackTame - 1;
-    if (currentPlayer === "white") whiteTame = whiteTame - 1;
+if (data.color === "black") blackTame--;
+if (data.color === "white") whiteTame--;
 
     gameMode="pawa";
 
     placeStone(data.x, data.y,true,false,data.color);
-
-    playerChange(false);
-
+playerChange(false);  
     socket.emit("ack", {
         messageId: data.messageId
     });
@@ -390,7 +393,7 @@ socket.on("reverse", async data=>{
      whiteTame = whiteTame - 2 - kaesisu * 2;
     }
    gameMode = "main";
-   playerChange();
+   playerChange(false);
    updateForbiddenPoints();
    updateDisplay();
    draw();
@@ -400,15 +403,17 @@ socket.emit("ack", {
 });
 
 socket.on("timeSync", data => {
-    console.log("TIME SYNC", {
-        before: currentPlayer,
-        serverTurn: data.turn,
-        myColor: myColor
-    });
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
     currentPlayer = data.turn;
-    console.log("TIME SYNC後 currentPlayer =", currentPlayer);
+
+    if (myColor === currentPlayer) {
+        document.getElementById("mainControls").style.display = "block";
+        uemsg = "じぶんのばんだよ";
+    } else {
+        document.getElementById("mainControls").style.display = "none";
+        uemsg = "あいてのばんだよ";
+    }
 
     blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
     whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
