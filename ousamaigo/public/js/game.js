@@ -353,8 +353,19 @@ setInterval(() => {
 if (ISNET) {
 socket.on("putStone", data => {
     console.log("受信", data);
+
     placeStone(data.x, data.y, true, false, data.color);
-playerChange(false);  
+
+    currentPlayer = data.color === "black" ? "white" : "black";
+
+    if (myColor === currentPlayer) {
+        document.getElementById("mainControls").style.display = "block";
+        uemsg = "じぶんのばんだよ";
+    } else {
+        document.getElementById("mainControls").style.display = "none";
+        uemsg = "あいてのばんだよ";
+    }
+
     socket.emit("ack", {
         messageId: data.messageId
     });
@@ -368,8 +379,17 @@ if (data.color === "white") whiteTame--;
 
     gameMode="pawa";
 
-    placeStone(data.x, data.y,true,false,data.color);
-playerChange(false);  
+placeStone(data.x, data.y, true, false, data.color);
+
+currentPlayer = data.color === "black" ? "white" : "black";
+
+if (myColor === currentPlayer) {
+    document.getElementById("mainControls").style.display = "block";
+    uemsg = "じぶんのばんだよ";
+} else {
+    document.getElementById("mainControls").style.display = "none";
+    uemsg = "あいてのばんだよ";
+}
     socket.emit("ack", {
         messageId: data.messageId
     });
