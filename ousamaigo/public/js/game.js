@@ -69,9 +69,11 @@ console.log("ぱわ送信", roomId, x, y);
     if (!fromNetwork) {
         await showEffectText("パワーうち\nはつどう！", 1500);
     }
-    if (changeTurn) {
+if (changeTurn) {
+    if (!ISNET) {
         playerChange();
     }
+}
 }
 
   updateForbiddenPoints();
@@ -212,7 +214,9 @@ async function passMove(fromNetwork = false) {
 
     await showEffectText("きあいを\nためるよ！", 1000);
 
-    playerChange(!fromNetwork);
+if (!ISNET) {
+    playerChange();
+}
 
     updateForbiddenPoints();
     updateDisplay();
