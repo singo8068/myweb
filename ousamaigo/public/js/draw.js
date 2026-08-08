@@ -46,8 +46,8 @@ function updateDisplay() {
   }else{passBtn.style.backgroundColor="#DDDDDD";
   }
 if (MAJI) {
-    blackTimeLibsDisplay.textContent = blackTime;
-    whiteTimeLibsDisplay.textContent = whiteTime;
+ blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
+ whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
 }
 
 }
