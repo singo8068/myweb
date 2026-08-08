@@ -98,6 +98,12 @@ function updateTurnControls() {
         document.getElementById("mainControls").style.display = "none";
         uemsg = "あいてのばんだよ";
     }
+
+    while (turnDisplay.firstChild) {
+        turnDisplay.removeChild(turnDisplay.lastChild);
+    }
+
+    turnDisplay.appendChild(document.createTextNode(uemsg));
 }
 
 function uteruka(x, y) {
@@ -149,44 +155,57 @@ if (!ISNET) {
 
   }
 
-  if (point &&gameMode === "osero" &&
-    (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
-  ) {
+if (point && gameMode === "osero" &&
+    (drawBoard[point.y][point.x] === "kouho_black" ||
+     drawBoard[point.y][point.x] === "kouho_white")
+) {
     saveState();
 
+    const reverseColor = currentPlayer;
 
-if (ISNET) {
-socket.emit("reverse", {
-  roomId,
-  x: point.x,
-  y: point.y,
-  color: currentPlayer
-});
-}
+    if (ISNET) {
+        socket.emit("reverse", {
+            roomId,
+            x: point.x,
+            y: point.y,
+            color: reverseColor
+        });
+    }
+
     await showEffectText("リバース\nはつどう！", 1500);
-    board[point.y][point.x] = currentPlayer;
+
+    board[point.y][point.x] = reverseColor;
     oseroGaesi(point.x, point.y);
-//リバースした後、リバースした側のプレイヤーの石が取り上げられないか調べる。
-    currentPlayer = currentPlayer === "black" ? "white" : "black";
+
+    // リバースした後、相手側の石が取り上げられないか調べる
+    const enemyColor = reverseColor === "black" ? "white" : "black";
+
     for (let y = 0; y < SIZE; y++) {
-      for (let x = 0; x < SIZE; x++) {
-        if (board[y][x] === currentPlayer) {
-          board[y][x] = null;
-          placeStone(x, y,false,false);
+        for (let x = 0; x < SIZE; x++) {
+            if (board[y][x] === enemyColor) {
+                board[y][x] = null;
+                placeStone(x, y, false, false, enemyColor);
+            }
         }
-      }
     }
-    currentPlayer = currentPlayer === "black" ? "white" : "black";
-    if (currentPlayer === "black") {
-     blackTame = blackTame - 2 - kaesisu * 2;
+
+    if (reverseColor === "black") {
+        blackTame = blackTame - 2 - kaesisu * 2;
+    } else {
+        whiteTame = whiteTame - 2 - kaesisu * 2;
     }
-    if (currentPlayer === "white") {
-     whiteTame = whiteTame - 2 - kaesisu * 2;
-    }
+
     gameMode = "main";
-    playerChange();
+
+    // ネット対戦では playerChange() しない
+    if (!ISNET) {
+        playerChange();
+    }
+
+    updateForbiddenPoints();
     updateDisplay();
-  }
+    draw();
+}
 });
 
 function tekingka(x,y){
@@ -437,15 +456,29 @@ socket.on("reverse", async data => {
     board[data.y][data.x] = data.color;
     oseroGaesi(data.x, data.y);
 
-    if (currentPlayer === "black") {
-        blackTame = blackTame - 2 - kaesisu * 2;
+    const enemyColor =
+        data.color === "black" ? "white" : "black";
+
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            if (board[y][x] === enemyColor) {
+                board[y][x] = null;
+                placeStone(x, y, false, false, enemyColor);
+            }
+        }
     }
-    if (currentPlayer === "white") {
+
+    if (data.color === "black") {
+        blackTame = blackTame - 2 - kaesisu * 2;
+    } else {
         whiteTame = whiteTame - 2 - kaesisu * 2;
     }
 
     gameMode = "main";
-    playerChange(false);
+
+    // ネット対戦では手番を変更しない
+    // timeSyncのdata.turnを正とする
+
     updateForbiddenPoints();
     updateDisplay();
     draw();
