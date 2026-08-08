@@ -332,7 +332,7 @@ setInterval(() => {
 if (ISNET) {
     socket.on("putStone", data => {
         console.log("受信", data);
-        placeStone(data.x, data.y,true);
+        placeStone(data.x, data.y,true,false);
 socket.emit("ack", {
     messageId: data.messageId
 });
@@ -342,7 +342,7 @@ socket.emit("ack", {
     if (currentPlayer === "black") blackTame = blackTame - 1;
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
 	gameMode="pawa";
-        placeStone(data.x, data.y,true);
+        placeStone(data.x, data.y,true,false);
 socket.emit("ack", {
     messageId: data.messageId
 });
