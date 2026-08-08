@@ -54,7 +54,7 @@ console.log("送信", roomId, x, y);
     color: currentPlayer
         });
     }
-    if (changeTurn) {
+    if (changeTurn && !ISNET) {
         playerChange();
     }
 }
@@ -142,7 +142,9 @@ if (point && gameMode === "main") {
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
 
     gameMode = "main";
+if (!ISNET) {
     playerChange();
+}
     updateDisplay();
 
   }
@@ -230,7 +232,9 @@ async function passMove(fromNetwork = false) {
 
     await showEffectText("きあいを\nためるよ！", 1000);
 
+if (!ISNET) {
     playerChange();
+}
 
     updateForbiddenPoints();
     updateDisplay();
@@ -367,8 +371,6 @@ socket.on("putStone", data => {
 
     placeStone(data.x, data.y, true, false, data.color);
 
-    currentPlayer = data.color === "black" ? "white" : "black";
-
 updateTurnControls();
 
     socket.emit("ack", {
@@ -394,8 +396,6 @@ socket.on("pawa", async data => {
 
     gameMode = "main";
 
-    currentPlayer = data.color === "black" ? "white" : "black";
-
     updateForbiddenPoints();
     updateDisplay();
     draw();
@@ -416,8 +416,6 @@ socket.on("tameru", async data => {
     } else {
         whiteTame++;
     }
-
-    currentPlayer = data.color === "black" ? "white" : "black";
 
     await showEffectText("きあいを\nためるよ！", 1000);
 
