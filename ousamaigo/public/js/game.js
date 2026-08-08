@@ -463,7 +463,7 @@ socket.on("timeSync", data => {
     blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
     whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
 });
-
+}
 
 if(!MAJI){
 undoBtn.addEventListener("click", () => {
