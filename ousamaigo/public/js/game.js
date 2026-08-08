@@ -1,3 +1,5 @@
+
+
 async function placeStone(x, y, fromNetwork = false, changeTurn = true,stoneColor = currentPlayer){
   if (board[y][x] !== null) return false;
   if (gameMode === "main") {saveState();}
@@ -83,6 +85,20 @@ if (changeTurn) {
   return true;
 }
 
+function updateTurnControls() {
+    if (!ISNET) {
+        document.getElementById("mainControls").style.display = "block";
+        return;
+    }
+
+    if (myColor === currentPlayer) {
+        document.getElementById("mainControls").style.display = "block";
+        uemsg = "じぶんのばんだよ";
+    } else {
+        document.getElementById("mainControls").style.display = "none";
+        uemsg = "あいてのばんだよ";
+    }
+}
 
 function uteruka(x, y) {
   if (board[y][x] === null && drawBoard[y][x] === null) return true;
@@ -214,9 +230,7 @@ async function passMove(fromNetwork = false) {
 
     await showEffectText("きあいを\nためるよ！", 1000);
 
-if (!ISNET) {
     playerChange();
-}
 
     updateForbiddenPoints();
     updateDisplay();
@@ -252,30 +266,20 @@ effectDiv.style.opacity = "0.7";
     effectDiv.style.display = "none";
   }, duration);
   await delay(duration);
-  document.getElementById("mainControls").style.display = "block";
-  gameNow=true;
+updateTurnControls();
+gameNow = true;
 }
-function playerChange(addByoyomi = true){
-    if(currentPlayer === "black"){
+
+function playerChange(addByoyomi = true) {
+    if (currentPlayer === "black") {
         currentPlayer = "white";
         if (addByoyomi) blackTime += 10000;
-    }else{
+    } else {
         currentPlayer = "black";
         if (addByoyomi) whiteTime += 10000;
     }
 
-    if(ISNET){
-        document.getElementById("mainControls").style.display = "block";
-
-        if(myColor === currentPlayer){
-            uemsg = "じぶんのばんだよ";
-        }else{
-            document.getElementById("mainControls").style.display = "none";
-            uemsg = "あいてのばんだよ";
-        }
-    }else{
-        uemsg = "のばんだよ";
-    }
+    updateTurnControls();
 }
 
 
@@ -365,13 +369,7 @@ socket.on("putStone", data => {
 
     currentPlayer = data.color === "black" ? "white" : "black";
 
-    if (myColor === currentPlayer) {
-        document.getElementById("mainControls").style.display = "block";
-        uemsg = "じぶんのばんだよ";
-    } else {
-        document.getElementById("mainControls").style.display = "none";
-        uemsg = "あいてのばんだよ";
-    }
+updateTurnControls();
 
     socket.emit("ack", {
         messageId: data.messageId
@@ -398,14 +396,6 @@ socket.on("pawa", async data => {
 
     currentPlayer = data.color === "black" ? "white" : "black";
 
-    if (myColor === currentPlayer) {
-        document.getElementById("mainControls").style.display = "block";
-        uemsg = "じぶんのばんだよ";
-    } else {
-        document.getElementById("mainControls").style.display = "none";
-        uemsg = "あいてのばんだよ";
-    }
-
     updateForbiddenPoints();
     updateDisplay();
     draw();
@@ -428,14 +418,6 @@ socket.on("tameru", async data => {
     }
 
     currentPlayer = data.color === "black" ? "white" : "black";
-
-    if (myColor === currentPlayer) {
-        document.getElementById("mainControls").style.display = "block";
-        uemsg = "じぶんのばんだよ";
-    } else {
-        document.getElementById("mainControls").style.display = "none";
-        uemsg = "あいてのばんだよ";
-    }
 
     await showEffectText("きあいを\nためるよ！", 1000);
 
@@ -476,19 +458,12 @@ socket.on("timeSync", data => {
     whiteTime = data.whiteTime;
     currentPlayer = data.turn;
 
-    if (myColor === currentPlayer) {
-        document.getElementById("mainControls").style.display = "block";
-        uemsg = "じぶんのばんだよ";
-    } else {
-        document.getElementById("mainControls").style.display = "none";
-        uemsg = "あいてのばんだよ";
-    }
+    updateTurnControls();
 
     blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
     whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
 });
 
-}
 
 if(!MAJI){
 undoBtn.addEventListener("click", () => {
