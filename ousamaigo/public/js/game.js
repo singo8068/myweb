@@ -377,6 +377,10 @@ socket.on("putStone", data => {
 socket.on("pawa", async data => {
     console.log("ぱわ受信", data);
 
+    socket.emit("ack", {
+        messageId: data.messageId
+    });
+
     if (data.color === "black") blackTame--;
     if (data.color === "white") whiteTame--;
 
@@ -401,16 +405,17 @@ socket.on("pawa", async data => {
     updateForbiddenPoints();
     updateDisplay();
     draw();
-
-    socket.emit("ack", {
-        messageId: data.messageId
-    });
 });
 
 
 
 socket.on("tameru", async data => {
     console.log("受信ためる", data);
+
+    // まず受信確認を返す
+    socket.emit("ack", {
+        messageId: data.messageId
+    });
 
     if (data.color === "black") {
         blackTame++;
@@ -433,32 +438,33 @@ socket.on("tameru", async data => {
     updateForbiddenPoints();
     updateDisplay();
     draw();
+});
+
+
+
+socket.on("reverse", async data => {
 
     socket.emit("ack", {
         messageId: data.messageId
     });
-});
 
-
-
-socket.on("reverse", async data=>{
     await showEffectText("リバース\nはつどう！", 1500);
-   board[data.y][data.x] = data.color;
-   oseroGaesi(data.x,data.y);
+
+    board[data.y][data.x] = data.color;
+    oseroGaesi(data.x, data.y);
+
     if (currentPlayer === "black") {
-     blackTame = blackTame - 2 - kaesisu * 2;
+        blackTame = blackTame - 2 - kaesisu * 2;
     }
     if (currentPlayer === "white") {
-     whiteTame = whiteTame - 2 - kaesisu * 2;
+        whiteTame = whiteTame - 2 - kaesisu * 2;
     }
-   gameMode = "main";
-   playerChange(false);
-   updateForbiddenPoints();
-   updateDisplay();
-   draw();
-socket.emit("ack", {
-    messageId: data.messageId
-});
+
+    gameMode = "main";
+    playerChange(false);
+    updateForbiddenPoints();
+    updateDisplay();
+    draw();
 });
 
 socket.on("timeSync", data => {
