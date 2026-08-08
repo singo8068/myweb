@@ -91,30 +91,45 @@ function oseroCheck(x, y, su) {
 }
 
 
-function oseroGaesi(x,y){
- kaesisu=0;
- for (let [nx, ny] of getNeighbors(x, y)) {
-  let isKing=tekingka(nx,ny);
-  if(board[ny][nx]!==currentPlayer&&board[ny][nx]!==null&&isKing===false){
-   for(let i = 1;i<SIZE;i++){
-    let px=nx*(i+1)-x*i;
-    let py=ny*(i+1)-y*i;
-    if(px >= 0 && py >= 0 && px < SIZE && py < SIZE){
-     if(board[py][px]===currentPlayer)kaesiSyori(x,y,nx,ny);
-     if(board[py][px]===null)break;
-     if(tekingka(px,py))break;
+function oseroGaesi(x, y, playerColor = currentPlayer) {
+    kaesisu = 0;
+
+    for (let [nx, ny] of getNeighbors(x, y)) {
+        let isKing = tekingka(nx, ny, playerColor);
+
+        if (
+            board[ny][nx] !== playerColor &&
+            board[ny][nx] !== null &&
+            isKing === false
+        ) {
+            for (let i = 1; i < SIZE; i++) {
+                let px = nx * (i + 1) - x * i;
+                let py = ny * (i + 1) - y * i;
+
+                if (px >= 0 && py >= 0 && px < SIZE && py < SIZE) {
+
+                    if (board[py][px] === playerColor) {
+                        kaesiSyori(x, y, nx, ny, playerColor);
+                        break;
+                    }
+
+                    if (board[py][px] === null) break;
+                    if (tekingka(px, py, playerColor)) break;
+
+                }
+            }
+        }
     }
-   }
-  }
- }
 }
-function kaesiSyori(x,y,nx,ny){
- for(let i = 0;i<SIZE;i++){
-  let px=nx*(i+1)-x*i;
-  let py=ny*(i+1)-y*i;
-   //alert(board[py][px]);
-  if(board[py][px]===currentPlayer)return;
-  board[py][px]=currentPlayer;
-  kaesisu++;
- }
+
+function kaesiSyori(x, y, nx, ny, playerColor = currentPlayer) {
+    for (let i = 0; i < SIZE; i++) {
+        let px = nx * (i + 1) - x * i;
+        let py = ny * (i + 1) - y * i;
+
+        if (board[py][px] === playerColor) return;
+
+        board[py][px] = playerColor;
+        kaesisu++;
+    }
 }

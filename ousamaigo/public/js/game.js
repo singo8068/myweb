@@ -103,7 +103,25 @@ function updateTurnControls() {
         turnDisplay.removeChild(turnDisplay.lastChild);
     }
 
+    // 今の手番の王様ねこを表示
+    const turnImg = document.createElement("img");
+
+    turnImg.src =
+        currentPlayer === "black"
+            ? kurokingImg.src
+            : sirokingImg.src;
+
+    turnImg.alt =
+        currentPlayer === "black"
+            ? "くろ"
+            : "しろ";
+
+    turnImg.style.height = "50px";
+    turnImg.style.verticalAlign = "middle";
+
+    turnDisplay.appendChild(turnImg);
     turnDisplay.appendChild(document.createTextNode(uemsg));
+
 }
 
 function uteruka(x, y) {
@@ -175,19 +193,7 @@ if (point && gameMode === "osero" &&
     await showEffectText("リバース\nはつどう！", 1500);
 
     board[point.y][point.x] = reverseColor;
-    oseroGaesi(point.x, point.y);
-
-    // リバースした後、相手側の石が取り上げられないか調べる
-    const enemyColor = reverseColor === "black" ? "white" : "black";
-
-    for (let y = 0; y < SIZE; y++) {
-        for (let x = 0; x < SIZE; x++) {
-            if (board[y][x] === enemyColor) {
-                board[y][x] = null;
-                placeStone(x, y, false, false, enemyColor);
-            }
-        }
-    }
+    oseroGaesi(point.x, point.y, reverseColor);
 
     if (reverseColor === "black") {
         blackTame = blackTame - 2 - kaesisu * 2;
@@ -208,13 +214,13 @@ if (point && gameMode === "osero" &&
 }
 });
 
-function tekingka(x,y){
- if(currentPlayer==="black"){
-  if(x===whiteKing.x&&y===whiteKing.y)return true;
- }else{
-  if(x===blackKing.x&&y===blackKing.y)return true;
- }
- return false;
+function tekingka(x, y, playerColor = currentPlayer) {
+    if (playerColor === "black") {
+        if (x === whiteKing.x && y === whiteKing.y) return true;
+    } else {
+        if (x === blackKing.x && y === blackKing.y) return true;
+    }
+    return false;
 }
 
 passBtn.addEventListener("click", () => {
@@ -454,19 +460,7 @@ socket.on("reverse", async data => {
     await showEffectText("リバース\nはつどう！", 1500);
 
     board[data.y][data.x] = data.color;
-    oseroGaesi(data.x, data.y);
-
-    const enemyColor =
-        data.color === "black" ? "white" : "black";
-
-    for (let y = 0; y < SIZE; y++) {
-        for (let x = 0; x < SIZE; x++) {
-            if (board[y][x] === enemyColor) {
-                board[y][x] = null;
-                placeStone(x, y, false, false, enemyColor);
-            }
-        }
-    }
+    oseroGaesi(data.x, data.y, data.color);
 
     if (data.color === "black") {
         blackTame = blackTame - 2 - kaesisu * 2;
