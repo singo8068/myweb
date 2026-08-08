@@ -66,7 +66,9 @@ console.log("ぱわ送信", roomId, x, y);
     color: currentPlayer
         });
     }
-    await showEffectText("パワーうち\nはつどう！", 1500);
+    if (!fromNetwork) {
+        await showEffectText("パワーうち\nはつどう！", 1500);
+    }
     if (changeTurn) {
         playerChange();
     }
@@ -372,38 +374,19 @@ socket.on("putStone", data => {
     });
 });
 
-socket.on("pawa", async data=>{
+socket.on("pawa", async data => {
     console.log("ぱわ受信", data);
 
-if (data.color === "black") blackTame--;
-if (data.color === "white") whiteTame--;
+    if (data.color === "black") blackTame--;
+    if (data.color === "white") whiteTame--;
 
-    gameMode="pawa";
+    gameMode = "pawa";
 
-placeStone(data.x, data.y, true, false, data.color);
+    placeStone(data.x, data.y, true, false, data.color);
 
-currentPlayer = data.color === "black" ? "white" : "black";
+    await showEffectText("パワーうち\nはつどう！", 1500);
 
-if (myColor === currentPlayer) {
-    document.getElementById("mainControls").style.display = "block";
-    uemsg = "じぶんのばんだよ";
-} else {
-    document.getElementById("mainControls").style.display = "none";
-    uemsg = "あいてのばんだよ";
-}
-    socket.emit("ack", {
-        messageId: data.messageId
-    });
-});
-
-socket.on("tameru", data => {
-    console.log("受信ためる", data);
-
-    if (data.color === "black") {
-        blackTame++;
-    } else {
-        whiteTame++;
-    }
+    gameMode = "main";
 
     currentPlayer = data.color === "black" ? "white" : "black";
 
@@ -423,6 +406,40 @@ socket.on("tameru", data => {
         messageId: data.messageId
     });
 });
+
+
+
+socket.on("tameru", async data => {
+    console.log("受信ためる", data);
+
+    if (data.color === "black") {
+        blackTame++;
+    } else {
+        whiteTame++;
+    }
+
+    currentPlayer = data.color === "black" ? "white" : "black";
+
+    if (myColor === currentPlayer) {
+        document.getElementById("mainControls").style.display = "block";
+        uemsg = "じぶんのばんだよ";
+    } else {
+        document.getElementById("mainControls").style.display = "none";
+        uemsg = "あいてのばんだよ";
+    }
+
+    await showEffectText("きあいを\nためるよ！", 1000);
+
+    updateForbiddenPoints();
+    updateDisplay();
+    draw();
+
+    socket.emit("ack", {
+        messageId: data.messageId
+    });
+});
+
+
 
 socket.on("reverse", async data=>{
     await showEffectText("リバース\nはつどう！", 1500);
