@@ -48,7 +48,8 @@ console.log("送信", roomId, x, y);
         socket.emit("putStone", {
             roomId,
             x,
-            y
+            y,
+    color: currentPlayer
         });
     }
     if (changeTurn) {
@@ -61,7 +62,8 @@ console.log("ぱわ送信", roomId, x, y);
         socket.emit("pawa", {
             roomId,
             x,
-            y
+            y,
+    color: currentPlayer
         });
     }
     await showEffectText("パワーうち\nはつどう！", 1500);
@@ -170,33 +172,41 @@ function tekingka(x,y){
 passBtn.addEventListener("click", () => {
     passMove();
 });
-async function passMove(fromNetwork = false) {
-console.log("passMove実行", {
-  ISNET,
-  fromNetwork,
-  roomId
-});
 
-  if (!blackKing || !whiteKing) {
-    uemsg="１てめはためれないよ";
-    turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode(uemsg));
-    return;
-  }
-　saveState();
-  if (currentPlayer === "black") blackTame++;
-  else whiteTame++;
+
+async function passMove(fromNetwork = false) {
+    console.log("passMove実行", {
+        ISNET,
+        fromNetwork,
+        roomId
+    });
+
+    if (!blackKing || !whiteKing) {
+        uemsg="１てめはためれないよ";
+        turnDisplay.removeChild(turnDisplay.lastChild);
+        turnDisplay.appendChild(document.createTextNode(uemsg));
+        return;
+    }
+
+    saveState();
+
+    if (currentPlayer === "black") blackTame++;
+    else whiteTame++;
+
     if (ISNET && !fromNetwork) {
-console.log("ためる送信", roomId);
+        console.log("ためる送信", roomId);
         socket.emit("tameru", {
             roomId
         });
     }
-  await showEffectText("きあいを\nためるよ！", 1000);
-  playerChange();
-  updateForbiddenPoints();
-  updateDisplay();
-  draw();
+
+    await showEffectText("きあいを\nためるよ！", 1000);
+
+    playerChange(!fromNetwork);
+
+    updateForbiddenPoints();
+    updateDisplay();
+    draw();
 }
 
 
@@ -231,26 +241,30 @@ effectDiv.style.opacity = "0.7";
   document.getElementById("mainControls").style.display = "block";
   gameNow=true;
 }
-function playerChange(){
- if(currentPlayer === "black"){
-  currentPlayer =  "white";
-  blackTime=blackTime+10000;
- }else{
-  currentPlayer =  "black";
-  whiteTime=whiteTime+10000;
- }
-if(ISNET){
-  document.getElementById("mainControls").style.display = "block";
- if(myColor===currentPlayer){uemsg="じぶんのばんだよ";
- }else{
-  document.getElementById("mainControls").style.display = "none";
-uemsg="あいてのばんだよ";
- }
-}else{
-　uemsg="のばんだよ";
+function playerChange(addByoyomi = true){
+    if(currentPlayer === "black"){
+        currentPlayer = "white";
+        if (addByoyomi) blackTime += 10000;
+    }else{
+        currentPlayer = "black";
+        if (addByoyomi) whiteTime += 10000;
+    }
+
+    if(ISNET){
+        document.getElementById("mainControls").style.display = "block";
+
+        if(myColor === currentPlayer){
+            uemsg = "じぶんのばんだよ";
+        }else{
+            document.getElementById("mainControls").style.display = "none";
+            uemsg = "あいてのばんだよ";
+        }
+    }else{
+        uemsg = "のばんだよ";
+    }
 }
 
-}
+
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -330,23 +344,34 @@ setInterval(() => {
 
 
 if (ISNET) {
-    socket.on("putStone", data => {
-        console.log("受信", data);
-        placeStone(data.x, data.y,true,false,data.color);
-socket.emit("ack", {
-    messageId: data.messageId
-});
+socket.on("putStone", data => {
+    console.log("受信", data);
+    placeStone(data.x, data.y, true, false, data.color);
+
+    playerChange(false);
+
+    socket.emit("ack", {
+        messageId: data.messageId
     });
-    socket.on("pawa", async data=>{
-        console.log("ぱわ受信", data);
+});
+
+socket.on("pawa", async data=>{
+    console.log("ぱわ受信", data);
+
     if (currentPlayer === "black") blackTame = blackTame - 1;
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
-	gameMode="pawa";
-        placeStone(data.x, data.y,true,false,data.color);
-socket.emit("ack", {
-    messageId: data.messageId
-});
+
+    gameMode="pawa";
+
+    placeStone(data.x, data.y,true,false,data.color);
+
+    playerChange(false);
+
+    socket.emit("ack", {
+        messageId: data.messageId
     });
+});
+
     socket.on("tameru", data => {
         console.log("受信", data);
         passMove(true);
