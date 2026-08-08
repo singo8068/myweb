@@ -33,8 +33,8 @@ if (room.turn === "black") {
     room.whiteTime = room.whiteTime - elapsed + BYOYOMI_ADD;
     room.turn = "black";
 }
-
 room.lastUpdate = now;
+console.log("Serverが処理");
 io.to(room.roomId).emit("timeSync", {
     blackTime: room.blackTime,
     whiteTime: room.whiteTime,
@@ -155,6 +155,7 @@ const gameEvents = [
 gameEvents.forEach(eventName => {
     socket.on(eventName, data => {
 const room = rooms.find(r => r.roomId === data.roomId);
+console.log("Serverが受信");
         sendGameData(socket, room,eventName, data);
     });
 });
