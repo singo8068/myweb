@@ -162,10 +162,10 @@ const gameEvents = [
 gameEvents.forEach(eventName => {
     socket.on(eventName, data => {
 const room = gameRooms.find(r => r.roomId === data.roomId);
-console.log("Serverが受信");
-console.log("data.roomId =", data.roomId);
-console.log("gameRooms =", gameRooms);
-console.log("room =", room);
+//console.log("Serverが受信");
+//console.log("data.roomId =", data.roomId);
+//console.log("gameRooms =", gameRooms);
+//console.log("room =", room);
         sendGameData(socket, room,eventName, data);
     });
 });
