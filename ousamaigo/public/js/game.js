@@ -400,9 +400,15 @@ socket.emit("ack", {
 });
 
 socket.on("timeSync", data => {
+    console.log("TIME SYNC", {
+        before: currentPlayer,
+        serverTurn: data.turn,
+        myColor: myColor
+    });
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
     currentPlayer = data.turn;
+    console.log("TIME SYNC後 currentPlayer =", currentPlayer);
 
     blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
     whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
