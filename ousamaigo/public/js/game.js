@@ -203,7 +203,8 @@ async function passMove(fromNetwork = false) {
     if (ISNET && !fromNetwork) {
         console.log("ためる送信", roomId);
         socket.emit("tameru", {
-            roomId
+    roomId,
+    color: currentPlayer
         });
     }
 
@@ -395,13 +396,34 @@ if (myColor === currentPlayer) {
     });
 });
 
-    socket.on("tameru", data => {
-        console.log("受信", data);
-        passMove(true);
-socket.emit("ack", {
-    messageId: data.messageId
-});
+socket.on("tameru", data => {
+    console.log("受信ためる", data);
+
+    if (data.color === "black") {
+        blackTame++;
+    } else {
+        whiteTame++;
+    }
+
+    currentPlayer = data.color === "black" ? "white" : "black";
+
+    if (myColor === currentPlayer) {
+        document.getElementById("mainControls").style.display = "block";
+        uemsg = "じぶんのばんだよ";
+    } else {
+        document.getElementById("mainControls").style.display = "none";
+        uemsg = "あいてのばんだよ";
+    }
+
+    updateForbiddenPoints();
+    updateDisplay();
+    draw();
+
+    socket.emit("ack", {
+        messageId: data.messageId
     });
+});
+
 socket.on("reverse", async data=>{
     await showEffectText("リバース\nはつどう！", 1500);
    board[data.y][data.x] = data.color;
