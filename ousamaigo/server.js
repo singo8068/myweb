@@ -26,6 +26,7 @@ function sendGameData(socket, room,eventName, data) {
 
 const now = Date.now();
 const elapsed = Math.max(0, now - room.lastUpdate);
+const moveColor = room.turn;
 
 if (room.turn === "black") {
     room.blackTime = room.blackTime - elapsed + BYOYOMI_ADD;
@@ -41,7 +42,12 @@ io.to(room.roomId).emit("timeSync", {
     whiteTime: room.whiteTime,
     turn: room.turn
 });
-sendWithRetry(socket.to(data.roomId), eventName, data);
+sendWithRetry(socket.to(data.roomId), eventName, {
+    roomId: data.roomId,
+    x: data.x,
+    y: data.y,
+    color: moveColor
+});
 }
 const waitingAck = new Map();
 
