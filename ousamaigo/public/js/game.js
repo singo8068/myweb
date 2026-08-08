@@ -1,11 +1,11 @@
-async function placeStone(x, y, fromNetwork = false, changeTurn = true){
+async function placeStone(x, y, fromNetwork = false, changeTurn = true,stoneColor = currentPlayer){
   if (board[y][x] !== null) return false;
   if (gameMode === "main") {saveState();}
 
-  board[y][x] = currentPlayer;
+  board[y][x] = stoneColor;
 
-  if (!blackKing && currentPlayer === "black") blackKing = { x, y };
-  if (!whiteKing && currentPlayer === "white") whiteKing = { x, y };
+  if (!blackKing && stoneColor === "black") blackKing = { x, y };
+  if (!whiteKing && stoneColor === "white") whiteKing = { x, y };
 
  if (gameMode === "pawa") {
 if (ISNET && fromNetwork)console.log("受信パワー", roomId, x, y);
@@ -13,7 +13,7 @@ if (ISNET && fromNetwork)console.log("受信パワー", roomId, x, y);
   let singleCaptureCount = 0;
   for (let [nx, ny] of getNeighbors(x, y)) {
     const target = board[ny][nx];
-    if (target && target !== currentPlayer) {
+    if (target && target !== stoneColor) {
         const pos = removeDead(nx, ny, target);
         if (pos) {
             singleCaptureCount++;
@@ -23,16 +23,16 @@ if (ISNET && fromNetwork)console.log("受信パワー", roomId, x, y);
   }
  if (singleCaptureCount === 1) {
     const [rx, ry] = extraStone;
-    board[ry][rx] = currentPlayer;
+    board[ry][rx] = stoneColor;
  }
 }
 
-  if (!hasLiberties(x, y, currentPlayer, {})) {
+  if (!hasLiberties(x, y, stoneColor, {})) {
     board[y][x] = null;
     return false;
   }
 
-  const enemy = currentPlayer === "black" ? "white" : "black";
+  const enemy = stoneColor === "black" ? "white" : "black";
 
   for (const [nx, ny] of getNeighbors(x, y)) {
     if (board[ny][nx] === enemy) {
@@ -332,7 +332,7 @@ setInterval(() => {
 if (ISNET) {
     socket.on("putStone", data => {
         console.log("受信", data);
-        placeStone(data.x, data.y,true,false);
+        placeStone(data.x, data.y,true,false,data.color);
 socket.emit("ack", {
     messageId: data.messageId
 });
@@ -342,7 +342,7 @@ socket.emit("ack", {
     if (currentPlayer === "black") blackTame = blackTame - 1;
     if (currentPlayer === "white") whiteTame = whiteTame - 1;
 	gameMode="pawa";
-        placeStone(data.x, data.y,true,false);
+        placeStone(data.x, data.y,true,false,data.color);
 socket.emit("ack", {
     messageId: data.messageId
 });
