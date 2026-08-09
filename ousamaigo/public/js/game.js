@@ -511,35 +511,7 @@ socket.on("kousan", async data => {
     console.log("受信こうさん", data);
  syouhai("こうさんで",currentPlayer === "white", false);
 });
-function getCookie(name) {
-    const cookies = document.cookie.split("; ");
 
-    for (const cookie of cookies) {
-        const [key, value] = cookie.split("=");
-
-        if (key === name) {
-            return decodeURIComponent(value);
-        }
-    }
-
-    return null;
-}
-socket.on("gameEnd", data => {
-    console.log("勝敗受信", data);
-
-    let wins = Number(getCookie("wins")) || 0;
-    let losses = Number(getCookie("losses")) || 0;
-
-    if (data.winner === myColor) {
-        wins++;
-        document.cookie = `wins=${wins}; max-age=31536000; path=/`;
-        console.log("勝ち +1", wins);
-    } else {
-        losses++;
-        document.cookie = `losses=${losses}; max-age=31536000; path=/`;
-        console.log("負け +1", losses);
-    }
-});
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
