@@ -358,6 +358,12 @@ if(ISNET){
  document.getElementById("mainControls").style.display = "none";
  document.getElementById("saigoControls").style.display = "block";
  gameNow=false;
+if (ISNET) {
+    socket.emit("gameEnd", {
+        roomId,
+        winner: isBlackWin ? "black" : "white"
+    });
+}
 }
 
 function saveState() {
@@ -434,13 +440,13 @@ socket.on("tameru", async data => {
     socket.emit("ack", {
         messageId: data.messageId
     });
-
+saveState();
     if (data.color === "black") {
         blackTame++;
     } else {
         whiteTame++;
     }
-saveState();
+
     await showEffectText("きあいを\nためるよ！", 1000);
 
     updateForbiddenPoints();
@@ -476,7 +482,19 @@ saveState();
     updateDisplay();
     draw();
 });
+socket.on("gameEnd", data => {
+    console.log("勝敗受信", data);
 
+    if (data.winner === myColor) {
+        wins++;
+        document.cookie = `wins=${wins}; max-age=31536000; path=/`;
+        console.log("勝ち +1", wins);
+    } else {
+        losses++;
+        document.cookie = `losses=${losses}; max-age=31536000; path=/`;
+        console.log("負け +1", losses);
+    }
+});
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
