@@ -175,7 +175,14 @@ const room = gameRooms.find(r => r.roomId === data.roomId);
         sendGameData(socket, room,eventName, data);
     });
 });
+socket.on("kousan", data => {
+    const room = gameRooms.find(r => r.roomId === data.roomId);
+    if (!room) return;
 
+    io.to(room.roomId).emit("kousan", {
+        color: data.color
+    });
+});
 
 socket.on("gameEnd", data => {
     const room = gameRooms.find(r => r.roomId === data.roomId);
