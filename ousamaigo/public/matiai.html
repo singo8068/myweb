@@ -96,8 +96,7 @@ function getCookie(name) {
 
 // Cookieからレベルを読み込む
 let level = getCookie("level");
-let wins = getCookie("wins");
-let losses = getCookie("losses");
+let winDiff = getCookie("winDiff");
 
 
 // Cookieがなければ初期値を作成
@@ -106,23 +105,15 @@ if (level === null) {
     document.cookie = "level=1; max-age=31536000; path=/";
 }
 
-if (wins === null) {
-    wins = 0;
-    document.cookie = "wins=0; max-age=31536000; path=/";
+if (winDiff === null) {
+    winDiff = 0;
+    document.cookie = "winDiff=0; max-age=31536000; path=/";
 }
 
-if (losses === null) {
-    losses = 0;
-    document.cookie = "losses=0; max-age=31536000; path=/";
-}
 
 level = Number(level);
-wins = Number(wins);
-losses = Number(losses);
+winDiff = Number(winDiff);
 
-
-// 勝ち越し
-const winDiff = wins - losses;
 
 
 // 表示
