@@ -175,9 +175,17 @@ const room = gameRooms.find(r => r.roomId === data.roomId);
         sendGameData(socket, room,eventName, data);
     });
 });
+
+
+socket.on("gameEnd", data => {
+    const room = gameRooms.find(r => r.roomId === data.roomId);
+    if (!room) return;
+
+    io.to(room.roomId).emit("gameEnd", {
+        winner: data.winner
+    });
 });
-
-
+});
 
 const PORT = process.env.PORT || 3000;
 
