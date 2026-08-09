@@ -455,7 +455,7 @@ socket.on("reverse", async data => {
     socket.emit("ack", {
         messageId: data.messageId
     });
-
+saveState();
     await showEffectText("リバース\nはつどう！", 1500);
 
     board[data.y][data.x] = data.color;
