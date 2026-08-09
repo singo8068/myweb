@@ -55,6 +55,7 @@ input,select{
 </div>
 <h2>まちあいしつ</h2>
 
+<div id="userStatus"></div>
 <div>
 
 おおきさ
@@ -73,6 +74,60 @@ input,select{
 const socket=io();
 const roomsDiv=document.getElementById("rooms");
 let waiting = false;
+
+// ==============================
+// ゲスト情報（Cookie）
+// ==============================
+
+function getCookie(name) {
+    const cookies = document.cookie.split("; ");
+
+    for (const cookie of cookies) {
+        const [key, value] = cookie.split("=");
+
+        if (key === name) {
+            return decodeURIComponent(value);
+        }
+    }
+
+    return null;
+}
+
+
+// Cookieからレベルを読み込む
+let level = getCookie("level");
+let wins = getCookie("wins");
+let losses = getCookie("losses");
+
+
+// Cookieがなければ初期値を作成
+if (level === null) {
+    level = 1;
+    document.cookie = "level=1; max-age=31536000; path=/";
+}
+
+if (wins === null) {
+    wins = 0;
+    document.cookie = "wins=0; max-age=31536000; path=/";
+}
+
+if (losses === null) {
+    losses = 0;
+    document.cookie = "losses=0; max-age=31536000; path=/";
+}
+
+level = Number(level);
+wins = Number(wins);
+losses = Number(losses);
+
+
+// 勝ち越し
+const winDiff = wins - losses;
+
+
+// 表示
+document.getElementById("userStatus").textContent =
+    `ゲスト　レベル ${level}　かちこし ${winDiff}`;
 
 function createRoom(){
 
