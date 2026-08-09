@@ -416,7 +416,6 @@ socket.on("pawa", async data => {
     gameMode = "pawa";
 
     placeStone(data.x, data.y, true, false, data.color);
-
     await showEffectText("パワーうち\nはつどう！", 1500);
 
     gameMode = "main";
@@ -441,7 +440,7 @@ socket.on("tameru", async data => {
     } else {
         whiteTame++;
     }
-
+saveState();
     await showEffectText("きあいを\nためるよ！", 1000);
 
     updateForbiddenPoints();
