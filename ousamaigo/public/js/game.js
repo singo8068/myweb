@@ -269,6 +269,13 @@ if (!ISNET) {
 
 
 resetBtn.addEventListener("click", async function () {
+    if (ISNET) {
+        console.log("こうさん送信", roomId);
+        socket.emit("kousan", {
+    roomId,
+    color: currentPlayer
+        });
+    }
  syouhai("こうさんで",currentPlayer === "white");
  });
 resetBtn2.addEventListener("click", async function () {
@@ -330,7 +337,7 @@ async function hantei(){
   //await showEffectText( 3000);
   syouhai("くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので",blackCount>whiteCount);
 }
-async function syouhai(maetext,isBlackWin){
+async function syouhai(maetext,isBlackWin, sendGameEnd = true){
  while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
  const winImg = document.createElement("img");
 
@@ -358,7 +365,7 @@ if(ISNET){
  document.getElementById("mainControls").style.display = "none";
  document.getElementById("saigoControls").style.display = "block";
  gameNow=false;
-if (ISNET) {
+if (ISNET && sendGameEnd) {
     socket.emit("gameEnd", {
         roomId,
         winner: isBlackWin ? "black" : "white"
@@ -432,15 +439,33 @@ socket.on("pawa", async data => {
 });
 
 
+const receivedMessages = new Set();
 
 socket.on("tameru", async data => {
     console.log("受信ためる", data);
 
-    // まず受信確認を返す
+    // 同じメッセージを2回受信しても、2回処理しない
+    if (receivedMessages.has(data.messageId)) {
+        console.log("ためる：重複受信なので無視", data.messageId);
+
+        // ACKだけは返す
+        socket.emit("ack", {
+            messageId: data.messageId
+        });
+
+        return;
+    }
+
+    // このmessageIdは処理済みとして記録
+    receivedMessages.add(data.messageId);
+
+    // 受信確認を返す
     socket.emit("ack", {
         messageId: data.messageId
     });
-saveState();
+
+    saveState();
+
     if (data.color === "black") {
         blackTame++;
     } else {
@@ -482,6 +507,11 @@ saveState();
     updateDisplay();
     draw();
 });
+socket.on("kousan", async data => {
+    console.log("受信こうさん", data);
+ syouhai("こうさんで",currentPlayer === "white", false);
+});
+
 socket.on("gameEnd", data => {
     console.log("勝敗受信", data);
 
