@@ -511,9 +511,24 @@ socket.on("kousan", async data => {
     console.log("受信こうさん", data);
  syouhai("こうさんで",currentPlayer === "white", false);
 });
+function getCookie(name) {
+    const cookies = document.cookie.split("; ");
 
+    for (const cookie of cookies) {
+        const [key, value] = cookie.split("=");
+
+        if (key === name) {
+            return decodeURIComponent(value);
+        }
+    }
+
+    return null;
+}
 socket.on("gameEnd", data => {
     console.log("勝敗受信", data);
+
+    let wins = Number(getCookie("wins")) || 0;
+    let losses = Number(getCookie("losses")) || 0;
 
     if (data.winner === myColor) {
         wins++;
