@@ -9,6 +9,24 @@ const io = new Server(server);
 const crypto = require("crypto");
 const BYOYOMI_ADD = 10000;
 
+const { Pool } = require("pg");
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+pool.query("SELECT NOW()")
+    .then(result => {
+        console.log("Neon DB 接続成功！");
+        console.log("DB時刻:", result.rows[0].now);
+    })
+    .catch(err => {
+        console.error("Neon DB 接続エラー:", err);
+    });
+
 app.use(express.static("public", {
     index: false
 }));
