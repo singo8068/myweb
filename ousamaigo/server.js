@@ -26,6 +26,20 @@ pool.query("SELECT NOW()")
     .catch(err => {
         console.error("Neon DB 接続エラー:", err);
     });
+pool.query(`
+    INSERT INTO users
+    (user_id, password_hash, level, win_diff, gems, magical_candy, candy_fragments, golden_candy)
+    VALUES
+    ('test_user', 'test_password_hash', 3, 0, 0, 0, 0, 0)
+    ON CONFLICT (user_id) DO NOTHING
+`)
+.then(() => {
+    console.log("テスト会員登録成功！");
+})
+.catch(err => {
+    console.error("テスト会員登録エラー:", err);
+});
+
 
 app.use(express.static("public", {
     index: false
