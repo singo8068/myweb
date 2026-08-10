@@ -204,6 +204,7 @@ const room = gameRooms.find(r => r.roomId === data.roomId);
 //console.log("data.roomId =", data.roomId);
 //console.log("gameRooms =", gameRooms);
 //console.log("room =", room);
+// Neon usersテーブル作成確認
         sendGameData(socket, room,eventName, data);
     });
 });
