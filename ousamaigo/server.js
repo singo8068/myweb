@@ -88,6 +88,78 @@ app.post("/api/register", async (req, res) => {
     }
 
 });
+app.post("/api/login", async (req, res) => {
+
+```
+const { user_id, password } = req.body;
+
+if (!user_id || !password) {
+    return res.json({
+        success: false,
+        message: "IDとパスワードを入力してください"
+    });
+}
+
+try {
+
+    // IDを検索
+    const result = await pool.query(
+        "SELECT * FROM users WHERE user_id = $1",
+        [user_id]
+    );
+
+    // IDが存在しない
+    if (result.rows.length === 0) {
+        return res.status(401).json({
+            success: false,
+            message: "IDまたはパスワードが違います"
+        });
+    }
+
+    const user = result.rows[0];
+
+    // パスワード確認
+    const passwordMatch = await bcrypt.compare(
+        password,
+        user.password_hash
+    );
+
+    if (!passwordMatch) {
+        return res.status(401).json({
+            success: false,
+            message: "IDまたはパスワードが違います"
+        });
+    }
+
+    console.log("ログイン:", user.user_id);
+
+    // ログイン成功
+    res.json({
+        success: true,
+        message: "ログイン成功",
+        user: {
+            userId: user.user_id,
+            level: user.level,
+            winDiff: user.win_diff,
+            gems: user.gems,
+            magicalCandy: user.magical_candy,
+            candyFragments: user.candy_fragments,
+            goldenCandy: user.golden_candy
+        }
+    });
+
+} catch (error) {
+
+    console.error("ログインエラー:", error);
+
+    res.status(500).json({
+        success: false,
+        message: "ログイン中にエラーが発生しました"
+    });
+}
+```
+
+});
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "matiai.html"));
