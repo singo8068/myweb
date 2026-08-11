@@ -7,6 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const BYOYOMI_ADD = 10000;
 
 const { Pool } = require("pg");
@@ -26,19 +27,6 @@ pool.query("SELECT NOW()")
     .catch(err => {
         console.error("Neon DB 接続エラー:", err);
     });
-pool.query(`
-    INSERT INTO users
-    (user_id, password_hash, level, win_diff, gems, magical_candy, candy_fragments, golden_candy)
-    VALUES
-    ('test_user', 'test_password_hash', 3, 0, 0, 0, 0, 0)
-    ON CONFLICT (user_id) DO NOTHING
-`)
-.then(() => {
-    console.log("テスト会員登録成功！");
-})
-.catch(err => {
-    console.error("テスト会員登録エラー:", err);
-});
 
 
 app.use(express.static("public", {
@@ -204,7 +192,6 @@ const room = gameRooms.find(r => r.roomId === data.roomId);
 //console.log("data.roomId =", data.roomId);
 //console.log("gameRooms =", gameRooms);
 //console.log("room =", room);
-// Neon usersテーブル作成確認
         sendGameData(socket, room,eventName, data);
     });
 });
