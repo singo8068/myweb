@@ -90,7 +90,6 @@ app.post("/api/register", async (req, res) => {
 });
 app.post("/api/login", async (req, res) => {
 
-```
 const { user_id, password } = req.body;
 
 if (!user_id || !password) {
@@ -157,7 +156,6 @@ try {
         message: "ログイン中にエラーが発生しました"
     });
 }
-```
 
 });
 
