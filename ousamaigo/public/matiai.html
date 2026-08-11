@@ -77,51 +77,70 @@ input,select{
 const socket=io();
 const roomsDiv=document.getElementById("rooms");
 let waiting = false;
+let currentUser = null;
 
 // ==============================
-// ゲスト情報（Cookie）
+// ユーザー情報
 // ==============================
 
-function getCookie(name) {
-    const cookies = document.cookie.split("; ");
+async function loadUserInfo() {
 
-    for (const cookie of cookies) {
-        const [key, value] = cookie.split("=");
+    try {
 
-        if (key === name) {
-            return decodeURIComponent(value);
-        }
-    }
+        const response = await fetch("/api/me");
 
-    return null;
-}
+        // ログインしていない
+        if (!response.ok) {
 
+            // ゲスト用Cookieを使用
+let level = Number(getCookie("level"));
+let winDiff = Number(getCookie("winDiff"));
 
-// Cookieからレベルを読み込む
-let level = Number(getCookie("level")) || 1;
-let winDiff = Number(getCookie("winDiff")) || 0;
-
-
-// Cookieがなければ初期値を作成
-if (level === null) {
+if (!level || Number.isNaN(level)) {
     level = 1;
-    document.cookie = "level=1; max-age=31536000; path=/";
+    document.cookie =
+        "level=1; max-age=31536000; path=/";
 }
 
-if (winDiff === null) {
+if (Number.isNaN(winDiff)) {
     winDiff = 0;
-    document.cookie = "winDiff=0; max-age=31536000; path=/";
+    document.cookie =
+        "winDiff=0; max-age=31536000; path=/";
 }
 
+            document.getElementById("userStatus").textContent =
+                `ゲスト　レベル ${level}　かちこし ${winDiff}`;
 
-level = Number(level);
-winDiff = Number(winDiff);
+            return;
+        }
 
+        // ログインしている場合
+        const data = await response.json();
 
+        if (!data.success) {
+            throw new Error("ユーザー情報を取得できませんでした");
+        }
 
-// 表示
-document.getElementById("userStatus").textContent =
-    `ゲスト　レベル ${level}　かちこし ${winDiff}`;
+const user = data.user;
+currentUser = user;
+
+        // Neonから取得した情報を表示
+        document.getElementById("userStatus").textContent =
+            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}`;
+
+        console.log("ログインユーザー:", user);
+
+    } catch (error) {
+
+        console.error("ユーザー情報取得エラー:", error);
+
+        document.getElementById("userStatus").textContent =
+            "ユーザー情報を取得できませんでした";
+    }
+}
+
+// ページを開いたらユーザー情報を取得
+loadUserInfo();
 
 function createRoom(){
 
@@ -134,10 +153,10 @@ function createRoom(){
     document.getElementById("createBtn").disabled = true;
     document.getElementById("cancelBtn").disabled = false;
 
-    socket.emit("createRoom",{
-        name:"ゲスト",
-        size:Number(document.getElementById("size").value)
-    });
+socket.emit("createRoom", {
+    name: currentUser ? currentUser.userId : "ゲスト",
+    size: Number(document.getElementById("size").value)
+});
 }
 
 function joinRoom(id){
