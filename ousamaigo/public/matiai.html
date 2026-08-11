@@ -54,10 +54,13 @@ input,select{
   <a href="index.html" class="back">メニューにもどる</a>
 </div>
 <h2>まちあいしつ</h2>
-
+<div id="authButtons">
+    <button onclick="showLogin()">ログイン</button>
+    <button onclick="location.href='register.html'">会員登録</button>
+</div>
 <div id="userStatus"></div>
-<div>
 
+<div>
 おおきさ
 
 <select id="size">
@@ -95,8 +98,8 @@ function getCookie(name) {
 
 
 // Cookieからレベルを読み込む
-let level = getCookie("level");
-let winDiff = getCookie("winDiff");
+let level = Number(getCookie("level")) || 1;
+let winDiff = Number(getCookie("winDiff")) || 0;
 
 
 // Cookieがなければ初期値を作成
