@@ -28,10 +28,68 @@ pool.query("SELECT NOW()")
         console.error("Neon DB 接続エラー:", err);
     });
 
-
+app.use(express.json());
 app.use(express.static("public", {
     index: false
 }));
+
+app.post("/api/register", async (req, res) => {
+
+    const { id, password } = req.body;
+
+    if (!id || !password) {
+        return res.json({
+            success: false,
+            message: "IDとパスワードを入力してください"
+        });
+    }
+
+    try {
+
+        // 同じIDがあるか確認
+        const check = await pool.query(
+            "SELECT id FROM users WHERE id = $1",
+            [id]
+        );
+
+        if (check.rows.length > 0) {
+            return res.json({
+                success: false,
+                message: "そのIDはすでに使われています"
+            });
+        }
+
+        // パスワードをハッシュ化
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // 会員登録
+        await pool.query(
+            `INSERT INTO users
+            (id, password, level, win_diff, gem, magic_candy, candy_piece, golden_candy)
+            VALUES ($1, $2, 3, 0, 0, 0, 0, 0)`,
+            [id, hashedPassword]
+        );
+
+        console.log("会員登録:", id);
+
+        res.json({
+            success: true,
+            message: "会員登録が完了しました"
+        });
+
+    } catch (err) {
+
+        console.error("会員登録エラー:", err);
+
+        res.status(500).json({
+            success: false,
+            message: "登録中にエラーが発生しました"
+        });
+
+    }
+
+});
+
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "matiai.html"));
