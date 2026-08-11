@@ -1,50 +1,51 @@
+console.log("login.js 読み込み成功");
+
 async function login() {
 
-const id = document.getElementById("userId").value.trim();
-const password = document.getElementById("password").value;
+    console.log("login関数が呼ばれました");
 
-const message = document.getElementById("message");
+    const id = document.getElementById("userId").value.trim();
+    const password = document.getElementById("password").value;
 
-if (!id || !password) {
-    message.textContent =
-        "IDとパスワードを入力してください";
-    return;
-}
+    console.log("入力ID:", id);
+    console.log("パスワード入力:", password ? "あり" : "なし");
 
-try {
+    try {
 
-    const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            user_id: id,
-            password: password
-        })
-    });
+        console.log("/api/loginへ送信します");
 
-    const data = await response.json();
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: id,
+                password: password
+            })
+        });
 
-    if (!response.ok) {
-        message.textContent = data.message;
-        return;
+        console.log("サーバーから返事が来ました");
+        console.log("status:", response.status);
+
+        const data = await response.json();
+
+        console.log("返ってきたデータ:", data);
+
+        const message = document.getElementById("message");
+
+        if (!response.ok) {
+            message.textContent = data.message;
+            return;
+        }
+
+        message.textContent = "ログインしました！";
+
+    } catch (error) {
+
+        console.error("ログインエラー:", error);
+
+        document.getElementById("message").textContent =
+            "通信エラーが発生しました";
     }
-
-    message.textContent = "ログインしました！";
-
-    console.log("ログインした会員:", data.user);
-
-    // 後で待合室などへ移動
-    // location.href = "/matiai.html";
-
-} catch (error) {
-
-    console.error(error);
-
-    message.textContent =
-        "通信エラーが発生しました";
-}
-```
-
 }
