@@ -1,3 +1,4 @@
+
 console.log("login.js 読み込み成功");
 
 async function login() {
@@ -41,6 +42,11 @@ async function login() {
 
         message.textContent = "ログインしました！";
 
+        // ログイン成功後、待合室へ移動
+        setTimeout(() => {
+            window.location.href = "/matiai.html";
+        }, 500);
+
     } catch (error) {
 
         console.error("ログインエラー:", error);
@@ -49,3 +55,4 @@ async function login() {
             "通信エラーが発生しました";
     }
 }
+
