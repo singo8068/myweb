@@ -32,12 +32,11 @@ app.use(express.json());
 app.use(express.static("public", {
     index: false
 }));
-
 app.post("/api/register", async (req, res) => {
 
-    const { id, password } = req.body;
+    const { user_id, password } = req.body;
 
-    if (!id || !password) {
+    if (!user_id || !password) {
         return res.json({
             success: false,
             message: "IDとパスワードを入力してください"
@@ -48,8 +47,8 @@ app.post("/api/register", async (req, res) => {
 
         // 同じIDがあるか確認
         const check = await pool.query(
-            "SELECT id FROM users WHERE id = $1",
-            [id]
+            "SELECT id FROM users WHERE user_id = $1",
+            [user_id]
         );
 
         if (check.rows.length > 0) {
@@ -65,12 +64,12 @@ app.post("/api/register", async (req, res) => {
         // 会員登録
         await pool.query(
             `INSERT INTO users
-            (id, password, level, win_diff, gem, magic_candy, candy_piece, golden_candy)
+            (user_id, password_hash, level, win_diff, gems, magical_candy, candy_fragments, golden_candy)
             VALUES ($1, $2, 3, 0, 0, 0, 0, 0)`,
-            [id, hashedPassword]
+            [user_id, hashedPassword]
         );
 
-        console.log("会員登録:", id);
+        console.log("会員登録:", user_id);
 
         res.json({
             success: true,
@@ -89,7 +88,6 @@ app.post("/api/register", async (req, res) => {
     }
 
 });
-
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "matiai.html"));
