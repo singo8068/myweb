@@ -169,33 +169,41 @@ app.get("/", (req, res) => {
 let rooms = [];       // 募集中
 let gameRooms = [];   // 対戦中
 
-function sendGameData(socket, room,eventName, data) {
+function sendGameData(socket, room, eventName, data) {
     if (!room) return;
 
-const now = Date.now();
-const elapsed = Math.max(0, now - room.lastUpdate);
-const moveColor = room.turn;
+    const now = Date.now();
+    const elapsed = Math.max(0, now - room.lastUpdate);
+    const moveColor = room.turn;
 
-if (room.turn === "black") {
-    room.blackTime = room.blackTime - elapsed + BYOYOMI_ADD;
-    room.turn = "white";
-} else {
-    room.whiteTime = room.whiteTime - elapsed + BYOYOMI_ADD;
-    room.turn = "black";
-}
-room.lastUpdate = now;
-console.log("Serverが処理");
-io.to(room.roomId).emit("timeSync", {
-    blackTime: room.blackTime,
-    whiteTime: room.whiteTime,
-    turn: room.turn
-});
-sendWithRetry(socket.to(data.roomId), eventName, {
-    roomId: data.roomId,
-    x: data.x,
-    y: data.y,
-    color: moveColor
-});
+    if (room.turn === "black") {
+        room.blackTime = room.blackTime - elapsed + BYOYOMI_ADD;
+        room.turn = "white";
+    } else {
+        room.whiteTime = room.whiteTime - elapsed + BYOYOMI_ADD;
+        room.turn = "black";
+    }
+
+    room.lastUpdate = now;
+
+    console.log("Serverが処理");
+
+    io.to(room.roomId).emit("timeSync", {
+        blackTime: room.blackTime,
+        whiteTime: room.whiteTime,
+        turn: room.turn
+    });
+
+    sendWithRetry(
+        socket.to(room.roomId),
+        eventName,
+        {
+            roomId: room.roomId,
+            x: data.x,
+            y: data.y,
+            color: moveColor
+        }
+    );
 }
 const waitingAck = new Map();
 
