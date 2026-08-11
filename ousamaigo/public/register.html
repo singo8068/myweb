@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>会員登録</title>
+
+<style>
+
+body {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+#register {
+    width: 350px;
+    margin: 50px auto;
+}
+
+input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 20px;
+    margin: 15px 0;
+    padding: 10px;
+}
+
+button {
+    font-size: 20px;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="register">
+
+<h1>会員登録</h1>
+
+<input
+    type="text"
+    id="userId"
+    placeholder="ID"
+    autocomplete="username"
+>
+
+<input
+    type="password"
+    id="password"
+    placeholder="パスワード"
+    autocomplete="new-password"
+>
+
+<button onclick="register()">
+とうろくする
+</button>
+
+<button onclick="location.href='matiai.html'">
+もどる
+</button>
+
+<div id="message"></div>
+
+</div>
+
+
+<script>
+
+async function register() {
+
+    const id = document.getElementById("userId").value.trim();
+    const password = document.getElementById("password").value;
+
+    const message = document.getElementById("message");
+
+    // 入力チェック
+    if (!id || !password) {
+        message.textContent =
+            "IDとパスワードを入力してください";
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/api/register", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                id: id,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        message.textContent = data.message;
+
+        // 登録成功
+        if (data.success) {
+
+            setTimeout(() => {
+                location.href = "matiai.html";
+            }, 1000);
+
+        }
+
+    } catch (error) {
+
+        console.error("登録エラー:", error);
+
+        message.textContent =
+            "通信エラーが発生しました";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
