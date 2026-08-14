@@ -125,7 +125,7 @@ const user = data.user;
 currentUser = user;
 
         // Neonから取得した情報を表示
-        document.getElementById("userStatus").textContent =
+        document.getElementById("userStatus").innerHTML =
             `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}
     <span class="itemInfo">
         <img src="/bin/gyem.webp"> ${user.gems}
