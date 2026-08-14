@@ -36,13 +36,13 @@ const tesuLibsDisplay = document.getElementById("tesuLibs");
 const winText = document.createTextNode("のかち！");
 
 const kuronekoImg = new Image();
-kuronekoImg.src = "./bin/kuroneko.png";
+kuronekoImg.src = "./bin/kuroneko.webp";
 const kurokingImg = new Image();
-kurokingImg.src = "./bin/kuroking.png";
+kurokingImg.src = "./bin/kuroking.webp";
 const sironekoImg = new Image();
-sironekoImg.src = "./bin/sironeko.png";
+sironekoImg.src = "./bin/sironeko.webp";
 const sirokingImg = new Image();
-sirokingImg.src = "./bin/siroking.png";
+sirokingImg.src = "./bin/siroking.webp";
 
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
