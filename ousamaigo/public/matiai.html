@@ -126,7 +126,13 @@ currentUser = user;
 
         // Neonから取得した情報を表示
         document.getElementById("userStatus").textContent =
-            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}`;
+            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}
+    <span class="itemInfo">
+        <img src="/bin/gyem.webp"> ${user.gems}
+        <img src="/bin/kiname.webp"> ${user.goldenCandy}
+        <img src="/bin/mahoame.webp"> ${user.magicalCandy}
+        <img src="/bin/amekakera.webp"> ${user.candyFragments}
+    </span>`;
 
         console.log("ログインユーザー:", user);
 
