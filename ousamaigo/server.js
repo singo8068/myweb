@@ -8,6 +8,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const Stripe = require("stripe");
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const BYOYOMI_ADD = 10000;
 
 const sessions = new Map();
