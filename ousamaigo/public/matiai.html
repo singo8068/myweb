@@ -59,7 +59,7 @@ input,select{
     <button onclick="location.href='register.html'">会員登録</button>
 </div>
 <div id="userStatus"></div>
-
+<button id="buyGemBtn">ジェムを購入</button>
 <div>
 おおきさ
 
@@ -126,14 +126,13 @@ currentUser = user;
 
         // Neonから取得した情報を表示
         document.getElementById("userStatus").innerHTML =
-            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}
+            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　
     <span class="itemInfo">
         <img src="/bin/gyem.webp"> ${user.gems}
         <img src="/bin/kiname.webp"> ${user.goldenCandy}
         <img src="/bin/mahoame.webp"> ${user.magicalCandy}
         <img src="/bin/amekakera.webp"> ${user.candyFragments}
     </span>`;
-
         console.log("ログインユーザー:", user);
 
     } catch (error) {
@@ -231,6 +230,31 @@ function cancelRoom(){
 
     socket.emit("cancelRoom");
 }
+
+document.getElementById("buyGemBtn").addEventListener("click", async () => {
+
+    try {
+
+        const response = await fetch("/api/create-checkout-session", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            alert("決済画面を開けませんでした");
+        }
+
+    } catch (error) {
+
+        console.error(error);
+        alert("決済画面を開けませんでした");
+
+    }
+
+});
 </script>
 
 </body>
