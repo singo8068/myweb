@@ -31,8 +31,13 @@ pool.query("SELECT NOW()")
     .catch(err => {
         console.error("Neon DB 接続エラー:", err);
     });
-
+app.use(
+    "/api/stripe-webhook",
+    express.raw({ type: "application/json" })
+);
 app.use(express.json());
+require("./stripe")(app, stripe, pool, sessions);
+
 app.use(express.static("public", {
     index: false
 }));
@@ -164,40 +169,6 @@ app.post("/api/login", async (req, res) => {
         });
     }
 });
-
-app.post("/api/create-checkout-session", async (req, res) => {
-    try {
-
-        const session = await stripe.checkout.sessions.create({
-            mode: "payment",
-
-            line_items: [
-                {
-                    price: "price_1U4XIgPh2txd175gtbvANjzv",
-                    quantity: 1
-                }
-            ],
-
-            success_url: "https://myweb-qcr3.onrender.com/payment-success.html",
-            cancel_url: "https://myweb-qcr3.onrender.com/matiai.html"
-        });
-
-        res.json({
-            url: session.url
-        });
-
-    } catch (error) {
-
-        console.error("Stripe Checkoutエラー:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "決済画面を作成できませんでした"
-        });
-    }
-});
-
-
 app.get("/api/me", async (req, res) => {
 
     try {
