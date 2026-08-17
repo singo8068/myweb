@@ -147,7 +147,7 @@ module.exports = function(app, pool, sessions) {
         }
 
     });
-};
+
 
 app.post("/api/use-golden-candy", async (req, res) => {
 
@@ -270,3 +270,5 @@ app.post("/api/use-golden-candy", async (req, res) => {
     }
 
 });
+
+};
