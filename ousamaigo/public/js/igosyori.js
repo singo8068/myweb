@@ -55,6 +55,7 @@ function countLiberties(x, y, visited = {}) {
 }
 
 function removeDead(x, y, color) {
+if (board[y][x] !== color) return null;
   const toRemove = [];
   const visited = {};
   let lastRemoved = null;

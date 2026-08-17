@@ -105,21 +105,25 @@ function oseroGaesi(x, y, playerColor = currentPlayer) {
             for (let i = 1; i < SIZE; i++) {
                 let px = nx * (i + 1) - x * i;
                 let py = ny * (i + 1) - y * i;
-
                 if (px >= 0 && py >= 0 && px < SIZE && py < SIZE) {
-
                     if (board[py][px] === playerColor) {
                         kaesiSyori(x, y, nx, ny, playerColor);
                         break;
                     }
-
                     if (board[py][px] === null) break;
                     if (tekingka(px, py, playerColor)) break;
-
                 }
             }
         }
     }
+const enemy = playerColor === "black" ? "white" : "black";
+ for (let y = 0; y < SIZE; y++) {
+  for (let x = 0; x < SIZE; x++) {
+    if (board[y][x] === enemy) {
+      removeDead(x, y, enemy);
+    }
+  }
+ }
 }
 
 function kaesiSyori(x, y, nx, ny, playerColor = currentPlayer) {
