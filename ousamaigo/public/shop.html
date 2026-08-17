@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>まちあいしつ</title>
+<title>ショップ</title>
 
 <link rel="stylesheet" href="css/style.css">
 <style>
@@ -51,33 +51,17 @@ input,select{
 
 <body>
 <div class="section">
-  <a href="index.html" class="back">メニューにもどる</a>
+  <a href="matiai.html" class="back">まちあいしつにもどる</a>
 </div>
-<h2>まちあいしつ</h2>
-<div id="authButtons">
-    <button onclick="location.href='login.html'">ログイン</button>
-    <button onclick="location.href='register.html'">会員登録</button>
-</div>
-<div id="userStatus"></div>
-<a href="shop.html" class="back">ショップ</a>
-<div>
-おおきさ
+<h2>ショップ</h2>
 
-<select id="size">
-<option value="9">９×９</option>
-</select>
-<button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
-<button id="cancelBtn" onclick="cancelRoom()" disabled>ぼしゅうをやめる</button>
-</div>
-<p id="status"></p>
-<hr>
-<div id="rooms"></div>
+<div id="userStatus"></div>
+<button id="buyGemBtn">ジェムを購入</button>
+<div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket=io();
-const roomsDiv=document.getElementById("rooms");
-let waiting = false;
-let currentUser = null;
+
 
 // ==============================
 // ユーザー情報
@@ -122,7 +106,6 @@ if (Number.isNaN(winDiff)) {
         }
 
 const user = data.user;
-currentUser = user;
 
         // Neonから取得した情報を表示
         document.getElementById("userStatus").innerHTML =
@@ -146,91 +129,30 @@ currentUser = user;
 
 // ページを開いたらユーザー情報を取得
 loadUserInfo();
+document.getElementById("buyGemBtn").addEventListener("click", async () => {
 
-function createRoom(){
+    try {
 
-    if(waiting) return;
+        const response = await fetch("/api/create-checkout-session", {
+            method: "POST"
+        });
 
-    waiting = true;
+        const data = await response.json();
 
-    document.getElementById("status").textContent = "ぼしゅうちゅうです…";
-
-    document.getElementById("createBtn").disabled = true;
-    document.getElementById("cancelBtn").disabled = false;
-
-socket.emit("createRoom", {
-    name: currentUser ? currentUser.userId : "ゲスト",
-    size: Number(document.getElementById("size").value)
-});
-}
-
-function joinRoom(id){
-    socket.emit("joinRoom",id);
-}
-
-socket.on("startGame", room => {
-
-    waiting = false;
-
-    document.getElementById("status").textContent = "";
-
-    document.getElementById("createBtn").disabled = false;
-    document.getElementById("cancelBtn").disabled = true;
-
-    location.href =
-`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}&maji=true`;
-
-});
-
-socket.on("roomList", rooms => {
-
-    roomsDiv.innerHTML = "";
-
-    if (rooms.length === 0) {
-        roomsDiv.innerHTML = "<p>ぼしゅうちゅうのひとはいません。</p>";
-        return;
-    }
-
-    rooms.forEach(room => {
-
-        const div = document.createElement("div");
-        div.className = "room";
-
-        let buttonHtml;
-
-        if (room.hostId === socket.id) {
-            buttonHtml = "<b>ぼしゅうちゅう…</b>";
+        if (data.url) {
+            window.location.href = data.url;
         } else {
-            buttonHtml = `<button onclick="joinRoom('${room.roomId}')">さんか</button>`;
+            alert("決済画面を開けませんでした");
         }
 
-        div.innerHTML = `
-            <div>
-                ${room.name}：
-                ${room.size}×${room.size}
-                ${buttonHtml}
-            </div>
-        `;
+    } catch (error) {
 
-        roomsDiv.appendChild(div);
+        console.error(error);
+        alert("決済画面を開けませんでした");
 
-    });
+    }
 
 });
-function cancelRoom(){
-
-    if(!waiting) return;
-
-    waiting = false;
-
-    document.getElementById("status").textContent = "";
-
-    document.getElementById("createBtn").disabled = false;
-    document.getElementById("cancelBtn").disabled = true;
-
-    socket.emit("cancelRoom");
-}
-
 </script>
 
 </body>
