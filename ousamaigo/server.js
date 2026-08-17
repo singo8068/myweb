@@ -37,6 +37,7 @@ app.use(
 );
 app.use(express.json());
 require("./stripe")(app, stripe, pool, sessions);
+require("./shop")(app, pool, sessions);
 
 app.use(express.static("public", {
     index: false
