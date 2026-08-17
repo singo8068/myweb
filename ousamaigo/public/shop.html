@@ -56,13 +56,26 @@ input,select{
 <h2>ショップ</h2>
 
 <div id="userStatus"></div>
-<button id="buyGemBtn">ジェムを購入</button>
+<button id="buyGemBtn">ジェムをかう</button>
+<div>
+    <button id="useGoldenCandyBtn">きんのあめをつかう</button>
+</div>
+<div>
+    <button id="buyGoldenCandyBtn">きんのあめをかう</button>
+</div>
 <div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket=io();
 
+function getGoldenCandyPrice(level) {
 
+    if (level <= 5) {
+        return 150;
+    }
+
+    return (level - 2) * 50;
+}
 // ==============================
 // ユーザー情報
 // ==============================
@@ -118,6 +131,10 @@ const user = data.user;
     </span>`;
         console.log("ログインユーザー:", user);
 
+const price = getGoldenCandyPrice(user.level);
+document.getElementById("buyGoldenCandyBtn").textContent =
+    `きんのあめをかう（${price}ジェム）`;
+
     } catch (error) {
 
         console.error("ユーザー情報取得エラー:", error);
@@ -153,6 +170,64 @@ document.getElementById("buyGemBtn").addEventListener("click", async () => {
     }
 
 });
+document.getElementById("buyGoldenCandyBtn").addEventListener("click", async () => {
+
+    try {
+
+        const response = await fetch("/api/buy-golden-candy", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            alert(data.message || "購入できませんでした");
+            return;
+        }
+
+        alert("きんのあめを1個購入しました！");
+
+        // 購入後にジェム・アイテム数を更新
+        loadUserInfo();
+
+    } catch (error) {
+
+        console.error(error);
+        alert("購入処理でエラーが発生しました");
+
+    }
+
+});
+
+document.getElementById("useGoldenCandyBtn").addEventListener("click", async () => {
+
+    try {
+
+        const response = await fetch("/api/use-golden-candy", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            alert(data.message || "きんのあめを使えませんでした");
+            return;
+        }
+
+        alert("きんのあめを1個使いました！");
+
+        loadUserInfo();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("きんのあめの使用処理に失敗しました");
+
+    }
+
+});
+
 </script>
 
 </body>
