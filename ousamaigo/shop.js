@@ -149,9 +149,38 @@ module.exports = function(app, pool, sessions) {
     });
 
 
-app.post("/api/use-golden-candy", async (req, res) => {
+app.post("/api/use-candy", async (req, res) => {
 
     try {
+
+        // ==============================
+        // あめの種類
+        // ==============================
+
+        const { type } = req.body;
+
+        let candyColumn;
+        let candyName;
+
+        if (type === "golden") {
+
+            candyColumn = "golden_candy";
+            candyName = "きんのあめ";
+
+        } else if (type === "magic") {
+
+            candyColumn = "magical_candy";
+            candyName = "まほうのあめ";
+
+        } else {
+
+            return res.status(400).json({
+                success: false,
+                message: "使用するあめが不正です"
+            });
+
+        }
+
 
         // ==============================
         // ログイン確認
@@ -163,15 +192,17 @@ app.post("/api/use-golden-candy", async (req, res) => {
         const userId = sessions.get(sessionId);
 
         if (!userId) {
+
             return res.status(401).json({
                 success: false,
                 message: "ログインしてください"
             });
+
         }
 
 
         // ==============================
-        // きんのあめを1個消費して
+        // あめを1個消費して
         // かちこしを+1
         // ==============================
 
@@ -179,12 +210,12 @@ app.post("/api/use-golden-candy", async (req, res) => {
             `
             UPDATE users
             SET
-                golden_candy = golden_candy - 1,
+                ${candyColumn} = ${candyColumn} - 1,
                 win_diff = win_diff + 1
             WHERE user_id = $1
-              AND golden_candy > 0
+              AND ${candyColumn} > 0
               AND win_diff < 0
-            RETURNING golden_candy, win_diff
+            RETURNING ${candyColumn}, win_diff
             `,
             [userId]
         );
@@ -199,32 +230,47 @@ app.post("/api/use-golden-candy", async (req, res) => {
             // 現在の状態を取得
             const userResult = await pool.query(
                 `
-                SELECT golden_candy, win_diff
+                SELECT
+                    golden_candy,
+                    magical_candy,
+                    win_diff
                 FROM users
                 WHERE user_id = $1
                 `,
                 [userId]
             );
 
+
             if (userResult.rowCount === 0) {
+
                 return res.status(404).json({
                     success: false,
                     message: "ユーザーが見つかりません"
                 });
+
             }
+
 
             const user = userResult.rows[0];
 
 
-            if (user.golden_candy <= 0) {
+            // ==============================
+            // あめを持っていない
+            // ==============================
+
+            if (Number(user[candyColumn]) <= 0) {
 
                 return res.status(400).json({
                     success: false,
-                    message: "きんのあめを持っていません"
+                    message: `${candyName}を持っていません`
                 });
 
             }
 
+
+            // ==============================
+            // かちこしがマイナスではない
+            // ==============================
 
             if (user.win_diff >= 0) {
 
@@ -238,29 +284,28 @@ app.post("/api/use-golden-candy", async (req, res) => {
 
             return res.status(400).json({
                 success: false,
-                message: "きんのあめを使えません"
+                message: `${candyName}を使えません`
             });
 
         }
-
-
-        const user = result.rows[0];
 
 
         // ==============================
         // 成功
         // ==============================
 
+        const user = result.rows[0];
+
         res.json({
             success: true,
-            goldenCandy: user.golden_candy,
+            candy: user[candyColumn],
             winDiff: user.win_diff
         });
 
 
     } catch (error) {
 
-        console.error("きんのあめ使用エラー:", error);
+        console.error("あめ使用エラー:", error);
 
         res.status(500).json({
             success: false,
