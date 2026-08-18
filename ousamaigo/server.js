@@ -345,23 +345,28 @@ room.turn = "black";
     });
 
     // 参加する
-    socket.on("joinRoom", id => {
+socket.on("joinRoom", data => {
 
-        const room = rooms.find(r => r.roomId === id);
+    const room = rooms.find(r => r.roomId === data.id);
 
-        if (!room) return;
+    if (!room) return;
 
-socket.join(room.roomId);
-console.log(io.sockets.adapter.rooms.get(room.roomId));
-const hostSocket = io.sockets.sockets.get(room.hostId);
-hostSocket?.join(room.roomId);
+    room.guestLevel = data.level;
 
-// ランダムで色を決める
-const hostColor = Math.random() < 0.5 ? "black" : "white";
-const guestColor = hostColor === "black" ? "white" : "black";
+    socket.join(room.roomId);
 
-// それぞれに違う情報を送る
-room.lastUpdate=Date.now()+ 2000;
+    console.log(io.sockets.adapter.rooms.get(room.roomId));
+
+    const hostSocket = io.sockets.sockets.get(room.hostId);
+    hostSocket?.join(room.roomId);
+
+    // ランダムで色を決める
+    const hostColor = Math.random() < 0.5 ? "black" : "white";
+    const guestColor = hostColor === "black" ? "white" : "black";
+
+    // それぞれに違う情報を送る
+    room.lastUpdate = Date.now() + 2000;
+
     // ★ 募集中から削除
     rooms = rooms.filter(r => r.roomId !== room.roomId);
 
@@ -371,18 +376,24 @@ room.lastUpdate=Date.now()+ 2000;
     // 募集一覧を更新
     io.emit("roomList", rooms);
 
-hostSocket?.emit("startGame", {
-    roomId: room.roomId,
-    size: room.size,
-    color: hostColor
-});
-
-socket.emit("startGame", {
-    roomId: room.roomId,
-    size: room.size,
-    color: guestColor
-});
+    hostSocket?.emit("startGame", {
+        roomId: room.roomId,
+        size: room.size,
+        color: hostColor,
+        mylv: room.level,
+        enlv: room.guestLevel
     });
+
+    socket.emit("startGame", {
+        roomId: room.roomId,
+        size: room.size,
+        color: guestColor,
+        mylv: room.guestLevel,
+        enlv: room.level
+    });
+
+});
+});
 
     // 切断
 socket.on("disconnect", () => {
