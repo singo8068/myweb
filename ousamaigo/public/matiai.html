@@ -62,11 +62,11 @@ input,select{
 <div id="userStatus"></div>
 
 <div>
-おおきさ
+//おおきさ
 
-<select id="size">
-<option value="9">９×９</option>
-</select>
+//<select id="size">
+//<option value="9">９×９</option>
+//</select>
 <button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
 <button id="cancelBtn" onclick="cancelRoom()" disabled>ぼしゅうをやめる</button>
 </div>
@@ -159,10 +159,17 @@ function createRoom(){
     document.getElementById("createBtn").disabled = true;
     document.getElementById("cancelBtn").disabled = false;
 
-socket.emit("createRoom", {
-    name: currentUser ? currentUser.userId : "ゲスト",
-    size: Number(document.getElementById("size").value)
-});
+    // ゲストのレベルをCookieから取得
+    let guestLevel = Number(getCookie("level"));
+
+    if (!guestLevel || Number.isNaN(guestLevel)) {
+        guestLevel = 1;
+    }
+
+    socket.emit("createRoom", {
+        name: currentUser ? currentUser.userId : "ゲスト",
+        level: currentUser ? currentUser.level : guestLevel
+    });
 }
 
 function joinRoom(id){
@@ -179,7 +186,8 @@ socket.on("startGame", room => {
     document.getElementById("cancelBtn").disabled = true;
 
     location.href =
-`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}&maji=true`;
+//`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}&maji=true`;
+ `hutari.html?size=9&room=${room.roomId}&color=${room.color}&maji=true`;
 
 });
 
@@ -208,7 +216,9 @@ socket.on("roomList", rooms => {
         div.innerHTML = `
             <div>
                 ${room.name}：
-                ${room.size}×${room.size}
+                レベル
+                ${room.level}
+                //${room.size}×${room.size}
                 ${buttonHtml}
             </div>
         `;
