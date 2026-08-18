@@ -75,6 +75,7 @@ const socket=io();
 const roomsDiv=document.getElementById("rooms");
 let waiting = false;
 let currentUser = null;
+let myLevel = 1;
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -101,13 +102,16 @@ async function loadUserInfo() {
 
             // ゲスト用Cookieを使用
 let level = Number(getCookie("level"));
-let winDiff = Number(getCookie("winDiff"));
 
 if (!level || Number.isNaN(level)) {
     level = 1;
     document.cookie =
         "level=1; max-age=31536000; path=/";
 }
+
+myLevel = level;
+
+let winDiff = Number(getCookie("winDiff"));
 
 if (Number.isNaN(winDiff)) {
     winDiff = 0;
@@ -130,7 +134,7 @@ if (Number.isNaN(winDiff)) {
 
 const user = data.user;
 currentUser = user;
-
+myLevel = user.level;
         // Neonから取得した情報を表示
         document.getElementById("userStatus").innerHTML =
             `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　
@@ -165,21 +169,17 @@ function createRoom(){
     document.getElementById("createBtn").disabled = true;
     document.getElementById("cancelBtn").disabled = false;
 
-    // ゲストのレベルをCookieから取得
-    let guestLevel = Number(getCookie("level"));
-
-    if (!guestLevel || Number.isNaN(guestLevel)) {
-        guestLevel = 1;
-    }
-
     socket.emit("createRoom", {
         name: currentUser ? currentUser.userId : "ゲスト",
-        level: currentUser ? currentUser.level : guestLevel
+        level: currentUser ? currentUser.level : myLevel
     });
 }
 
 function joinRoom(id){
-    socket.emit("joinRoom",id);
+    socket.emit("joinRoom", {
+        id: id,
+        level: myLevel
+});
 }
 
 socket.on("startGame", room => {
@@ -192,8 +192,12 @@ socket.on("startGame", room => {
     document.getElementById("cancelBtn").disabled = true;
 
     location.href =
-//`hutari.html?size=${room.size}&room=${room.roomId}&color=${room.color}&maji=true`;
- `hutari.html?size=9&room=${room.roomId}&color=${room.color}&maji=true`;
+        `hutari.html?size=${room.size}` +
+        `&room=${room.roomId}` +
+        `&color=${room.color}` +
+        `&maji=true` +
+        `&mylv=${room.mylv}` +
+        `&enlv=${room.enlv}`;
 
 });
 
