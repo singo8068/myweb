@@ -56,13 +56,20 @@ input,select{
 <h2>ショップ</h2>
 
 <div id="userStatus"></div>
-<button id="buyGemBtn">ジェムをかう</button>
+
 <div>
     <button id="useGoldenCandyBtn">きんのあめをつかう</button>
 </div>
 <div>
+    <button id="useMagicCandyBtn">まほうのあめをつかう</button>
+</div>
+<br>
+<div>
     <button id="buyGoldenCandyBtn">きんのあめをかう</button>
 </div>
+<br>
+<button id="buyGemBtn">ジェムをかう</button>
+
 <div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -199,34 +206,50 @@ document.getElementById("buyGoldenCandyBtn").addEventListener("click", async () 
 
 });
 
-document.getElementById("useGoldenCandyBtn").addEventListener("click", async () => {
+document.getElementById("useGoldenCandyBtn").addEventListener("click", () => {
+    useCandy("golden");
+});
+
+document.getElementById("useMagicCandyBtn").addEventListener("click", () => {
+    useCandy("magic");
+});
+
+async function useCandy(type) {
 
     try {
 
-        const response = await fetch("/api/use-golden-candy", {
-            method: "POST"
+        const response = await fetch("/api/use-candy", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                type: type
+            })
         });
 
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            alert(data.message || "きんのあめを使えませんでした");
+            alert(data.message || "あめを使えませんでした");
             return;
         }
 
-        alert("きんのあめを1個使いました！");
+        if (type === "golden") {
+            alert("きんのあめを1個使いました！");
+        } else if (type === "magic") {
+            alert("まほうのあめを1個使いました！");
+        }
 
         loadUserInfo();
 
     } catch (error) {
 
         console.error(error);
-
-        alert("きんのあめの使用処理に失敗しました");
+        alert("あめの使用処理に失敗しました");
 
     }
-
-});
+}
 
 </script>
 
