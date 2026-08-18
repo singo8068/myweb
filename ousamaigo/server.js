@@ -393,7 +393,6 @@ socket.on("joinRoom", data => {
     });
 
 });
-});
 
     // 切断
 socket.on("disconnect", () => {
