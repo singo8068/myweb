@@ -8,8 +8,27 @@ async function initBoard() {
   currentPlayer = "black";
   blackKing = null;
   whiteKing = null;
-  blackTame=0;
-  whiteTame=1;
+  
+  if (LVDIF===0){blackTame=0;whiteTame=1;}else{whiteTame=0;}
+  if (LVDIF===1)blackTame=0;
+  if (LVDIF===2)blackTame=1;
+  if (LVDIF===3)blackTame=0;
+  if (LVDIF===4)blackTame=1;
+  if (LVDIF===5)blackTame=0;
+  if (LVDIF===6)blackTame=1;
+  if (LVDIF===7)blackTame=0;
+  if (LVDIF===8)blackTame=1;
+  if (LVDIF===9)blackTame=0;
+  if (LVDIF>9)blackTame=1;
+  if (LVDIF>2){
+   currentPlayer = "white";
+   blackKing = { x: 5, y: 5 };
+   board[5][3] = black;
+  }
+  if (LVDIF>4)board[5][7] = black;
+  if (LVDIF>6)board[3][5] = black;
+  if (LVDIF>8)board[7][5] = black;
+
   blackTime = 60000; 
   whiteTime = 60000;
   updateDisplay();
@@ -20,7 +39,7 @@ if (ISNET) {
         myColor === "black"
             ? "きみは●くろ●だよ！"
             : "きみは〇しろ〇だよ！",
-        2000
+        3000
     );
 }
 }
