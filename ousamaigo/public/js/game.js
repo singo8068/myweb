@@ -88,6 +88,7 @@ if (changeTurn) {
 function updateTurnControls() {
     if (!ISNET) {
         document.getElementById("mainControls").style.display = "block";
+        uemsg = "のばんだよ";
         return;
     }
 
@@ -151,7 +152,7 @@ if (point && gameMode === "main") {
         turnDisplay.appendChild(document.createTextNode(uemsg));
     } 
 }
- if (!ISNET)uemsg="はそこにはうてないよ";
+
  if (ISNET && currentPlayer === myColor)uemsg="はそこにはうてないよ";
 
 
