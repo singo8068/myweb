@@ -61,6 +61,7 @@ const SIZE = Number(params.get("size")) || 9;
 const MAJI = params.get("maji") === "true";
 const MYLV = Number(params.get("mylv")) || 1;
 const ENLV = Number(params.get("enlv")) || 1;
+const LVDIF = Math.abs(MYLV - ENLV);
 
 let roomId = params.get("room");
 let myColor = params.get("color");
