@@ -2,12 +2,11 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
+const crypto = require("crypto");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const crypto = require("crypto");
-const bcrypt = require("bcrypt");
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const BYOYOMI_ADD = 10000;
@@ -38,212 +37,11 @@ app.use(
 app.use(express.json());
 require("./stripe")(app, stripe, pool, sessions);
 require("./shop")(app, pool, sessions);
+require("./login")(app, pool, sessions);
 
 app.use(express.static("public", {
     index: false
 }));
-app.post("/api/register", async (req, res) => {
-
-    const { user_id, password } = req.body;
-
-    if (!user_id || !password) {
-        return res.json({
-            success: false,
-            message: "IDとパスワードを入力してください"
-        });
-    }
-
-    try {
-
-        // 同じIDがあるか確認
-        const check = await pool.query(
-            "SELECT id FROM users WHERE user_id = $1",
-            [user_id]
-        );
-
-        if (check.rows.length > 0) {
-            return res.json({
-                success: false,
-                message: "そのIDはすでに使われています"
-            });
-        }
-
-        // パスワードをハッシュ化
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 会員登録
-        await pool.query(
-            `INSERT INTO users
-            (user_id, password_hash, level, win_diff, gems, magical_candy, candy_fragments, golden_candy)
-            VALUES ($1, $2, 3, 0, 0, 0, 0, 0)`,
-            [user_id, hashedPassword]
-        );
-
-        console.log("会員登録:", user_id);
-
-        res.json({
-            success: true,
-            message: "会員登録が完了しました"
-        });
-
-    } catch (err) {
-
-        console.error("会員登録エラー:", err);
-
-        res.status(500).json({
-            success: false,
-            message: "登録中にエラーが発生しました"
-        });
-
-    }
-
-});
-app.post("/api/login", async (req, res) => {
-
-    const { user_id, password } = req.body;
-
-    if (!user_id || !password) {
-        return res.json({
-            success: false,
-            message: "IDとパスワードを入力してください"
-        });
-    }
-
-    try {
-
-        // IDを検索
-        const result = await pool.query(
-            "SELECT * FROM users WHERE user_id = $1",
-            [user_id]
-        );
-
-        // IDが存在しない
-        if (result.rows.length === 0) {
-            return res.status(401).json({
-                success: false,
-                message: "IDまたはパスワードが違います"
-            });
-        }
-
-        const user = result.rows[0];
-
-        // パスワード確認
-        const passwordMatch = await bcrypt.compare(
-            password,
-            user.password_hash
-        );
-
-        if (!passwordMatch) {
-            return res.status(401).json({
-                success: false,
-                message: "IDまたはパスワードが違います"
-            });
-        }
-
-        // セッションIDを作成
-        const sessionId = crypto.randomBytes(32).toString("hex");
-
-        // サーバー側に保存
-        sessions.set(sessionId, user.user_id);
-
-        // CookieにセッションIDだけ保存
-        res.setHeader(
-            "Set-Cookie",
-            `sessionId=${sessionId}; HttpOnly; Secure; SameSite=Lax; Path=/`
-        );
-
-        console.log("ログイン:", user.user_id);
-
-        // ログイン成功
-        res.json({
-            success: true,
-            message: "ログイン成功"
-        });
-
-    } catch (error) {
-
-        console.error("ログインエラー:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "ログイン中にエラーが発生しました"
-        });
-    }
-});
-app.get("/api/me", async (req, res) => {
-
-    try {
-
-        const cookie = req.headers.cookie || "";
-
-        const match = cookie.match(/(?:^|;\s*)sessionId=([^;]+)/);
-
-        if (!match) {
-            return res.status(401).json({
-                success: false,
-                message: "ログインしていません"
-            });
-        }
-
-        const sessionId = match[1];
-
-        // セッションIDからユーザーIDを取得
-        const userId = sessions.get(sessionId);
-
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                message: "ログインしていません"
-            });
-        }
-
-        // Neonから最新データを取得
-        const result = await pool.query(
-            `SELECT
-                user_id,
-                level,
-                win_diff,
-                gems,
-                magical_candy,
-                candy_fragments,
-                golden_candy
-             FROM users
-             WHERE user_id = $1`,
-            [userId]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(401).json({
-                success: false,
-                message: "ユーザーが見つかりません"
-            });
-        }
-
-        const user = result.rows[0];
-
-        res.json({
-            success: true,
-            user: {
-                userId: user.user_id,
-                level: user.level,
-                winDiff: user.win_diff,
-                gems: user.gems,
-                magicalCandy: user.magical_candy,
-                candyFragments: user.candy_fragments,
-                goldenCandy: user.golden_candy
-            }
-        });
-
-    } catch (error) {
-
-        console.error("ユーザー情報取得エラー:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "ユーザー情報の取得に失敗しました"
-        });
-    }
-});
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "matiai.html"));
 });
@@ -360,12 +158,31 @@ socket.on("joinRoom", data => {
     const hostSocket = io.sockets.sockets.get(room.hostId);
     hostSocket?.join(room.roomId);
 
-    // ランダムで色を決める
-    const hostColor = Math.random() < 0.5 ? "black" : "white";
-    const guestColor = hostColor === "black" ? "white" : "black";
+// 色を決める
+let hostColor;
+let guestColor;
+
+if (room.level === room.guestLevel) {
+
+    // レベルが同じならランダム
+    hostColor = Math.random() < 0.5 ? "black" : "white";
+    guestColor = hostColor === "black" ? "white" : "black";
+
+} else {
+
+    // レベルが低い方を黒にする
+    if (room.level < room.guestLevel) {
+        hostColor = "black";
+        guestColor = "white";
+    } else {
+        hostColor = "white";
+        guestColor = "black";
+    }
+
+}
 
     // それぞれに違う情報を送る
-    room.lastUpdate = Date.now() + 2000;
+    room.lastUpdate = Date.now() + 3000;
 
     // ★ 募集中から削除
     rooms = rooms.filter(r => r.roomId !== room.roomId);
@@ -417,10 +234,6 @@ const gameEvents = [
 gameEvents.forEach(eventName => {
     socket.on(eventName, data => {
 const room = gameRooms.find(r => r.roomId === data.roomId);
-//console.log("Serverが受信");
-//console.log("data.roomId =", data.roomId);
-//console.log("gameRooms =", gameRooms);
-//console.log("room =", room);
         sendGameData(socket, room,eventName, data);
     });
 });
