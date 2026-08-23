@@ -150,6 +150,7 @@ socket.on("joinRoom", data => {
     if (!room) return;
 
     room.guestLevel = data.level;
+    room.hostLevel = room.level;
 
     socket.join(room.roomId);
 
@@ -251,7 +252,9 @@ socket.on("gameEnd", data => {
     if (!room) return;
 
     io.to(room.roomId).emit("gameEnd", {
-        winner: data.winner
+        winner: data.winner,
+        hostLevel: room.hostLevel,
+        guestLevel: room.guestLevel
     });
 });
 });
