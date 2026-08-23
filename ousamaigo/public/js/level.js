@@ -29,47 +29,63 @@ socket.on("gameEnd", data => {
     let winDiff = Number(getCookie("winDiff")) || 0;
     let level = Number(getCookie("level")) || 1;
 
-    if (data.winner === myColor) {
-        winDiff++;
-        console.log("勝ち +1", winDiff);
-    } else {
-        if (level > 3 || winDiff > 0) {
-            winDiff--;
-            console.log("負け -1", winDiff);
+    // 相手とのレベル差
+const params = new URLSearchParams(location.search);
+const opponentLevel = Number(params.get("enlv")) || level;
+const levelDiff = Math.abs(level - opponentLevel);
+
+    // レベル差が3以上なら勝ち越しに影響させない
+
+    if (levelDiff < 3||level<=2) {
+        if (data.winner === myColor) {
+            winDiff++;
+            console.log("勝ち +1", winDiff);
+        } else {
+            if (level > 3 || winDiff > 0) {
+                winDiff--;
+                console.log("負け -1", winDiff);
+            }
         }
+    } else {
+        console.log(
+            `レベル差${levelDiff}のため、勝ち越し変動なし`
+        );
     }
 
     const rule = LEVEL_RULES[level];
 
-  if(level<9){
-    // レベルアップ
-    if (rule.up !== null && winDiff >= rule.up) {
-        level++;
-        winDiff = 0;
-        console.log("レベルアップ！", level);
-    }
+    if (level < 9) {
 
-    // レベルダウン
-    if (rule.down !== null && winDiff <= -rule.down) {
-        level--;
-        winDiff = 0;
-        console.log("レベルダウン！", level);
-    }
-  }else{
-    // レベルアップ
-    if (winDiff >= level-3) {
-        level++;
-        winDiff = 0;
-        console.log("レベルアップ！", level);
-    }
+        // レベルアップ
+        if (rule.up !== null && winDiff >= rule.up) {
+            level++;
+            winDiff = 0;
+            console.log("レベルアップ！", level);
+        }
 
-    // レベルダウン
-    if (winDiff <= -4) {
-        level--;
-        winDiff = 0;
-        console.log("レベルダウン！", level);
+        // レベルダウン
+        if (rule.down !== null && winDiff <= -rule.down) {
+            level--;
+            winDiff = 0;
+            console.log("レベルダウン！", level);
+        }
+
+    } else {
+
+        // レベルアップ
+        if (winDiff >= level - 3) {
+            level++;
+            winDiff = 0;
+            console.log("レベルアップ！", level);
+        }
+
+        // レベルダウン
+        if (winDiff <= -4) {
+            level--;
+            winDiff = 0;
+            console.log("レベルダウン！", level);
+        }
     }
-  }
 
     document.cookie =
         `level=${level}; max-age=31536000; path=/`;
