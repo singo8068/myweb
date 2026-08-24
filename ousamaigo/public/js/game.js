@@ -364,9 +364,10 @@ if(ISNET){
  effectDiv.style.opacity = "0.7";
 
  document.getElementById("mainControls").style.display = "none";
- document.getElementById("saigoControls").style.display = "block";
+ if (!ISNET)document.getElementById("saigoControls").style.display = "block";
  gameNow=false;
 if (ISNET && sendGameEnd) {
+backMenu.style.display = "block";
     socket.emit("gameEnd", {
         roomId,
         winner: isBlackWin ? "black" : "white"
