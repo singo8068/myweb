@@ -115,7 +115,7 @@ if (typeof levelInfo !== "undefined") {
 
 const resultDiff = winDiff - oldWinDiff;
 
-const diffText = resultDiff > 0
+const diffText = resultDiff >= 0
     ? `＋${resultDiff}`
     : `${resultDiff}`;
 
@@ -123,13 +123,13 @@ levelInfo.innerHTML =
     `レベル${oldLevel}　かちこし${oldWinDiff}${diffText}＝${winDiff}`;
 
 if (level > oldLevel) {
-    levelInfo.innerHTML +=
+    levelInfo.innerHTML =
         `<br>レベル${level}にアップ！`;
 }
 
         // レベルダウン
         if (level < oldLevel) {
-            levelInfo.innerHTML +=
+            levelInfo.innerHTML =
                 `<br>レベル${level}にダウン`;
         }
 
