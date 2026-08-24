@@ -8,6 +8,7 @@
 <body>
 
 <a id="backMenu" href="index.html">メインメニューにもどる</a>
+<a id="backMati" href="matiai.html">まちあいしつにもどる</a>
 <div id="levelInfo" style="display:none;"></div>
 <div>
   <span id="turn"></span>
@@ -70,7 +71,9 @@ const colmoji = myColor === "black" ? "くろ" : "しろ";
 const ISNET = !!roomId;
 
 const backMenu = document.getElementById("backMenu");
+const backMati = document.getElementById("backMati");
 const levelInfo = document.getElementById("levelInfo");
+backMati.style.display = "none";
 if (ISNET) {
     backMenu.style.display = "none";
 
