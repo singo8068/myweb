@@ -24,34 +24,42 @@ function getCookie(name) {
 }
 
 socket.on("gameEnd", data => {
+
     console.log("勝敗受信", data);
 
     let winDiff = Number(getCookie("winDiff")) || 0;
     let level = Number(getCookie("level")) || 1;
 
+    // 対戦前のレベルを保存
+    const oldLevel = level;
+const oldWinDiff = winDiff;
+
     // 相手とのレベル差
-const params = new URLSearchParams(location.search);
-const opponentLevel = Number(params.get("enlv")) || level;
-const levelDiff = Math.abs(level - opponentLevel);
+    const params = new URLSearchParams(location.search);
+    const opponentLevel = Number(params.get("enlv")) || level;
+    const levelDiff = Math.abs(level - opponentLevel);
 
-    // レベル差が3以上なら勝ち越しに影響させない
+    // 勝ち越し変動
+    if (levelDiff < 3 || level <= 2) {
 
-    if (levelDiff < 3||level<=2) {
         if (data.winner === myColor) {
             winDiff++;
             console.log("勝ち +1", winDiff);
+
         } else {
             if (level > 3 || winDiff > 0) {
                 winDiff--;
                 console.log("負け -1", winDiff);
             }
         }
+
     } else {
         console.log(
             `レベル差${levelDiff}のため、勝ち越し変動なし`
         );
     }
 
+    // レベル判定
     const rule = LEVEL_RULES[level];
 
     if (level < 9) {
@@ -87,6 +95,7 @@ const levelDiff = Math.abs(level - opponentLevel);
         }
     }
 
+    // Cookie更新
     document.cookie =
         `level=${level}; max-age=31536000; path=/`;
 
@@ -95,4 +104,35 @@ const levelDiff = Math.abs(level - opponentLevel);
 
     console.log("現在レベル", level);
     console.log("現在かちこし", winDiff);
+
+
+    // =========================
+    // 対戦後のレベル表示
+    // =========================
+
+if (typeof levelInfo !== "undefined") {
+
+
+const resultDiff = winDiff - oldWinDiff;
+
+const diffText = resultDiff > 0
+    ? `＋${resultDiff}`
+    : `${resultDiff}`;
+
+levelInfo.innerHTML =
+    `レベル${oldLevel}　かちこし${oldWinDiff}${diffText}＝${winDiff}`;
+
+if (level > oldLevel) {
+    levelInfo.innerHTML +=
+        `<br>レベル${level}にアップ！`;
+}
+
+        // レベルダウン
+        if (level < oldLevel) {
+            levelInfo.innerHTML +=
+                `<br>レベル${level}にダウン`;
+        }
+
+        levelInfo.style.display = "block";
+    }
 });
