@@ -175,12 +175,18 @@ if (room.level === room.guestLevel) {
     if (room.level < room.guestLevel) {
         hostColor = "black";
         guestColor = "white";
+
     } else {
         hostColor = "white";
         guestColor = "black";
     }
-
+    // レベル差が3以上なら白番から開始
+    if (Math.abs(room.level - room.guestLevel) > 2) {
+        room.turn = "white";
+    }
 }
+
+
 
     // それぞれに違う情報を送る
     room.lastUpdate = Date.now() + 3000;
@@ -265,15 +271,14 @@ socket.on("restoreGame", ({ roomId }) => {
 
     socket.join(room.roomId);
 
-    socket.emit("restoreGame", {
-        board: room.board,
-        currentPlayer: room.currentPlayer,
-        blackTime: room.blackTime,
-        whiteTime: room.whiteTime,
-        turn: room.turn,
-        hostLevel: room.hostLevel,
-        guestLevel: room.guestLevel
-    });
+socket.emit("restoreGame", {
+    gameState: room.gameState,
+    blackTime: room.blackTime,
+    whiteTime: room.whiteTime,
+    turn: room.turn,
+    hostLevel: room.hostLevel,
+    guestLevel: room.guestLevel
+});
 });
 socket.on("gameEnd", data => {
     const room = gameRooms.find(r => r.roomId === data.roomId);
