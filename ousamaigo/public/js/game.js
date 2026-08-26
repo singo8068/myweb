@@ -650,3 +650,16 @@ undoBtn.addEventListener("click", () => {
 
 }
 
+
+function saveState() {
+    undoHistory.push({
+        board: board.map(row => [...row]),
+        drawBoard: drawBoard.map(row => [...row]),
+        currentPlayer: currentPlayer,
+        blackKing: blackKing ? { ...blackKing } : null,
+        whiteKing: whiteKing ? { ...whiteKing } : null,
+        blackTame: blackTame,
+        whiteTame: whiteTame
+    });
+}
+
