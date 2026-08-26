@@ -260,26 +260,31 @@ socket.on("kousan", data => {
     });
 });
 
-socket.on("restoreGame", ({ roomId }) => {
+socket.on("restoreGame", ({ roomId }, callback) => {
+
+    console.log("restoreGame受信", roomId);
 
     const room = gameRooms.find(r => r.roomId === roomId);
 
-    if (!room) {
-        socket.emit("restoreFailed");
+    if (!room || !room.gameState) {
+        callback({
+            exists: false
+        });
         return;
     }
 
-    socket.join(room.roomId);
+    callback({
+        exists: true,
+        gameState: room.gameState,
+        blackTime: room.blackTime,
+        whiteTime: room.whiteTime,
+        turn: room.turn,
+        hostLevel: room.hostLevel,
+        guestLevel: room.guestLevel
+    });
 
-socket.emit("restoreGame", {
-    gameState: room.gameState,
-    blackTime: room.blackTime,
-    whiteTime: room.whiteTime,
-    turn: room.turn,
-    hostLevel: room.hostLevel,
-    guestLevel: room.guestLevel
 });
-});
+
 socket.on("gameEnd", data => {
     const room = gameRooms.find(r => r.roomId === data.roomId);
     if (!room) return;
