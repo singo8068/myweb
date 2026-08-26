@@ -23,11 +23,11 @@ async function initBoard() {
   if (LVDIF>2){
    currentPlayer = "white";
    blackKing = { x: 5, y: 5 };
-   board[5][3] = black;
+   board[5][3] = "black";
   }
-  if (LVDIF>4)board[5][7] = black;
-  if (LVDIF>6)board[3][5] = black;
-  if (LVDIF>8)board[7][5] = black;
+  if (LVDIF>4)board[5][7] = "black";
+  if (LVDIF>6)board[3][5] = "black";
+  if (LVDIF>8)board[7][5] = "black";
 
   blackTime = 60000; 
   whiteTime = 60000;
