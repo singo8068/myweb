@@ -1,4 +1,60 @@
 async function initBoard() {
+
+console.log("initBoard", {
+    SIZE,
+    LVDIF,
+    ISNET,
+    myColor
+});
+
+    if (ISNET) {
+
+        const data = await new Promise(resolve => {
+            socket.emit("restoreGame", { roomId }, resolve);
+        });
+
+        if (data.exists) {
+
+            console.log("途中のゲームを復元します");
+
+            const state = data.gameState;
+
+            board = state.board.map(row => [...row]);
+            drawBoard = state.drawBoard.map(row => [...row]);
+
+            currentPlayer = state.currentPlayer;
+
+            blackKing = state.blackKing
+                ? { ...state.blackKing }
+                : null;
+
+            whiteKing = state.whiteKing
+                ? { ...state.whiteKing }
+                : null;
+
+            blackTame = state.blackTame;
+            whiteTame = state.whiteTame;
+
+            blackTime = data.blackTime;
+            whiteTime = data.whiteTime;
+
+            undoHistory = [state];
+
+            gameNow = true;
+
+            updateForbiddenPoints();
+            updateDisplay();
+            draw();
+            updateTurnControls();
+
+            console.log("復元完了");
+
+            return;
+        }
+
+        console.log("途中状態なし → 通常の初期化");
+    }
+
   undoHistory = [];
   document.getElementById("mainControls").style.display = "block";
   document.getElementById("saigoControls").style.display = "none";
@@ -22,8 +78,10 @@ async function initBoard() {
   if (LVDIF>9)blackTame=1;
   if (LVDIF>2){
    currentPlayer = "white";
+   board[5][5] = "black";
    blackKing = { x: 5, y: 5 };
    board[5][3] = "black";
+console.log("置き石した", board[5][3]);
   }
   if (LVDIF>4)board[5][7] = "black";
   if (LVDIF>6)board[3][5] = "black";
@@ -33,6 +91,7 @@ async function initBoard() {
   whiteTime = 60000;
   updateDisplay();
   updateForbiddenPoints();
+console.log("draw前", board);
   draw();
   saveState();
 if (ISNET) {
