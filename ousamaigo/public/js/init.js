@@ -34,6 +34,7 @@ async function initBoard() {
   updateDisplay();
   updateForbiddenPoints();
   draw();
+  saveState();
 if (ISNET) {
     await showEffectText(
         myColor === "black"

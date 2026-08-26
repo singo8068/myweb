@@ -1,82 +1,143 @@
-
-
-async function placeStone(x, y, fromNetwork = false, changeTurn = true,stoneColor = currentPlayer){
+async function placeStone(
+  x,
+  y,
+  fromNetwork = false,
+  changeTurn = true,
+  stoneColor = currentPlayer
+) {
   if (board[y][x] !== null) return false;
-  if (gameMode === "main") {saveState();}
+
+  if (
+    gameMode === "main" &&
+    !hasLiberties(x, y, stoneColor, {})
+  ) {
+    uemsg = "はそこにはうてないよ";
+    return false;
+  }
 
   board[y][x] = stoneColor;
 
-  if (!blackKing && stoneColor === "black") blackKing = { x, y };
-  if (!whiteKing && stoneColor === "white") whiteKing = { x, y };
+  if (!blackKing && stoneColor === "black") {
+    blackKing = { x, y };
+  }
 
- if (gameMode === "pawa") {
-if (ISNET && fromNetwork)console.log("受信パワー", roomId, x, y);
-  let extraStone = null;
-  let singleCaptureCount = 0;
-  for (let [nx, ny] of getNeighbors(x, y)) {
-    const target = board[ny][nx];
-    if (target && target !== stoneColor) {
+  if (!whiteKing && stoneColor === "white") {
+    whiteKing = { x, y };
+  }
+
+  // =========================
+  // パワーうち
+  // =========================
+  if (gameMode === "pawa") {
+
+    if (ISNET && fromNetwork) {
+      console.log("受信パワー", roomId, x, y);
+    }
+
+    let extraStone = null;
+    let singleCaptureCount = 0;
+
+    for (let [nx, ny] of getNeighbors(x, y)) {
+
+      const target = board[ny][nx];
+
+      if (target && target !== stoneColor) {
+
         const pos = removeDead(nx, ny, target);
+
         if (pos) {
-            singleCaptureCount++;
-            extraStone = pos;
+          singleCaptureCount++;
+          extraStone = pos;
         }
+      }
+    }
+
+    // 1個だけ取った場合は、取った場所にも置く
+    if (singleCaptureCount === 1) {
+      const [rx, ry] = extraStone;
+      board[ry][rx] = stoneColor;
     }
   }
- if (singleCaptureCount === 1) {
-    const [rx, ry] = extraStone;
-    board[ry][rx] = stoneColor;
- }
-}
 
+  // =========================
+  // 自殺手チェック
+  // =========================
   if (!hasLiberties(x, y, stoneColor, {})) {
     board[y][x] = null;
     return false;
   }
 
-  const enemy = stoneColor === "black" ? "white" : "black";
+  const enemy =
+    stoneColor === "black" ? "white" : "black";
 
+  // =========================
+  // 通常の石取り
+  // =========================
   for (const [nx, ny] of getNeighbors(x, y)) {
+
     if (board[ny][nx] === enemy) {
-        removeDead(nx, ny, enemy);
+      removeDead(nx, ny, enemy);
     }
-}
+  }
 
   if (!gameNow) return false;
 
-if (gameMode === "main") {
+  // =========================
+  // 状態保存
+  // =========================
+  saveState();
+
+  // =========================
+  // ネット送信
+  // =========================
+  if (gameMode === "main") {
+
     if (ISNET && !fromNetwork) {
-console.log("送信", roomId, x, y);
-        socket.emit("putStone", {
-            roomId,
-            x,
-            y,
-    color: currentPlayer
-        });
+
+      console.log("送信", roomId, x, y);
+
+      socket.emit("putStone", {
+        roomId,
+        x,
+        y,
+        color: stoneColor,
+        gameState: undoHistory[undoHistory.length - 1]
+      });
     }
+
     if (changeTurn && !ISNET) {
-        playerChange();
+      playerChange();
     }
-}
-if (gameMode === "pawa") {
+  }
+
+  // =========================
+  // パワー送信
+  // =========================
+  if (gameMode === "pawa") {
+
     if (ISNET && !fromNetwork) {
-console.log("ぱわ送信", roomId, x, y);
-        socket.emit("pawa", {
-            roomId,
-            x,
-            y,
-    color: currentPlayer
-        });
+
+      console.log("ぱわ送信", roomId, x, y);
+
+      socket.emit("pawa", {
+        roomId,
+        x,
+        y,
+        color: stoneColor,
+        gameState: undoHistory[undoHistory.length - 1]
+      });
     }
+
     if (!fromNetwork) {
-        await showEffectText("パワーうち\nはつどう！", 1500);
+      await showEffectText("パワーうち\nはつどう！", 1500);
     }
-if (changeTurn) {
-    if (!ISNET) {
+
+    if (changeTurn) {
+      if (!ISNET) {
         playerChange();
+      }
     }
-}
-}
+  }
 
   updateForbiddenPoints();
   updateDisplay();
@@ -153,13 +214,11 @@ if (point && gameMode === "main") {
     } 
 }
 
- if (ISNET && currentPlayer === myColor)uemsg="はそこにはうてないよ";
 
 
   if (point && gameMode === "pawa" &&
      (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
-    saveState();
     pawatorisu=0;
     placeStone(point.x, point.y,false,false);
     draw();
@@ -171,25 +230,14 @@ if (!ISNET) {
     playerChange();
 }
     updateDisplay();
-
   }
 
 if (point && gameMode === "osero" &&
     (drawBoard[point.y][point.x] === "kouho_black" ||
      drawBoard[point.y][point.x] === "kouho_white")
 ) {
-    saveState();
 
     const reverseColor = currentPlayer;
-
-    if (ISNET) {
-        socket.emit("reverse", {
-            roomId,
-            x: point.x,
-            y: point.y,
-            color: reverseColor
-        });
-    }
 
     await showEffectText("リバース\nはつどう！", 1500);
 
@@ -203,6 +251,19 @@ if (point && gameMode === "osero" &&
     }
 
     gameMode = "main";
+
+    // リバース後の状態を保存
+    saveState();
+
+    if (ISNET) {
+        socket.emit("reverse", {
+            roomId,
+            x: point.x,
+            y: point.y,
+            color: reverseColor,
+            gameState: undoHistory[undoHistory.length - 1]
+        });
+    }
 
     // ネット対戦では playerChange() しない
     if (!ISNET) {
@@ -227,8 +288,6 @@ function tekingka(x, y, playerColor = currentPlayer) {
 passBtn.addEventListener("click", () => {
     passMove();
 });
-
-
 async function passMove(fromNetwork = false) {
     console.log("passMove実行", {
         ISNET,
@@ -237,30 +296,46 @@ async function passMove(fromNetwork = false) {
     });
 
     if (!blackKing || !whiteKing) {
-        uemsg="１てめはためれないよ";
+        uemsg = "１てめはためれないよ";
         turnDisplay.removeChild(turnDisplay.lastChild);
         turnDisplay.appendChild(document.createTextNode(uemsg));
         return;
     }
 
-    saveState();
+    const passColor = currentPlayer;
 
-    if (currentPlayer === "black") blackTame++;
-    else whiteTame++;
+    if (passColor === "black") {
+        blackTame++;
+    } else {
+        whiteTame++;
+    }
+
+    // 手番変更
+    if (!ISNET) {
+        playerChange();
+    } else {
+        currentPlayer =
+            currentPlayer === "black"
+                ? "white"
+                : "black";
+
+        updateTurnControls();
+    }
+
+    // 手番変更後の状態を保存
+    saveState();
 
     if (ISNET && !fromNetwork) {
         console.log("ためる送信", roomId);
+
         socket.emit("tameru", {
-    roomId,
-    color: currentPlayer
+            roomId,
+            color: passColor,
+            gameState: undoHistory[undoHistory.length - 1]
         });
     }
 
     await showEffectText("きあいを\nためるよ！", 1000);
-
-if (!ISNET) {
-    playerChange();
-}
 
     updateForbiddenPoints();
     updateDisplay();
@@ -268,13 +343,13 @@ if (!ISNET) {
 }
 
 
-
 resetBtn.addEventListener("click", async function () {
     if (ISNET) {
         console.log("こうさん送信", roomId);
         socket.emit("kousan", {
     roomId,
-    color: currentPlayer
+    color: currentPlayer,
+ gameState: undoHistory[undoHistory.length - 1]
         });
     }
  syouhai("こうさんで",currentPlayer === "white");
@@ -375,17 +450,8 @@ if (ISNET && sendGameEnd) {
 }
 }
 
-function saveState() {
-  undoHistory.push({
-    board: board.map(row => [...row]),
-    drawBoard: drawBoard.map(row => [...row]),
-    currentPlayer,
-    blackKing: blackKing ? { ...blackKing } : null,
-    whiteKing: whiteKing ? { ...whiteKing } : null,
-    blackTame,
-    whiteTame
-  });
-}
+	
+
 setInterval(() => {
  if(!MAJI)return;
  if(!gameNow)return;
@@ -466,19 +532,19 @@ socket.on("tameru", async data => {
         messageId: data.messageId
     });
 
-    saveState();
+
 
     if (data.color === "black") {
         blackTame++;
     } else {
         whiteTame++;
     }
-
     await showEffectText("きあいを\nためるよ！", 1000);
 
     updateForbiddenPoints();
     updateDisplay();
     draw();
+    saveState();
 });
 
 
@@ -488,7 +554,6 @@ socket.on("reverse", async data => {
     socket.emit("ack", {
         messageId: data.messageId
     });
-saveState();
     await showEffectText("リバース\nはつどう！", 1500);
 
     board[data.y][data.x] = data.color;
@@ -508,6 +573,7 @@ saveState();
     updateForbiddenPoints();
     updateDisplay();
     draw();
+saveState();
 });
 socket.on("kousan", async data => {
     console.log("受信こうさん", data);
@@ -524,27 +590,63 @@ socket.on("timeSync", data => {
     blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
     whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
 });
+socket.on("restoreGame", data => {
+
+    const state = data.gameState;
+
+    board = state.board.map(row => [...row]);
+    drawBoard = state.drawBoard.map(row => [...row]);
+    currentPlayer = state.currentPlayer;
+
+    blackKing = state.blackKing
+        ? { ...state.blackKing }
+        : null;
+
+    whiteKing = state.whiteKing
+        ? { ...state.whiteKing }
+        : null;
+
+    blackTame = state.blackTame;
+    whiteTame = state.whiteTame;
+
+    blackTime = data.blackTime;
+    whiteTime = data.whiteTime;
+
+    updateForbiddenPoints();
+    updateDisplay();
+    draw();
+});
 }
 
 if(!MAJI){
 undoBtn.addEventListener("click", () => {
-  if (undoHistory.length === 0) {
-    uemsg="まったはできないよ";
-    turnDisplay.removeChild(turnDisplay.lastChild);
-    turnDisplay.appendChild(document.createTextNode(uemsg));
-    return;
-  }
-  const lastState = undoHistory.pop();
-  board = lastState.board.map(row => [...row]);
-  drawBoard = lastState.drawBoard.map(row => [...row]);
-  currentPlayer = lastState.currentPlayer;
-  blackKing = lastState.blackKing ? { ...lastState.blackKing } : null;
-  whiteKing = lastState.whiteKing ? { ...lastState.whiteKing } : null;
-  blackTame = lastState.blackTame;
-  whiteTame = lastState.whiteTame;
-  updateForbiddenPoints();
-  updateDisplay();
-  draw();
+
+    // 初期状態しかない場合は、まったできない
+    if (undoHistory.length <= 1) {
+        uemsg = "まったはできないよ";
+        turnDisplay.removeChild(turnDisplay.lastChild);
+        turnDisplay.appendChild(document.createTextNode(uemsg));
+        return;
+    }
+
+    // 現在の状態を捨てる
+    undoHistory.pop();
+
+    // 1手前の状態を取得
+    const lastState = undoHistory[undoHistory.length - 1];
+
+    board = lastState.board.map(row => [...row]);
+    drawBoard = lastState.drawBoard.map(row => [...row]);
+    currentPlayer = lastState.currentPlayer;
+    blackKing = lastState.blackKing ? { ...lastState.blackKing } : null;
+    whiteKing = lastState.whiteKing ? { ...lastState.whiteKing } : null;
+    blackTame = lastState.blackTame;
+    whiteTame = lastState.whiteTame;
+
+    updateForbiddenPoints();
+    updateDisplay();
+    draw();
 });
+
 }
 
