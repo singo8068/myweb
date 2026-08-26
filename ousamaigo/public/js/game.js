@@ -81,6 +81,9 @@ async function placeStone(
   }
 
   if (!gameNow) return false;
+    if (changeTurn && !ISNET) {
+      playerChange();
+    }
 
   // =========================
   // 状態保存
@@ -105,9 +108,7 @@ async function placeStone(
       });
     }
 
-    if (changeTurn && !ISNET) {
-      playerChange();
-    }
+
   }
 
   // =========================
@@ -596,7 +597,9 @@ socket.on("restoreGame", data => {
 
     board = state.board.map(row => [...row]);
     drawBoard = state.drawBoard.map(row => [...row]);
-    currentPlayer = state.currentPlayer;
+
+    // サーバーの手番を正とする
+    currentPlayer = data.turn;
 
     blackKing = state.blackKing
         ? { ...state.blackKing }

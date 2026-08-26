@@ -78,20 +78,18 @@ console.log("initBoard", {
   if (LVDIF>9)blackTame=1;
   if (LVDIF>2){
    currentPlayer = "white";
-   board[5][5] = "black";
-   blackKing = { x: 5, y: 5 };
-   board[5][3] = "black";
-console.log("置き石した", board[5][3]);
+   board[4][4] = "black";
+   blackKing = { x: 4, y: 4 };
+   board[4][2] = "black";
   }
-  if (LVDIF>4)board[5][7] = "black";
-  if (LVDIF>6)board[3][5] = "black";
-  if (LVDIF>8)board[7][5] = "black";
+  if (LVDIF>4)board[4][6] = "black";
+  if (LVDIF>6)board[2][4] = "black";
+  if (LVDIF>8)board[2][4] = "black";
 
   blackTime = 60000; 
   whiteTime = 60000;
   updateDisplay();
   updateForbiddenPoints();
-console.log("draw前", board);
   draw();
   saveState();
 if (ISNET) {
