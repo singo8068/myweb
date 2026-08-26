@@ -234,8 +234,15 @@ const gameEvents = [
 ];
 gameEvents.forEach(eventName => {
     socket.on(eventName, data => {
-const room = gameRooms.find(r => r.roomId === data.roomId);
-        sendGameData(socket, room,eventName, data);
+
+        const room = gameRooms.find(r => r.roomId === data.roomId);
+        if (!room) return;
+
+        if (data.gameState) {
+            room.gameState = data.gameState;
+        }
+
+        sendGameData(socket, room, eventName, data);
     });
 });
 socket.on("kousan", data => {
@@ -247,6 +254,27 @@ socket.on("kousan", data => {
     });
 });
 
+socket.on("restoreGame", ({ roomId }) => {
+
+    const room = gameRooms.find(r => r.roomId === roomId);
+
+    if (!room) {
+        socket.emit("restoreFailed");
+        return;
+    }
+
+    socket.join(room.roomId);
+
+    socket.emit("restoreGame", {
+        board: room.board,
+        currentPlayer: room.currentPlayer,
+        blackTime: room.blackTime,
+        whiteTime: room.whiteTime,
+        turn: room.turn,
+        hostLevel: room.hostLevel,
+        guestLevel: room.guestLevel
+    });
+});
 socket.on("gameEnd", data => {
     const room = gameRooms.find(r => r.roomId === data.roomId);
     if (!room) return;
