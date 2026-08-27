@@ -88,10 +88,10 @@ console.log("initBoard", {
 
   blackTime = 60000; 
   whiteTime = 60000;
+  saveState();
   updateDisplay();
   updateForbiddenPoints();
   draw();
-  saveState();
 if (ISNET) {
     await showEffectText(
         myColor === "black"

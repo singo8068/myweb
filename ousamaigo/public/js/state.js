@@ -47,9 +47,9 @@ sirokingImg.src = "./bin/siroking.webp";
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
 let MAXTEKAZU=0;
-if(SIZE===6)MAXTEKAZU=36;
-if(SIZE===9)MAXTEKAZU=80;
-if(SIZE===11)MAXTEKAZU=120;
+if(SIZE===6)MAXTEKAZU=37;
+if(SIZE===9)MAXTEKAZU=81;
+if(SIZE===11)MAXTEKAZU=121;
 
 
 let board = [];
