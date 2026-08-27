@@ -402,6 +402,7 @@ function delay(ms) {
 async function hantei(){
 //console.log=MAXTEKAZU;
   if (undoHistory.length < MAXTEKAZU)return;
+  MAXTEKAZU=MAXTEKAZU-1;
   await showEffectText(MAXTEKAZU+"てうっても\nしょうぶが\nつかないので\nはんていするよ", 3000);
   let blackCount=0;
   let whiteCount=0;
@@ -440,9 +441,12 @@ if(ISNET){
  effectDiv.style.opacity = "0.7";
 
  document.getElementById("mainControls").style.display = "none";
- if (!ISNET)document.getElementById("saigoControls").style.display = "block";
+
+ if (ISNET){backMati.style.display = "block";
+  }else{
+   document.getElementById("saigoControls").style.display = "block";
+  }
  gameNow=false;
-backMati.style.display = "block";
 if (ISNET && sendGameEnd) {
     socket.emit("gameEnd", {
         roomId,
