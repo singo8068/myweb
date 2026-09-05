@@ -1,5 +1,13 @@
 async function initBoard() {
 
+    if (ISNET) {
+        history.pushState(null, "", location.href);
+
+        window.addEventListener("popstate", () => {
+            history.pushState(null, "", location.href);
+        });
+    }
+
 console.log("initBoard", {
     SIZE,
     LVDIF,
@@ -8,6 +16,7 @@ console.log("initBoard", {
 });
 
     if (ISNET) {
+
 
         const data = await new Promise(resolve => {
             socket.emit("restoreGame", { roomId }, resolve);
@@ -22,7 +31,7 @@ console.log("initBoard", {
             board = state.board.map(row => [...row]);
             drawBoard = state.drawBoard.map(row => [...row]);
 
-            currentPlayer = state.currentPlayer;
+            currentPlayer = data.turn;
 
             blackKing = state.blackKing
                 ? { ...state.blackKing }
@@ -99,11 +108,7 @@ if (ISNET) {
             : "きみは〇しろ〇だよ！",
         3000
     );
-history.pushState(null, "", location.href);
 
-window.addEventListener("popstate", () => {
-    history.pushState(null, "", location.href);
-});
 }
 }
 
