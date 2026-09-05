@@ -619,6 +619,9 @@ socket.on("restoreGame", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
 
+    // ★これを追加
+    updateTurnControls();
+
     updateForbiddenPoints();
     updateDisplay();
     draw();

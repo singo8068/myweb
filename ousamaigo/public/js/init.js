@@ -99,6 +99,11 @@ if (ISNET) {
             : "きみは〇しろ〇だよ！",
         3000
     );
+history.pushState(null, "", location.href);
+
+window.addEventListener("popstate", () => {
+    history.pushState(null, "", location.href);
+});
 }
 }
 
