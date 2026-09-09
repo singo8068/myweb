@@ -334,7 +334,8 @@ socket.on("joinRoom", async data => {
     // =========================
     // 対戦開始
     // =========================
-
+        let hostColor;
+        let guestColor;
     try {
 
         // -------------------------
@@ -392,8 +393,7 @@ socket.on("joinRoom", async data => {
         // 色を決める
         // =========================
 
-        let hostColor;
-        let guestColor;
+
 
 if (room.hostLevel === 0 || room.guestLevel === 0) {
 
