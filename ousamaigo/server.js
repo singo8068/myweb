@@ -30,22 +30,28 @@ pool.query("SELECT NOW()")
     .catch(err => {
         console.error("Neon DB 接続エラー:", err);
     });
+
 app.use(
     "/api/stripe-webhook",
     express.raw({ type: "application/json" })
 );
+
 app.use(express.json());
+
 require("./stripe")(app, stripe, pool, sessions);
 require("./shop")(app, pool, sessions);
 require("./login")(app, pool, sessions);
 
+const createRating = require("./rating");
+const rating = createRating(pool, sessions);
+
 app.use(express.static("public", {
     index: false
 }));
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "matiai.html"));
 });
-
 
 let rooms = [];       // 募集中
 let gameRooms = [];   // 対戦中
@@ -118,6 +124,22 @@ function sendWithRetry(target, eventName, data) {
 
 
 io.on("connection", (socket) => {
+function getUserIdFromSocket(socket) {
+
+    const cookie = socket.handshake.headers.cookie || "";
+
+    const match = cookie.match(
+        /(?:^|;\s*)sessionId=([^;]+)/
+    );
+
+    if (!match) {
+        return null;
+    }
+
+    const sessionId = match[1];
+
+    return sessions.get(sessionId) || null;
+}
 socket.on("ack", data => {
     const timer = waitingAck.get(data.messageId);
 
@@ -131,93 +153,397 @@ console.log("connect:", socket.id);
     socket.emit("roomList", rooms);
 
     // 募集する
-    socket.on("createRoom", room => {
-        room.roomId = socket.id;
-        room.hostId = socket.id;
+socket.on("createRoom", async data => {
 
-room.blackTime = 60000;
-room.whiteTime = 60000;
-room.turn = "black";
-        rooms.push(room);
-        io.emit("roomList", rooms);
+    const userId = getUserIdFromSocket(socket);
+
+    let level;
+    let member = false;
+
+    // =========================
+    // 会員
+    // =========================
+
+    if (userId) {
+
+        try {
+
+            const result = await pool.query(
+                `
+                SELECT level
+                FROM users
+                WHERE user_id = $1
+                `,
+                [userId]
+            );
+
+            if (result.rows.length === 0) {
+                console.error("会員が見つかりません:", userId);
+                return;
+            }
+
+            level = Number(result.rows[0].level);
+            member = true;
+
+        } catch (err) {
+
+            console.error(
+                "募集時の会員情報取得エラー:",
+                err
+            );
+
+            return;
+        }
+
+    // =========================
+    // ゲスト
+    // =========================
+
+    } else {
+
+        level = 0;
+    }
+
+
+    const room = {
+
+        roomId: socket.id,
+        hostId: socket.id,
+
+        hostUserId: userId,
+
+        name: member
+            ? userId
+            : "ゲスト",
+
+        level: level,
+
+        hostLevel: level,
+
+        hostMember: member,
+
+        size: data.size,
+
+        blackTime: 60000,
+        whiteTime: 60000,
+        turn: "black"
+    };
+
+
+    rooms.push(room);
+
+    console.log("募集開始:", {
+        roomId: room.roomId,
+        userId: userId,
+        level: level,
+        member: member
     });
 
-    // 参加する
-socket.on("joinRoom", data => {
+    io.emit("roomList", rooms);
+});
+socket.on("joinRoom", async data => {
 
     const room = rooms.find(r => r.roomId === data.id);
 
     if (!room) return;
 
-    room.guestLevel = data.level;
-    room.hostLevel = room.level;
+
+    // =========================
+    // ゲスト側の会員判定
+    // =========================
+
+    const guestUserId = getUserIdFromSocket(socket);
+
+    let guestLevel;
+    let guestMember = false;
+
+
+    // =========================
+    // 会員
+    // =========================
+
+    if (guestUserId) {
+
+        try {
+
+            const result = await pool.query(
+                `
+                SELECT level
+                FROM users
+                WHERE user_id = $1
+                `,
+                [guestUserId]
+            );
+
+            if (result.rows.length === 0) {
+                console.error(
+                    "参加者の会員情報が見つかりません:",
+                    guestUserId
+                );
+                return;
+            }
+
+            guestLevel = Number(result.rows[0].level);
+            guestMember = true;
+
+        } catch (err) {
+
+            console.error(
+                "参加者の会員情報取得エラー:",
+                err
+            );
+
+            return;
+        }
+
+    // =========================
+    // ゲスト
+    // =========================
+
+    } else {
+
+        guestLevel = 0;
+    }
+
+
+    // =========================
+    // ホスト情報
+    // =========================
+
+    const hostLevel = Number(room.level) || 0;
+
+
+    // =========================
+    // Socket
+    // =========================
+
+    room.guestId = socket.id;
+    room.guestUserId = guestUserId;
+
+    room.guestLevel = guestLevel;
+    room.guestMember = guestMember;
 
     socket.join(room.roomId);
 
-    console.log(io.sockets.adapter.rooms.get(room.roomId));
+    const hostSocket =
+        io.sockets.sockets.get(room.hostId);
 
-    const hostSocket = io.sockets.sockets.get(room.hostId);
     hostSocket?.join(room.roomId);
 
-// 色を決める
-let hostColor;
-let guestColor;
 
-if (room.level === room.guestLevel) {
+    // =========================
+    // 対戦開始
+    // =========================
 
-    // レベルが同じならランダム
-    hostColor = Math.random() < 0.5 ? "black" : "white";
-    guestColor = hostColor === "black" ? "white" : "black";
+    try {
 
-} else {
+        // -------------------------
+        // ホスト
+        // -------------------------
 
-    // レベルが低い方を黒にする
-    if (room.level < room.guestLevel) {
-        hostColor = "black";
-        guestColor = "white";
+        if (room.hostUserId) {
 
-    } else {
-        hostColor = "white";
-        guestColor = "black";
+            room.hostPlayer =
+                await rating.startPlayer({
+                    userId: room.hostUserId
+                });
+
+        } else {
+
+            room.hostPlayer =
+                await rating.startPlayer({
+                    level: hostLevel
+                });
+        }
+
+
+        // -------------------------
+        // ゲスト
+        // -------------------------
+
+        if (guestUserId) {
+
+            room.guestPlayer =
+                await rating.startPlayer({
+                    userId: guestUserId
+                });
+
+        } else {
+
+            room.guestPlayer =
+                await rating.startPlayer({
+                    level: guestLevel
+                });
+        }
+
+
+        // =========================
+        // 対戦開始後のレベル
+        // =========================
+
+        room.hostLevel =
+            room.hostPlayer.level;
+
+        room.guestLevel =
+            room.guestPlayer.level;
+
+
+        // =========================
+        // 色を決める
+        // =========================
+
+        let hostColor;
+        let guestColor;
+
+if (room.hostLevel === 0 || room.guestLevel === 0) {
+
+    // ゲストがいる対戦はハンデなし
+    hostColor =
+        Math.random() < 0.5
+            ? "black"
+            : "white";
+
+    guestColor =
+        hostColor === "black"
+            ? "white"
+            : "black";
+
+    room.turn = "black";
+
+} else if (room.hostLevel === room.guestLevel) {
+
+            // 同レベルならランダム
+
+            hostColor =
+                Math.random() < 0.5
+                    ? "black"
+                    : "white";
+
+            guestColor =
+                hostColor === "black"
+                    ? "white"
+                    : "black";
+
+        } else {
+
+            // レベルが低い方を黒
+
+            if (room.hostLevel < room.guestLevel) {
+
+                hostColor = "black";
+                guestColor = "white";
+
+            } else {
+
+                hostColor = "white";
+                guestColor = "black";
+            }
+
+
+            // レベル差3以上なら白番から
+
+            if (
+                Math.abs(
+                    room.hostLevel -
+                    room.guestLevel
+                ) > 2
+            ) {
+
+                room.turn = "white";
+            }
+        }
+
+
+        room.hostColor = hostColor;
+        room.guestColor = guestColor;
+
+
+        console.log("対戦開始：勝ち越し -1", {
+            roomId: room.roomId,
+
+            host: {
+                userId: room.hostUserId,
+                member: room.hostPlayer.member,
+                level: room.hostPlayer.level,
+                winDiff: room.hostPlayer.winDiff
+            },
+
+            guest: {
+                userId: room.guestUserId,
+                member: room.guestPlayer.member,
+                level: room.guestPlayer.level,
+                winDiff: room.guestPlayer.winDiff
+            }
+        });
+
+
+    } catch (err) {
+
+        console.error(
+            "対戦開始時のレーティング処理エラー:",
+            err
+        );
+
+        return;
     }
-    // レベル差が3以上なら白番から開始
-    if (Math.abs(room.level - room.guestLevel) > 2) {
-        room.turn = "white";
-    }
-}
 
 
+    // =========================
+    // 時計
+    // =========================
 
-    // それぞれに違う情報を送る
-    room.lastUpdate = Date.now() + 3000;
+    room.lastUpdate =
+        Date.now() + 3000;
 
-    // ★ 募集中から削除
-    rooms = rooms.filter(r => r.roomId !== room.roomId);
 
-    // ★ 対戦中へ移動
+    // =========================
+    // 募集中から削除
+    // =========================
+
+    rooms =
+        rooms.filter(
+            r => r.roomId !== room.roomId
+        );
+
+
+    // =========================
+    // 対戦中へ
+    // =========================
+
     gameRooms.push(room);
 
-    // 募集一覧を更新
+
     io.emit("roomList", rooms);
 
-    hostSocket?.emit("startGame", {
-        roomId: room.roomId,
-        size: room.size,
-        color: hostColor,
-        mylv: room.level,
-        enlv: room.guestLevel
-    });
 
-    socket.emit("startGame", {
-        roomId: room.roomId,
-        size: room.size,
-        color: guestColor,
-        mylv: room.guestLevel,
-        enlv: room.level
-    });
+    // =========================
+    // ホストへ開始通知
+    // =========================
 
+hostSocket?.emit("startGame", {
+    roomId: room.roomId,
+    size: room.size,
+    color: hostColor,
+    mylv: room.hostPlayer.level,
+    enlv: room.guestPlayer.level,
+    member: room.hostPlayer.member
 });
 
+
+    // =========================
+    // ゲストへ開始通知
+    // =========================
+
+socket.emit("startGame", {
+    roomId: room.roomId,
+    size: room.size,
+    color: guestColor,
+    mylv: room.guestPlayer.level,
+    enlv: room.hostPlayer.level,
+    member: room.guestPlayer.member
+});
+
+});
     // 切断
 socket.on("disconnect", () => {
     console.log("disconnect:", socket.id);
@@ -284,16 +610,123 @@ socket.on("restoreGame", ({ roomId }, callback) => {
     });
 
 });
+socket.on("gameEnd", async data => {
 
-socket.on("gameEnd", data => {
-    const room = gameRooms.find(r => r.roomId === data.roomId);
+    const room =
+        gameRooms.find(
+            r => r.roomId === data.roomId
+        );
+
     if (!room) return;
 
-    io.to(room.roomId).emit("gameEnd", {
+
+    // =========================
+    // 二重処理防止
+    // =========================
+
+    if (room.ratingFinished) {
+        return;
+    }
+
+    room.ratingFinished = true;
+
+
+    // =========================
+    // 勝者判定
+    // =========================
+
+    const hostWon =
+        data.winner === room.hostColor;
+
+    const guestWon =
+        data.winner === room.guestColor;
+
+
+    try {
+
+        // =========================
+        // ホスト
+        // =========================
+
+        const hostResult =
+            await rating.finishPlayer(
+                room.hostPlayer,
+                hostWon
+            );
+
+
+        // =========================
+        // ゲスト
+        // =========================
+
+        const guestResult =
+            await rating.finishPlayer(
+                room.guestPlayer,
+                guestWon
+            );
+
+
+        console.log(
+            "対戦終了：レーティング更新",
+            {
+                roomId: room.roomId,
+                winner: data.winner,
+
+                host: hostResult,
+                guest: guestResult
+            }
+        );
+
+
+        // =========================
+        // ホストへ「ホスト自身の結果」
+        // =========================
+
+        io.to(room.hostId).emit(
+            "gameEnd",
+            {
+                winner: data.winner,
+
+                level: hostResult.level,
+                winDiff: hostResult.winDiff,
+
+                member: hostResult.member,
+
+                oldLevel: hostResult.oldLevel,
+                oldWinDiff: hostResult.oldWinDiff
+            }
+        );
+
+
+        // =========================
+        // ゲストへ「ゲスト自身の結果」
+        // =========================
+
+io.to(room.guestId).emit(
+    "gameEnd",
+    {
         winner: data.winner,
-        hostLevel: room.hostLevel,
-        guestLevel: room.guestLevel
-    });
+
+        level: guestResult.level,
+
+        member: guestResult.member
+    }
+);
+
+
+    } catch (err) {
+
+        console.error(
+            "対戦終了時のレーティング処理エラー:",
+            err
+        );
+
+
+        // エラーなら再処理可能
+
+        room.ratingFinished = false;
+    }
+
 });
 });
 
