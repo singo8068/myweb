@@ -584,7 +584,63 @@ socket.on("kousan", async data => {
     console.log("受信こうさん", data);
  syouhai("こうさんで",currentPlayer === "white", false);
 });
+socket.on("gameEnd", async data => {
 
+    console.log("サーバーからgameEnd受信", data);
+
+    // =========================
+    // 結果表示
+    // =========================
+
+    if (gameNow) {
+
+        await syouhai(
+            data.reason || "しょうぶがおわったよ",
+            data.winner === "black",
+            false
+        );
+    }
+
+    // =========================
+    // 会員のレベル・勝ち越し表示
+    // =========================
+
+    if (data.member && typeof levelInfo !== "undefined") {
+
+        const resultDiff =
+            data.winDiff - data.oldWinDiff;
+
+        const diffText =
+            resultDiff > 0
+                ? `＋${resultDiff}`
+                : `${resultDiff}`;
+
+        console.log("自分の最終結果", {
+            oldLevel: data.oldLevel,
+            oldWinDiff: data.oldWinDiff,
+            level: data.level,
+            winDiff: data.winDiff,
+            resultDiff
+        });
+
+        levelInfo.innerHTML =
+            `レベル${data.oldLevel}　` +
+            `かちこし${data.oldWinDiff}` +
+            `${diffText}＝${data.winDiff}`;
+
+        if (data.level > data.oldLevel) {
+
+            levelInfo.innerHTML +=
+                `<br>レベル${data.level}にあがったよ！`;
+
+        } else if (data.level < data.oldLevel) {
+
+            levelInfo.innerHTML +=
+                `<br>レベル${data.level}にさがったよ…`;
+        }
+    }
+
+});
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
