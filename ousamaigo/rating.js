@@ -105,11 +105,12 @@ module.exports = function(pool, sessions) {
             );
 
 
-            return {
-                member: true,
-                level: Number(user.level),
-                winDiff: Number(user.win_diff)
-            };
+return {
+    member: true,
+    userId: player.userId,
+    level: Number(user.level),
+    winDiff: Number(user.win_diff)
+};
         }
 
 
