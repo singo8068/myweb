@@ -601,44 +601,51 @@ socket.on("gameEnd", async data => {
         );
     }
 
-    // =========================
-    // 会員のレベル・勝ち越し表示
-    // =========================
+// =========================
+// 会員のレベル・勝ち越し表示
+// =========================
 
-    if (data.member && typeof levelInfo !== "undefined") {
+if (data.member && typeof levelInfo !== "undefined") {
 
-        const resultDiff =
-            data.winDiff - data.oldWinDiff;
+    // 対戦開始前の実際の勝ち越し
+    // 対戦開始時にサーバー側で -1 されているので +1 する
+    const beforeWinDiff = data.oldWinDiff + 1;
 
-        const diffText =
-            resultDiff > 0
-                ? `＋${resultDiff}`
-                : `${resultDiff}`;
+    // 対戦そのものによる勝ち越し変動
+    // oldWinDiff には「対戦開始時の -1」が含まれているので +1 して除外
+    const gameDiff =
+        data.winDiff - data.oldWinDiff - 1;
 
-        console.log("自分の最終結果", {
-            oldLevel: data.oldLevel,
-            oldWinDiff: data.oldWinDiff,
-            level: data.level,
-            winDiff: data.winDiff,
-            resultDiff
-        });
+    const diffText =
+        gameDiff > 0
+            ? `＋${gameDiff}`
+            : `${gameDiff}`;
 
-        levelInfo.innerHTML =
-            `レベル${data.oldLevel}　` +
-            `かちこし${data.oldWinDiff}` +
-            `${diffText}＝${data.winDiff}`;
+    console.log("自分の最終結果", {
+        oldLevel: data.oldLevel,
+        oldWinDiff: data.oldWinDiff,
+        beforeWinDiff,
+        level: data.level,
+        winDiff: data.winDiff,
+        gameDiff
+    });
 
-        if (data.level > data.oldLevel) {
+    levelInfo.innerHTML =
+        `レベル${data.oldLevel}　` +
+        `かちこし${beforeWinDiff} ` +
+        `${diffText}＝${data.winDiff}`;
 
-            levelInfo.innerHTML +=
-                `<br>レベル${data.level}にあがったよ！`;
+    if (data.level > data.oldLevel) {
 
-        } else if (data.level < data.oldLevel) {
+        levelInfo.innerHTML +=
+            `<br>レベル${data.level}にあがったよ！`;
 
-            levelInfo.innerHTML +=
-                `<br>レベル${data.level}にさがったよ…`;
-        }
+    } else if (data.level < data.oldLevel) {
+
+        levelInfo.innerHTML +=
+            `<br>レベル${data.level}にさがったよ…`;
     }
+}
 
 });
 socket.on("timeSync", data => {
