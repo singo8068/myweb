@@ -26,7 +26,9 @@ body{
     margin:10px;
     padding:10px;
 }
-
+.room > div {
+    white-space: nowrap;
+}
 input,select{
     font-size:20px;
 }
@@ -193,14 +195,25 @@ socket.on("roomList", rooms => {
             buttonHtml = `<button onclick="joinRoom('${room.roomId}')">さんか</button>`;
         }
 
-        div.innerHTML = `
-            <div>
-                ${room.name}：
-                レベル
-                ${room.level}
-                ${buttonHtml}
-            </div>
-        `;
+let roomInfo;
+
+if (room.hostMember) {
+    roomInfo = `
+        ${room.name}：
+        レベル ${room.level}
+    `;
+} else {
+    roomInfo = `
+        ${room.name}
+    `;
+}
+
+div.innerHTML = `
+    <div>
+        ${roomInfo}
+        ${buttonHtml}
+    </div>
+`;
 
         roomsDiv.appendChild(div);
 
