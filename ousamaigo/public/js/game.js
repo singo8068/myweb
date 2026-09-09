@@ -600,7 +600,6 @@ socket.on("gameEnd", async data => {
             false
         );
     }
-
 // =========================
 // 会員のレベル・勝ち越し表示
 // =========================
@@ -608,13 +607,15 @@ socket.on("gameEnd", async data => {
 if (data.member && typeof levelInfo !== "undefined") {
 
     // 対戦開始前の実際の勝ち越し
-    // 対戦開始時にサーバー側で -1 されているので +1 する
+    // startPlayer() で -1 されているので +1
     const beforeWinDiff = data.oldWinDiff + 1;
 
-    // 対戦そのものによる勝ち越し変動
-    // oldWinDiff には「対戦開始時の -1」が含まれているので +1 して除外
-    const gameDiff =
-        data.winDiff - data.oldWinDiff - 1;
+    // 自分が勝ったか
+    const myWon =
+        data.winner === myColor;
+
+    // 対戦による実際の勝ち越し変動
+    const gameDiff = myWon ? 1 : -1;
 
     const diffText =
         gameDiff > 0
@@ -622,6 +623,9 @@ if (data.member && typeof levelInfo !== "undefined") {
             : `${gameDiff}`;
 
     console.log("自分の最終結果", {
+        winner: data.winner,
+        myColor,
+        myWon,
         oldLevel: data.oldLevel,
         oldWinDiff: data.oldWinDiff,
         beforeWinDiff,
@@ -646,8 +650,6 @@ if (data.member && typeof levelInfo !== "undefined") {
             `<br>レベル${data.level}にさがったよ…`;
     }
 }
-
-});
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
