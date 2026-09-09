@@ -734,10 +734,9 @@ if (memberVsMember) {
             }
         );
 
-
-        // =========================
-        // ゲストへ「ゲスト自身の結果」
-        // =========================
+// =========================
+// ゲストへ「ゲスト自身の結果」
+// =========================
 
 io.to(room.guestId).emit(
     "gameEnd",
@@ -745,8 +744,12 @@ io.to(room.guestId).emit(
         winner: data.winner,
 
         level: guestResult.level,
+        winDiff: guestResult.winDiff,
 
-        member: guestResult.member
+        member: guestResult.member,
+
+        oldLevel: guestResult.oldLevel,
+        oldWinDiff: guestResult.oldWinDiff
     }
 );
 
