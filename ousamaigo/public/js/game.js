@@ -650,6 +650,7 @@ if (data.member && typeof levelInfo !== "undefined") {
             `<br>レベル${data.level}にさがったよ…`;
     }
 }
+}); 
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
