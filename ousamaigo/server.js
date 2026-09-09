@@ -649,7 +649,13 @@ socket.on("gameEnd", async data => {
 
     const guestWon =
         data.winner === room.guestColor;
-
+console.log("ゲーム終了判定:", {
+    winner: data.winner,
+    hostColor: room.hostColor,
+    guestColor: room.guestColor,
+    hostWon,
+    guestWon
+});
 
     try {
 
