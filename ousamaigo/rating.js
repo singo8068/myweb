@@ -174,10 +174,15 @@ return {
                 let winDiff = Number(result.rows[0].win_diff);
 
 
-                // 勝者だけ +2
-                if (won) {
-                    winDiff += 2;
-                }
+// 勝者は +2
+if (won) {
+    winDiff += 2;
+
+// レベル3以下で、勝ち越しがマイナスなら
+// 敗北しても +1
+} else if (level <= 3 && winDiff < 0) {
+    winDiff += 1;
+}
 
 
                 const oldLevel = level;

@@ -338,44 +338,53 @@ socket.on("joinRoom", async data => {
         let guestColor;
     try {
 
-        // -------------------------
-        // ホスト
-        // -------------------------
+ // =========================
+// 対戦開始時のレーティング処理
+// =========================
 
-        if (room.hostUserId) {
-
-            room.hostPlayer =
-                await rating.startPlayer({
-                    userId: room.hostUserId
-                });
-
-        } else {
-
-            room.hostPlayer =
-                await rating.startPlayer({
-                    level: hostLevel
-                });
-        }
+// 会員 vs 会員のときだけレーティングを変動させる
+const memberVsMember =
+    !!room.hostUserId &&
+    !!guestUserId;
 
 
-        // -------------------------
-        // ゲスト
-        // -------------------------
+if (memberVsMember) {
 
-        if (guestUserId) {
+    // -------------------------
+    // 会員 vs 会員
+    // -------------------------
 
-            room.guestPlayer =
-                await rating.startPlayer({
-                    userId: guestUserId
-                });
+    room.hostPlayer =
+        await rating.startPlayer({
+            userId: room.hostUserId
+        });
 
-        } else {
+    room.guestPlayer =
+        await rating.startPlayer({
+            userId: guestUserId
+        });
 
-            room.guestPlayer =
-                await rating.startPlayer({
-                    level: guestLevel
-                });
-        }
+} else {
+
+    // -------------------------
+    // ゲストがいる対戦
+    // -------------------------
+    // レーティングは一切変動させない
+
+    room.hostPlayer = {
+        member: !!room.hostUserId,
+        level: hostLevel,
+        winDiff: 0
+    };
+
+    room.guestPlayer = {
+        member: false,
+        level: 0,
+        winDiff: 0
+    };
+
+    // ホストが会員なら、DBから取得済みの hostLevel を使用
+}
 
 
         // =========================
@@ -458,7 +467,7 @@ if (room.hostLevel === 0 || room.guestLevel === 0) {
         room.guestColor = guestColor;
 
 
-        console.log("対戦開始：勝ち越し -1", {
+        console.log("対戦開始", {
             roomId: room.roomId,
 
             host: {
@@ -644,38 +653,60 @@ socket.on("gameEnd", async data => {
 
     try {
 
-        // =========================
-        // ホスト
-        // =========================
+       // =========================
+// レーティング処理
+// =========================
 
-        const hostResult =
-            await rating.finishPlayer(
-                room.hostPlayer,
-                hostWon
-            );
+const memberVsMember =
+    !!room.hostUserId &&
+    !!room.guestUserId;
 
 
-        // =========================
-        // ゲスト
-        // =========================
-
-        const guestResult =
-            await rating.finishPlayer(
-                room.guestPlayer,
-                guestWon
-            );
+let hostResult;
+let guestResult;
 
 
-        console.log(
-            "対戦終了：レーティング更新",
-            {
-                roomId: room.roomId,
-                winner: data.winner,
+if (memberVsMember) {
 
-                host: hostResult,
-                guest: guestResult
-            }
+    // =========================
+    // 会員 vs 会員
+    // =========================
+
+    hostResult =
+        await rating.finishPlayer(
+            room.hostPlayer,
+            hostWon
         );
+
+    guestResult =
+        await rating.finishPlayer(
+            room.guestPlayer,
+            guestWon
+        );
+
+} else {
+
+    // =========================
+    // ゲストがいる対戦
+    // =========================
+    // レーティングは一切変動させない
+
+    hostResult = {
+        member: !!room.hostUserId,
+        won: hostWon,
+        level: room.hostLevel,
+        winDiff: 0,
+        oldLevel: room.hostLevel,
+        oldWinDiff: 0
+    };
+
+    guestResult = {
+        member: false,
+        won: guestWon,
+        level: 0,
+        winDiff: 0
+    };
+}
 
 
         // =========================
