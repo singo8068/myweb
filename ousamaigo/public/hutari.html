@@ -60,9 +60,11 @@
 const params = new URLSearchParams(location.search);
 const SIZE = Number(params.get("size")) || 9;
 const MAJI = params.get("maji") === "true";
-const MYLV = Number(params.get("mylv")) || 1;
-const ENLV = Number(params.get("enlv")) || 1;
-const LVDIF = Math.abs(MYLV - ENLV);
+const MYLV = Number(params.get("mylv"));
+const ENLV = Number(params.get("enlv"));
+const LVDIF = (MYLV === 0 || ENLV === 0)
+    ? 0
+    : Math.abs(MYLV - ENLV);
 
 let roomId = params.get("room");
 let myColor = params.get("color");
@@ -77,8 +79,13 @@ backMati.style.display = "none";
 if (ISNET) {
     backMenu.style.display = "none";
 
-    levelInfo.textContent = `じぶんは${colmoji}でレベル ${MYLV}　あいてレベル ${ENLV}`;
-    levelInfo.style.display = "block";
+    // 両方とも会員のときだけレベル表示
+    if (MYLV !== 0 && ENLV !== 0) {
+        levelInfo.textContent = `じぶんは${colmoji}でレベル ${MYLV}　あいてレベル ${ENLV}`;
+        levelInfo.style.display = "block";
+    } else {
+        levelInfo.style.display = "none";
+    }
 }
 
 if (MAJI) {

@@ -26,7 +26,26 @@ body{
     margin:10px;
     padding:10px;
 }
-.room > div {
+
+.room-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.room-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.room-button {
+    flex-shrink: 0;
+}
+
+.waiting {
     white-space: nowrap;
 }
 input,select{
@@ -190,33 +209,36 @@ socket.on("roomList", rooms => {
         let buttonHtml;
 
         if (room.hostId === socket.id) {
-            buttonHtml = "<b>ぼしゅうちゅう…</b>";
+            buttonHtml = "<b class=\"waiting\">ぼしゅうちゅう…</b>";
         } else {
             buttonHtml = `<button onclick="joinRoom('${room.roomId}')">さんか</button>`;
         }
 
-let roomInfo;
+        let roomInfo;
 
-if (room.hostMember) {
-    roomInfo = `
-        ${room.name}：
-        レベル ${room.level}
-    `;
-} else {
-    roomInfo = `
-        ${room.name}
-    `;
-}
+        if (room.hostMember) {
+            roomInfo = `
+                ${room.name}：
+                レベル ${room.level}
+            `;
+        } else {
+            roomInfo = `
+                ${room.name}
+            `;
+        }
 
-div.innerHTML = `
-    <div>
-        ${roomInfo}
-        ${buttonHtml}
-    </div>
-`;
+        div.innerHTML = `
+            <div class="room-content">
+                <span class="room-info">
+                    ${roomInfo}
+                </span>
+                <span class="room-button">
+                    ${buttonHtml}
+                </span>
+            </div>
+        `;
 
         roomsDiv.appendChild(div);
-
     });
 
 });
