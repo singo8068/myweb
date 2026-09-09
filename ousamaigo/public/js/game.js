@@ -637,7 +637,7 @@ if (data.member && typeof levelInfo !== "undefined") {
     levelInfo.innerHTML =
         `レベル${data.oldLevel}　` +
         `かちこし${beforeWinDiff} ` +
-        `${diffText}＝${data.winDiff}`;
+        `${diffText}`;
 
     if (data.level > data.oldLevel) {
 
