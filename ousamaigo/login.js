@@ -142,7 +142,8 @@ app.post("/api/login", async (req, res) => {
                 expiresAt
             ]
         );
-
+// 既存のshop.jsなどとの互換性用
+sessions.set(sessionId, user.user_id);
 
         // ==============================
         // CookieにセッションID保存
@@ -228,7 +229,8 @@ app.get("/api/me", async (req, res) => {
 
 
         const userId = sessionResult.rows[0].user_id;
-
+// Neonから復元したログイン情報をメモリにも戻す
+sessions.set(sessionId, userId);
 
         // ==============================
         // Neonから最新データを取得
@@ -306,7 +308,8 @@ app.post("/api/logout", async (req, res) => {
                 [sessionId]
             );
         }
-
+// メモリからも削除
+    sessions.delete(sessionId);
 
         // Cookie削除
         res.setHeader(

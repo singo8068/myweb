@@ -124,7 +124,7 @@ function sendWithRetry(target, eventName, data) {
 
 
 io.on("connection", (socket) => {
-function getUserIdFromSocket(socket) {
+async function getUserIdFromSocket(socket) {
 
     const cookie = socket.handshake.headers.cookie || "";
 
@@ -138,7 +138,33 @@ function getUserIdFromSocket(socket) {
 
     const sessionId = match[1];
 
-    return sessions.get(sessionId) || null;
+    try {
+
+        const result = await pool.query(
+            `
+            SELECT user_id
+            FROM login_sessions
+            WHERE session_id = $1
+              AND expires_at > NOW()
+            `,
+            [sessionId]
+        );
+
+        if (result.rows.length === 0) {
+            return null;
+        }
+
+        return result.rows[0].user_id;
+
+    } catch (err) {
+
+        console.error(
+            "Socketログイン確認エラー:",
+            err
+        );
+
+        return null;
+    }
 }
 socket.on("ack", data => {
     const timer = waitingAck.get(data.messageId);
@@ -155,7 +181,7 @@ console.log("connect:", socket.id);
     // 募集する
 socket.on("createRoom", async data => {
 
-    const userId = getUserIdFromSocket(socket);
+    const userId = await getUserIdFromSocket(socket);
 
     let level;
     let member = false;
@@ -252,7 +278,7 @@ socket.on("joinRoom", async data => {
     // ゲスト側の会員判定
     // =========================
 
-    const guestUserId = getUserIdFromSocket(socket);
+    const guestUserId = await getUserIdFromSocket(socket);
 
     let guestLevel;
     let guestMember = false;
