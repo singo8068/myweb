@@ -102,7 +102,69 @@ let myLevel = 0;
 // ユーザー情報
 // ==============================
 
-async function loadUserInfo() { try { const response = await fetch("/api/me"); // ログインしていない if (!response.ok) { myLevel = 0; document.getElementById("userStatus").textContent = "ゲスト"; // ログイン・会員登録を表示 document.getElementById("loginBtn").style.display = "inline-block"; document.getElementById("registerBtn").style.display = "inline-block"; // ログアウトを非表示 document.getElementById("logoutBtn").style.display = "none"; return; } // ログインしている場合 const data = await response.json(); if (!data.success) { throw new Error("ユーザー情報を取得できませんでした"); } const user = data.user; currentUser = user; myLevel = user.level; // ログイン・会員登録を非表示 document.getElementById("loginBtn").style.display = "none"; document.getElementById("registerBtn").style.display = "none"; // ログアウトを表示 document.getElementById("logoutBtn").style.display = "inline-block"; // Neonから取得した情報を表示 document.getElementById("userStatus").innerHTML = `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　 <span class="itemInfo"> <img src="/bin/gyem.webp"> ${user.gems} <img src="/bin/kiname.webp"> ${user.goldenCandy} <img src="/bin/mahoame.webp"> ${user.magicalCandy} <img src="/bin/amekakera.webp"> ${user.candyFragments} </span>`; console.log("ログインユーザー:", user); } catch (error) { console.error("ユーザー情報取得エラー:", error); document.getElementById("userStatus").textContent = "ユーザー情報を取得できませんでした"; } }
+async function loadUserInfo() {
+
+    try {
+
+        console.log("ユーザー情報取得開始");
+
+        const response = await fetch("/api/me");
+
+        console.log("/api/me status:", response.status);
+
+        // ログインしていない
+        if (!response.ok) {
+
+            myLevel = 0;
+            currentUser = null;
+
+            document.getElementById("userStatus").textContent = "ゲスト";
+
+            document.getElementById("loginBtn").style.display = "inline-block";
+            document.getElementById("registerBtn").style.display = "inline-block";
+            document.getElementById("logoutBtn").style.display = "none";
+
+            console.log("ゲストとして認識");
+
+            return;
+        }
+
+        const data = await response.json();
+
+        console.log("/api/me response:", data);
+
+        if (!data.success) {
+            throw new Error("ユーザー情報を取得できませんでした");
+        }
+
+        const user = data.user;
+
+        currentUser = user;
+        myLevel = user.level;
+
+        document.getElementById("loginBtn").style.display = "none";
+        document.getElementById("registerBtn").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "inline-block";
+
+        document.getElementById("userStatus").innerHTML =
+            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　 
+            <span class="itemInfo">
+                <img src="/bin/gyem.webp"> ${user.gems}
+                <img src="/bin/kiname.webp"> ${user.goldenCandy}
+                <img src="/bin/mahoame.webp"> ${user.magicalCandy}
+                <img src="/bin/amekakera.webp"> ${user.candyFragments}
+            </span>`;
+
+        console.log("ログインユーザー:", user);
+
+    } catch (error) {
+
+        console.error("ユーザー情報取得エラー:", error);
+
+        document.getElementById("userStatus").textContent =
+            "ユーザー情報を取得できませんでした";
+    }
+}
 
 async function logout() {
 
@@ -126,8 +188,15 @@ loadUserInfo();
 
 function createRoom(){
 
-    if(waiting) return;
+    console.log("ぼしゅうするボタンを押しました");
 
+    if(waiting) {
+        console.log("すでに募集しています");
+        return;
+    }
+    console.log("Socket接続状態:", socket.connected);
+    console.log("currentUser:", currentUser);
+    console.log("myLevel:", myLevel);
     waiting = true;
 
     document.getElementById("status").textContent = "ぼしゅうちゅうです…";
