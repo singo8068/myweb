@@ -60,6 +60,12 @@ app.post("/api/register", async (req, res) => {
     }
 
 });
+
+
+// ==============================
+// ログイン
+// ==============================
+
 app.post("/api/login", async (req, res) => {
 
     const { user_id, password } = req.body;
@@ -102,21 +108,55 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
+
+        // ==============================
         // セッションIDを作成
+        // ==============================
+
         const sessionId = crypto.randomBytes(32).toString("hex");
 
-        // サーバー側に保存
-        sessions.set(sessionId, user.user_id);
 
-        // CookieにセッションIDだけ保存
+        // ==============================
+        // セッション有効期限
+        // 30日
+        // ==============================
+
+        const expiresAt = new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000
+        );
+
+
+        // ==============================
+        // Neonにセッション保存
+        // ==============================
+
+        await pool.query(
+            `
+            INSERT INTO login_sessions
+            (session_id, user_id, expires_at)
+            VALUES ($1, $2, $3)
+            `,
+            [
+                sessionId,
+                user.user_id,
+                expiresAt
+            ]
+        );
+
+
+        // ==============================
+        // CookieにセッションID保存
+        // ブラウザを閉じても残る
+        // ==============================
+
         res.setHeader(
             "Set-Cookie",
-            `sessionId=${sessionId}; HttpOnly; Secure; SameSite=Lax; Path=/`
+            `sessionId=${sessionId}; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax; Path=/`
         );
+
 
         console.log("ログイン:", user.user_id);
 
-        // ログイン成功
         res.json({
             success: true,
             message: "ログイン成功"
@@ -132,6 +172,12 @@ app.post("/api/login", async (req, res) => {
         });
     }
 });
+
+
+// ==============================
+// ログインユーザー情報
+// ==============================
+
 app.get("/api/me", async (req, res) => {
 
     try {
@@ -149,19 +195,48 @@ app.get("/api/me", async (req, res) => {
 
         const sessionId = match[1];
 
-        // セッションIDからユーザーIDを取得
-        const userId = sessions.get(sessionId);
 
-        if (!userId) {
+        // ==============================
+        // Neonからセッションを検索
+        // ==============================
+
+        const sessionResult = await pool.query(
+            `
+            SELECT user_id
+            FROM login_sessions
+            WHERE session_id = $1
+              AND expires_at > NOW()
+            `,
+            [sessionId]
+        );
+
+
+        // セッションがない・期限切れ
+        if (sessionResult.rows.length === 0) {
+
+            // 期限切れセッションをCookieから削除
+            res.setHeader(
+                "Set-Cookie",
+                "sessionId=; Max-Age=0; HttpOnly; Secure; SameSite=Lax; Path=/"
+            );
+
             return res.status(401).json({
                 success: false,
                 message: "ログインしていません"
             });
         }
 
+
+        const userId = sessionResult.rows[0].user_id;
+
+
+        // ==============================
         // Neonから最新データを取得
+        // ==============================
+
         const result = await pool.query(
-            `SELECT
+            `
+            SELECT
                 user_id,
                 level,
                 win_diff,
@@ -169,8 +244,9 @@ app.get("/api/me", async (req, res) => {
                 magical_candy,
                 candy_fragments,
                 golden_candy
-             FROM users
-             WHERE user_id = $1`,
+            FROM users
+            WHERE user_id = $1
+            `,
             [userId]
         );
 
@@ -206,4 +282,54 @@ app.get("/api/me", async (req, res) => {
         });
     }
 });
+
+
+// ==============================
+// ログアウト
+// ==============================
+
+app.post("/api/logout", async (req, res) => {
+
+    try {
+
+        const cookie = req.headers.cookie || "";
+
+        const match = cookie.match(/(?:^|;\s*)sessionId=([^;]+)/);
+
+        if (match) {
+
+            const sessionId = match[1];
+
+            // Neonからセッション削除
+            await pool.query(
+                "DELETE FROM login_sessions WHERE session_id = $1",
+                [sessionId]
+            );
+        }
+
+
+        // Cookie削除
+        res.setHeader(
+            "Set-Cookie",
+            "sessionId=; Max-Age=0; HttpOnly; Secure; SameSite=Lax; Path=/"
+        );
+
+
+        res.json({
+            success: true,
+            message: "ログアウトしました"
+        });
+
+    } catch (error) {
+
+        console.error("ログアウトエラー:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "ログアウト中にエラーが発生しました"
+        });
+    }
+});
+
+
 };
