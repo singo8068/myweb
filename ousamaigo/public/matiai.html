@@ -77,11 +77,8 @@ input,select{
   <a href="index.html" class="back">メニューにもどる</a>
 </div>
 <h2>まちあいしつ</h2>
-<div id="authButtons">
-    <button onclick="location.href='login.html'">ログイン</button>
-    <button onclick="location.href='register.html'">会員登録</button>
-<a href="shop.html" class="back">ショップ</a>
-</div>
+<div id="authButtons"> <button id="loginBtn" onclick="location.href='login.html'">ログイン</button> <button id="registerBtn" onclick="location.href='register.html'">会員登録</button> <button id="logoutBtn" onclick="logout()" style="display:none;">ログアウト</button> <a href="shop.html" class="back">ショップ</a> </div>
+
 <div id="userStatus"></div>
 
 <div>
@@ -105,46 +102,22 @@ let myLevel = 0;
 // ユーザー情報
 // ==============================
 
-async function loadUserInfo() {
+async function loadUserInfo() { try { const response = await fetch("/api/me"); // ログインしていない if (!response.ok) { myLevel = 0; document.getElementById("userStatus").textContent = "ゲスト"; // ログイン・会員登録を表示 document.getElementById("loginBtn").style.display = "inline-block"; document.getElementById("registerBtn").style.display = "inline-block"; // ログアウトを非表示 document.getElementById("logoutBtn").style.display = "none"; return; } // ログインしている場合 const data = await response.json(); if (!data.success) { throw new Error("ユーザー情報を取得できませんでした"); } const user = data.user; currentUser = user; myLevel = user.level; // ログイン・会員登録を非表示 document.getElementById("loginBtn").style.display = "none"; document.getElementById("registerBtn").style.display = "none"; // ログアウトを表示 document.getElementById("logoutBtn").style.display = "inline-block"; // Neonから取得した情報を表示 document.getElementById("userStatus").innerHTML = `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　 <span class="itemInfo"> <img src="/bin/gyem.webp"> ${user.gems} <img src="/bin/kiname.webp"> ${user.goldenCandy} <img src="/bin/mahoame.webp"> ${user.magicalCandy} <img src="/bin/amekakera.webp"> ${user.candyFragments} </span>`; console.log("ログインユーザー:", user); } catch (error) { console.error("ユーザー情報取得エラー:", error); document.getElementById("userStatus").textContent = "ユーザー情報を取得できませんでした"; } }
+
+async function logout() {
 
     try {
 
-        const response = await fetch("/api/me");
+        await fetch("/api/logout", {
+            method: "POST"
+        });
 
-        // ログインしていない
-        if (!response.ok) {
-myLevel = 0;
-document.getElementById("userStatus").textContent ="ゲスト";
-            return;
-        }
-
-        // ログインしている場合
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error("ユーザー情報を取得できませんでした");
-        }
-
-const user = data.user;
-currentUser = user;
-myLevel = user.level;
-        // Neonから取得した情報を表示
-        document.getElementById("userStatus").innerHTML =
-            `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　
-    <span class="itemInfo">
-        <img src="/bin/gyem.webp"> ${user.gems}
-        <img src="/bin/kiname.webp"> ${user.goldenCandy}
-        <img src="/bin/mahoame.webp"> ${user.magicalCandy}
-        <img src="/bin/amekakera.webp"> ${user.candyFragments}
-    </span>`;
-        console.log("ログインユーザー:", user);
+        location.reload();
 
     } catch (error) {
 
-        console.error("ユーザー情報取得エラー:", error);
+        console.error("ログアウトエラー:", error);
 
-        document.getElementById("userStatus").textContent =
-            "ユーザー情報を取得できませんでした";
     }
 }
 
