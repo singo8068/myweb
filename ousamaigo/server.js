@@ -268,30 +268,23 @@ socket.on("createRoom", async data => {
     io.emit("roomList", rooms);
 });
 socket.on("joinRoom", async data => {
-
     const room = rooms.find(r => r.roomId === data.id);
-
     if (!room) return;
-
 
     // =========================
     // ゲスト側の会員判定
     // =========================
 
     const guestUserId = await getUserIdFromSocket(socket);
-
     let guestLevel;
     let guestMember = false;
-
 
     // =========================
     // 会員
     // =========================
 
     if (guestUserId) {
-
         try {
-
             const result = await pool.query(
                 `
                 SELECT level
@@ -356,13 +349,22 @@ socket.on("joinRoom", async data => {
 
     hostSocket?.join(room.roomId);
 
+// =========================
+// 対戦開始
+// =========================
+let hostColor;
+let guestColor;
 
-    // =========================
-    // 対戦開始
-    // =========================
-        let hostColor;
-        let guestColor;
-    try {
+// =========================
+// 新しい対戦として初期化
+// =========================
+room.ratingFinished = false;
+room.gameState = null;
+room.blackTime = 60000;
+room.whiteTime = 60000;
+room.turn = "black";
+
+try {
 
  // =========================
 // 対戦開始時のレーティング処理
