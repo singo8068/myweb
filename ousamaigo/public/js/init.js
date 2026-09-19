@@ -17,7 +17,7 @@ console.log("initBoard", {
 
     if (ISNET) {
 
-
+        backMati.style.display = "none";
         const data = await new Promise(resolve => {
             socket.emit("restoreGame", { roomId }, resolve);
         });
