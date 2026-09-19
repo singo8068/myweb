@@ -634,21 +634,17 @@ if (data.member && typeof levelInfo !== "undefined") {
         gameDiff
     });
 
-    levelInfo.innerHTML =
-        `レベル${data.oldLevel}　` +
-        `かちこし${beforeWinDiff} ` +
-        `${diffText}`;
+//    levelInfo.innerHTML =
+//        `レベル${data.oldLevel}　` +
+//        `かちこし${beforeWinDiff} ` +
+//        `${diffText}`;
 
     if (data.level > data.oldLevel) {
 
         levelInfo.innerHTML +=
             `<br>レベル${data.level}にあがったよ！`;
 
-    } else if (data.level < data.oldLevel) {
-
-        levelInfo.innerHTML +=
-            `<br>レベル${data.level}にさがったよ…`;
-    }
+    } 
 }
 }); 
 socket.on("timeSync", data => {
