@@ -660,12 +660,19 @@ socket.on("gameEnd", async data => {
     // =========================
     // 二重処理防止
     // =========================
+if (room.ratingFinished) {
+    return;
+}
 
-    if (room.ratingFinished) {
-        return;
-    }
+room.ratingFinished = true;
 
-    room.ratingFinished = true;
+// =========================
+// ゲーム終了時の最終状態
+// =========================
+
+if (data.gameState) {
+    room.gameState = data.gameState;
+}
 
 
     // =========================
@@ -747,20 +754,27 @@ if (memberVsMember) {
         // ホストへ「ホスト自身の結果」
         // =========================
 
-        io.to(room.hostId).emit(
-            "gameEnd",
-            {
-                winner: data.winner,
+io.to(room.hostId).emit(
+    "gameEnd",
+    {
+        winner: data.winner,
+        reason: data.reason,
 
-                level: hostResult.level,
-                winDiff: hostResult.winDiff,
+        gameState: room.gameState,
 
-                member: hostResult.member,
+        blackTime: room.blackTime,
+        whiteTime: room.whiteTime,
+        turn: room.turn,
 
-                oldLevel: hostResult.oldLevel,
-                oldWinDiff: hostResult.oldWinDiff
-            }
-        );
+        level: hostResult.level,
+        winDiff: hostResult.winDiff,
+
+        member: hostResult.member,
+
+        oldLevel: hostResult.oldLevel,
+        oldWinDiff: hostResult.oldWinDiff
+    }
+);
 
 // =========================
 // ゲストへ「ゲスト自身の結果」
@@ -770,6 +784,13 @@ io.to(room.guestId).emit(
     "gameEnd",
     {
         winner: data.winner,
+        reason: data.reason,
+
+        gameState: room.gameState,
+
+        blackTime: room.blackTime,
+        whiteTime: room.whiteTime,
+        turn: room.turn,
 
         level: guestResult.level,
         winDiff: guestResult.winDiff,
