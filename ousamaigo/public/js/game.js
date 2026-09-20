@@ -353,7 +353,12 @@ resetBtn.addEventListener("click", async function () {
  gameState: undoHistory[undoHistory.length - 1]
         });
     }
- syouhai("こうさんで",currentPlayer === "white");
+ syouhai(
+    "こうさんで",
+    currentPlayer === "white",
+    true,
+    "kousan"
+);
  });
 resetBtn2.addEventListener("click", async function () {
  document.getElementById("effectText").style.display = "none";
@@ -413,46 +418,98 @@ async function hantei(){
    }
   }
   //await showEffectText( 3000);
-  syouhai("くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので",blackCount>whiteCount);
+  syouhai(
+    "くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので",
+    blackCount > whiteCount,
+    true,
+    "hantei"
+);
 }
-async function syouhai(maetext,isBlackWin, sendGameEnd = true){
- while (turnDisplay.firstChild) turnDisplay.removeChild(turnDisplay.firstChild);
- const winImg = document.createElement("img");
 
- winImg.src = isBlackWin ? kurokingImg.src : sirokingImg.src;
- winImg.alt = isBlackWin ? "くろのかち！" : "しろのかち！";
- winImg.style.height = "50px";
- winImg.style.verticalAlign = "middle";
- turnDisplay.appendChild(winImg);
- turnDisplay.appendChild(winText);
-if(ISNET){
-  if(myColor==="black"){
-  winMessage = isBlackWin ? "きみのかち！" : "きみのまけ";
- }else{
-  winMessage = isBlackWin ? "きみのまけ" : "きみのかち！";
 
- }
-}else{
- winMessage = isBlackWin ? "くろのかち！" : "しろのかち！";
-}
-  const effectDiv = document.getElementById("effectText");
-  effectDiv.textContent = maetext+"\n"+winMessage;
-  effectDiv.style.display = "block";
- effectDiv.style.opacity = "0.7";
+async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other") {
 
- document.getElementById("mainControls").style.display = "none";
+    while (turnDisplay.firstChild) {
+        turnDisplay.removeChild(turnDisplay.lastChild);
+    }
 
- if (ISNET){backMati.style.display = "block";
-  }else{
-   document.getElementById("saigoControls").style.display = "block";
-  }
- gameNow=false;
-if (ISNET && sendGameEnd) {
-    socket.emit("gameEnd", {
-        roomId,
-        winner: isBlackWin ? "black" : "white"
-    });
-}
+    const winImg = document.createElement("img");
+
+    winImg.src = isBlackWin ? kurokingImg.src : sirokingImg.src;
+    winImg.alt = isBlackWin ? "くろのかち！" : "しろのかち！";
+    winImg.style.height = "50px";
+    winImg.style.verticalAlign = "middle";
+
+    turnDisplay.appendChild(winImg);
+    turnDisplay.appendChild(winText);
+
+    if (ISNET) {
+
+        if (myColor === "black") {
+            winMessage =
+                isBlackWin
+                    ? "きみのかち！"
+                    : "きみのまけ";
+        } else {
+            winMessage =
+                isBlackWin
+                    ? "きみのまけ"
+                    : "きみのかち！";
+        }
+
+    } else {
+
+        winMessage =
+            isBlackWin
+                ? "くろのかち！"
+                : "しろのかち！";
+    }
+
+    const effectDiv =
+        document.getElementById("effectText");
+
+    effectDiv.textContent =
+        maetext + "\n" + winMessage;
+
+    effectDiv.style.display = "block";
+    effectDiv.style.opacity = "0.7";
+
+    document.getElementById("mainControls").style.display = "none";
+
+    if (ISNET) {
+        backMati.style.display = "block";
+    } else {
+        document.getElementById("saigoControls").style.display = "block";
+    }
+
+    gameNow = false;
+
+    // =========================
+    // ゲーム終了をサーバーへ送信
+    // =========================
+
+    if (ISNET && sendGameEnd) {
+
+        socket.emit("gameEnd", {
+
+            roomId,
+
+            winner:
+                isBlackWin
+                    ? "black"
+                    : "white",
+
+            reason,
+
+            gameState:
+                getGameState(),
+
+            blackTime,
+            whiteTime,
+
+            turn: currentPlayer
+        });
+    }
 }
 
 	
@@ -467,12 +524,23 @@ setInterval(() => {
  }
  blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
  whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
-    if (blackTime <= 0) {
-         syouhai("じかんぎれで",false);
-    }
-    if (whiteTime <= 0) {
-         syouhai("じかんぎれで",true);
-    }
+if (blackTime <= 0) {
+    syouhai(
+        "じかんぎれで",
+        false,
+        true,
+        "time"
+    );
+}
+
+if (whiteTime <= 0) {
+    syouhai(
+        "じかんぎれで",
+        true,
+        true,
+        "time"
+    );
+}
 }, 100);
 
 
@@ -582,71 +650,134 @@ saveState();
 });
 socket.on("kousan", async data => {
     console.log("受信こうさん", data);
- syouhai("こうさんで",currentPlayer === "white", false);
+
+    // こうさんの表示はgameEndで行う
 });
 socket.on("gameEnd", async data => {
 
     console.log("サーバーからgameEnd受信", data);
 
     // =========================
-    // 結果表示
+    // 最終ゲーム状態を復元
+    // =========================
+
+    if (data.gameState) {
+
+        const state = data.gameState;
+
+        board =
+            state.board.map(row => [...row]);
+
+        drawBoard =
+            state.drawBoard.map(row => [...row]);
+
+        currentPlayer =
+            state.currentPlayer;
+
+        blackKing =
+            state.blackKing
+                ? { ...state.blackKing }
+                : null;
+
+        whiteKing =
+            state.whiteKing
+                ? { ...state.whiteKing }
+                : null;
+
+        blackTame =
+            state.blackTame;
+
+        whiteTame =
+            state.whiteTame;
+
+        if (typeof data.blackTime === "number") {
+            blackTime = data.blackTime;
+        }
+
+        if (typeof data.whiteTime === "number") {
+            whiteTime = data.whiteTime;
+        }
+
+        if (data.turn) {
+            currentPlayer = data.turn;
+        }
+
+        updateForbiddenPoints();
+        updateDisplay();
+        draw();
+    }
+
+    // =========================
+    // 勝敗表示
     // =========================
 
     if (gameNow) {
 
+        let endText = "しょうぶがおわったよ";
+
+        if (data.reason === "kousan") {
+            endText = "こうさんで";
+        }
+
+        if (data.reason === "time") {
+            endText = "じかんぎれで";
+        }
+
+        if (data.reason === "king") {
+            endText = "王様を取って";
+        }
+
+        if (data.reason === "hantei") {
+            endText = "しょうぶがおわったよ";
+        }
+
         await syouhai(
-            data.reason || "しょうぶがおわったよ",
+            endText,
             data.winner === "black",
             false
         );
     }
-// =========================
-// 会員のレベル・勝ち越し表示
-// =========================
 
-if (data.member && typeof levelInfo !== "undefined") {
+    // =========================
+    // 会員のレベル・勝ち越し表示
+    // =========================
 
-    // 対戦開始前の実際の勝ち越し
-    // startPlayer() で -1 されているので +1
-    const beforeWinDiff = data.oldWinDiff + 1;
+    if (data.member && typeof levelInfo !== "undefined") {
 
-    // 自分が勝ったか
-    const myWon =
-        data.winner === myColor;
+        const beforeWinDiff =
+            data.oldWinDiff + 1;
 
-    // 対戦による実際の勝ち越し変動
-    const gameDiff = myWon ? 1 : -1;
+        const myWon =
+            data.winner === myColor;
 
-    const diffText =
-        gameDiff > 0
-            ? `＋${gameDiff}`
-            : `${gameDiff}`;
+        const gameDiff =
+            myWon ? 1 : -1;
 
-    console.log("自分の最終結果", {
-        winner: data.winner,
-        myColor,
-        myWon,
-        oldLevel: data.oldLevel,
-        oldWinDiff: data.oldWinDiff,
-        beforeWinDiff,
-        level: data.level,
-        winDiff: data.winDiff,
-        gameDiff
-    });
+        const diffText =
+            gameDiff > 0
+                ? `＋${gameDiff}`
+                : `${gameDiff}`;
 
-//    levelInfo.innerHTML =
-//        `レベル${data.oldLevel}　` +
-//        `かちこし${beforeWinDiff} ` +
-//        `${diffText}`;
+        console.log("自分の最終結果", {
+            winner: data.winner,
+            myColor,
+            myWon,
+            oldLevel: data.oldLevel,
+            oldWinDiff: data.oldWinDiff,
+            beforeWinDiff,
+            level: data.level,
+            winDiff: data.winDiff,
+            gameDiff
+        });
 
-    if (data.level > data.oldLevel) {
+        if (data.level > data.oldLevel) {
 
-        levelInfo.innerHTML +=
-            `<br>レベル${data.level}にあがったよ！`;
+            levelInfo.innerHTML +=
+                `<br>レベル${data.level}にあがったよ！`;
 
-    } 
-}
-}); 
+        }
+    }
+});
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
@@ -733,5 +864,17 @@ function saveState() {
         blackTame: blackTame,
         whiteTame: whiteTame
     });
+}
+
+function getGameState() {
+    return {
+        board: board.map(row => [...row]),
+        drawBoard: drawBoard.map(row => [...row]),
+        currentPlayer: currentPlayer,
+        blackKing: blackKing ? { ...blackKing } : null,
+        whiteKing: whiteKing ? { ...whiteKing } : null,
+        blackTame: blackTame,
+        whiteTame: whiteTame
+    };
 }
 
