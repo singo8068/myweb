@@ -80,7 +80,7 @@ async function placeStone(
     }
   }
 
-  if (!gameNow) return false;
+  if (!gameNow && !fromNetwork) return false;
     if (changeTurn && !ISNET) {
       playerChange();
     }
