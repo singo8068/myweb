@@ -445,6 +445,8 @@ socket.on("createRoom", async data => {
 
         hostMember: member,
 
+memberOnly: member ? !!data.memberOnly : false,
+
         size: data.size,
 
         blackTime: 60000,
@@ -475,7 +477,18 @@ socket.on("joinRoom", async data => {
     const guestUserId = await getUserIdFromSocket(socket);
     let guestLevel;
     let guestMember = false;
+    // =========================
+    // 会員限定募集チェック
+    // =========================
 
+    if (room.memberOnly && !guestUserId) {
+
+        socket.emit("joinRoomError", {
+            message: "この募集は会員のみ参加できます"
+        });
+
+        return;
+    }
     // =========================
     // 会員
     // =========================
