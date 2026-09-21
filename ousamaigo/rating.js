@@ -11,67 +11,11 @@ const LEVEL_RULES = {
 
 module.exports = function(pool, sessions) {
 
-
-    // =========================
-    // レベルアップ・ダウン判定
-    // =========================
-
-    function checkLevel(level, winDiff) {
-
-        const oldLevel = level;
-
-        if (level < 9) {
-
-            const rule = LEVEL_RULES[level];
-
-            // レベルアップ
-            if (rule.up !== null && winDiff >= rule.up) {
-                level++;
-                winDiff = 0;
-            }
-
-            // レベルダウン
-            else if (
-                rule.down !== null &&
-                winDiff <= -rule.down
-            ) {
-                level--;
-                winDiff = 0;
-            }
-
-        } else {
-
-            // レベル9以上
-            if (winDiff >= level - 3) {
-                level++;
-                winDiff = 0;
-            }
-
-            else if (winDiff <= -4) {
-                level--;
-                winDiff = 0;
-            }
-        }
-
-
-        return {
-            level,
-            winDiff,
-            levelChanged: level !== oldLevel
-        };
-    }
-
-
-
     // =========================
     // 対戦開始
     // =========================
 
     async function startPlayer(player) {
-
-        // -------------------------
-        // 会員
-        // -------------------------
 
         if (player.userId) {
 
@@ -85,13 +29,12 @@ module.exports = function(pool, sessions) {
                 [player.userId]
             );
 
-
             if (result.rows.length === 0) {
+
                 throw new Error(
                     `ユーザーが見つかりません: ${player.userId}`
                 );
             }
-
 
             const user = result.rows[0];
 
@@ -104,33 +47,25 @@ module.exports = function(pool, sessions) {
                 user.win_diff
             );
 
-
-return {
-    member: true,
-    userId: player.userId,
-    level: Number(user.level),
-    winDiff: Number(user.win_diff)
-};
+            return {
+                member: true,
+                userId: player.userId,
+                level: Number(user.level),
+                winDiff: Number(user.win_diff)
+            };
         }
 
 
-// -------------------------
-// ゲスト
-// -------------------------
+        console.log(
+            "ゲスト：対戦開始",
+            "level:"
+        );
 
-const level = 0;
-
-console.log(
-    "ゲスト：対戦開始",
-    "level:"
-);
-
-return {
-    member: false,
-    level: 0
-};
+        return {
+            member: false,
+            level: 0
+        };
     }
-
 
 
     // =========================
@@ -138,11 +73,6 @@ return {
     // =========================
 
     async function finishPlayer(player, won) {
-
-
-        // -------------------------
-        // 会員
-        // -------------------------
 
         if (player.userId) {
 
@@ -165,39 +95,43 @@ return {
 
 
                 if (result.rows.length === 0) {
+
                     throw new Error(
                         `ユーザーが見つかりません: ${player.userId}`
                     );
                 }
 
 
-                let level = Number(result.rows[0].level);
-                let winDiff = Number(result.rows[0].win_diff);
+                let level =
+                    Number(result.rows[0].level);
+
+                let winDiff =
+                    Number(result.rows[0].win_diff);
 
 
-// 勝者は +2
-if (won) {
-    winDiff += 2;
+                // -------------------------
+                // 勝者
+                // -------------------------
 
-// レベル3以下で、勝ち越しがマイナスなら
-// 敗北しても +1
-} else if (level <= 3 && winDiff < 0) {
-    winDiff += 1;
-}
+                if (won) {
+
+                    winDiff += 2;
 
 
-                const oldLevel = level;
-                const oldWinDiff = winDiff - (won ? 2 : 0);
+                // -------------------------
+                // 敗者
+                // -------------------------
+                // レベル3以下で、
+                // 勝ち越しがマイナスなら +1
+                // -------------------------
 
+                } else if (
+                    level <= 3 &&
+                    winDiff < 0
+                ) {
 
-                const checked = checkLevel(
-                    level,
-                    winDiff
-                );
-
-
-                level = checked.level;
-                winDiff = checked.winDiff;
+                    winDiff += 1;
+                }
 
 
                 await client.query(
@@ -219,7 +153,9 @@ if (won) {
 
 
                 console.log(
-                    won ? "会員：勝利 +2" : "会員：敗北",
+                    won
+                        ? "会員：勝利 +2"
+                        : "会員：敗北",
                     player.userId,
                     "level:",
                     level,
@@ -231,9 +167,7 @@ if (won) {
                 return {
                     member: true,
                     won,
-                    oldLevel,
                     level,
-                    oldWinDiff,
                     winDiff
                 };
 
@@ -251,25 +185,272 @@ if (won) {
         }
 
 
-// -------------------------
-// ゲスト
-// -------------------------
+        console.log(
+            won
+                ? "ゲスト：勝利"
+                : "ゲスト：敗北"
+        );
 
-console.log(
-    won ? "ゲスト：勝利" : "ゲスト：敗北"
-);
 
-return {
-    member: false,
-    won,
-    level: 0
-};
+        return {
+            member: false,
+            won,
+            level: 0
+        };
     }
 
 
+    // =========================
+    // 待合室へ入る前のレベル判定
+    // =========================
+
+    async function checkLevel(userId) {
+
+        const result = await pool.query(
+            `
+            SELECT level, win_diff
+            FROM users
+            WHERE user_id = $1
+            `,
+            [userId]
+        );
+
+
+        if (result.rows.length === 0) {
+
+            throw new Error(
+                `ユーザーが見つかりません: ${userId}`
+            );
+        }
+
+
+        const level =
+            Number(result.rows[0].level);
+
+        const winDiff =
+            Number(result.rows[0].win_diff);
+
+        const rule =
+            LEVEL_RULES[level];
+
+
+        if (!rule) {
+
+            return {
+                type: "none"
+            };
+        }
+
+
+        // =========================
+        // 昇格
+        // =========================
+
+        if (
+            level < 8 &&
+            winDiff >= rule.up
+        ) {
+
+            const newLevel =
+                level + 1;
+
+
+            await pool.query(
+                `
+                UPDATE users
+                SET level = $1,
+                    win_diff = 0
+                WHERE user_id = $2
+                `,
+                [
+                    newLevel,
+                    userId
+                ]
+            );
+
+
+            console.log(
+                "昇格:",
+                userId,
+                `Lv${level} → Lv${newLevel}`,
+                "winDiff: 0"
+            );
+
+
+            return {
+                type: "up",
+                oldLevel: level,
+                newLevel: newLevel
+            };
+        }
+
+
+        // =========================
+        // 降格条件
+        // =========================
+
+        if (
+            level > 1 &&
+            rule.down !== null &&
+            winDiff <= -rule.down
+        ) {
+
+            console.log(
+                "降格条件:",
+                userId,
+                "level:",
+                level,
+                "winDiff:",
+                winDiff
+            );
+
+
+            // ここではまだ降格しない
+            return {
+                type: "down",
+                level,
+                winDiff
+            };
+        }
+
+
+        // =========================
+        // 問題なし
+        // =========================
+
+        return {
+            type: "none",
+            level,
+            winDiff
+        };
+    }
+
+
+    // =========================
+    // 降格確定
+    // =========================
+
+    async function confirmDemotion(userId) {
+
+        const client = await pool.connect();
+
+        try {
+
+            await client.query("BEGIN");
+
+
+            const result = await client.query(
+                `
+                SELECT level, win_diff
+                FROM users
+                WHERE user_id = $1
+                FOR UPDATE
+                `,
+                [userId]
+            );
+
+
+            if (result.rows.length === 0) {
+
+                throw new Error(
+                    `ユーザーが見つかりません: ${userId}`
+                );
+            }
+
+
+            const level =
+                Number(result.rows[0].level);
+
+            const winDiff =
+                Number(result.rows[0].win_diff);
+
+            const rule =
+                LEVEL_RULES[level];
+
+
+            // =========================
+            // 現在も降格条件を満たしているか確認
+            // =========================
+
+            if (
+                level <= 1 ||
+                !rule ||
+                rule.down === null ||
+                winDiff > -rule.down
+            ) {
+
+                await client.query("COMMIT");
+
+                return {
+                    success: false,
+                    message: "降格条件を満たしていません"
+                };
+            }
+
+
+            // =========================
+            // 降格
+            // =========================
+
+            const newLevel =
+                level - 1;
+
+
+            // ★レベルが変わるので win_diff は必ず0
+            await client.query(
+                `
+                UPDATE users
+                SET level = $1,
+                    win_diff = 0
+                WHERE user_id = $2
+                `,
+                [
+                    newLevel,
+                    userId
+                ]
+            );
+
+
+            await client.query("COMMIT");
+
+
+            console.log(
+                "降格:",
+                userId,
+                `Lv${level} → Lv${newLevel}`,
+                "winDiff: 0"
+            );
+
+
+            return {
+                success: true,
+                oldLevel: level,
+                newLevel: newLevel,
+                winDiff: 0
+            };
+
+
+        } catch (err) {
+
+            await client.query("ROLLBACK");
+
+            throw err;
+
+        } finally {
+
+            client.release();
+        }
+    }
+
+
+    // =========================
+    // 外部公開
+    // =========================
 
     return {
         startPlayer,
-        finishPlayer
+        finishPlayer,
+        checkLevel,
+        confirmDemotion
     };
 };

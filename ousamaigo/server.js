@@ -45,13 +45,210 @@ require("./login")(app, pool, sessions);
 const createRating = require("./rating");
 const rating = createRating(pool, sessions);
 
+
+// =========================
+// セッションからユーザーID取得
+// =========================
+
+async function getUserIdFromRequest(req) {
+
+    const sessionId = req.headers.cookie
+        ?.match(/(?:^|;\s*)sessionId=([^;]+)/)?.[1];
+
+    if (!sessionId) {
+        return null;
+    }
+
+    try {
+
+        const result = await pool.query(
+            `
+            SELECT user_id
+            FROM login_sessions
+            WHERE session_id = $1
+              AND expires_at > NOW()
+            `,
+            [sessionId]
+        );
+
+        if (result.rows.length === 0) {
+            return null;
+        }
+
+        return result.rows[0].user_id;
+
+    } catch (err) {
+
+        console.error(
+            "HTTPログイン確認エラー:",
+            err
+        );
+
+        return null;
+    }
+}
+
+
+// =========================
+// 降格確定
+// =========================
+
+app.post("/api/confirm-demotion", async (req, res) => {
+
+    try {
+
+        const userId =
+            await getUserIdFromRequest(req);
+
+
+        // -------------------------
+        // ログイン確認
+        // -------------------------
+
+        if (!userId) {
+
+            return res.status(401).json({
+                success: false,
+                message: "ログインしてください"
+            });
+        }
+
+
+        // -------------------------
+        // rating.jsで降格処理
+        // -------------------------
+
+        const result =
+            await rating.confirmDemotion(userId);
+
+
+        // -------------------------
+        // 降格できなかった
+        // -------------------------
+
+        if (!result.success) {
+
+            return res.status(400).json(result);
+        }
+
+
+        // -------------------------
+        // 成功
+        // -------------------------
+
+        return res.json(result);
+
+
+    } catch (err) {
+
+        console.error(
+            "降格処理エラー:",
+            err
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "降格処理に失敗しました"
+        });
+    }
+
+});
+// =========================
+// 待合室へ入る前のレベル判定
+// =========================
+
+async function checkLevelAndServeWaitingRoom(req, res) {
+
+    const userId =
+        await getUserIdFromRequest(req);
+
+
+    // -------------------------
+    // ゲスト
+    // -------------------------
+
+    if (!userId) {
+
+        return res.sendFile(
+            path.join(__dirname, "public", "matiai.html")
+        );
+    }
+
+
+    try {
+
+        const result =
+            await rating.checkLevel(userId);
+
+
+        // -------------------------
+        // 昇格
+        // -------------------------
+
+        if (result.type === "up") {
+
+            return res.redirect(
+                `/level.html?type=up` +
+                `&oldLevel=${result.oldLevel}` +
+                `&newLevel=${result.newLevel}`
+            );
+        }
+
+
+        // -------------------------
+        // 降格
+        // -------------------------
+
+        if (result.type === "down") {
+
+            return res.redirect(
+                "/level.html?type=down"
+            );
+        }
+
+
+        // -------------------------
+        // 問題なし
+        // -------------------------
+
+        return res.sendFile(
+            path.join(__dirname, "public", "matiai.html")
+        );
+
+
+    } catch (err) {
+
+        console.error(
+            "レベル判定エラー:",
+            err
+        );
+
+        return res.sendFile(
+            path.join(__dirname, "public", "matiai.html")
+        );
+    }
+}
+
+
+// =========================
+// 待合室
+// =========================
+
+// / と /matiai.html の両方を
+// レベル判定してから表示する
+
+app.get("/", checkLevelAndServeWaitingRoom);
+
+app.get("/matiai.html", checkLevelAndServeWaitingRoom);
+
+
+// =========================
+// 静的ファイル
+// =========================
+
 app.use(express.static("public", {
     index: false
 }));
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "matiai.html"));
-});
 
 let rooms = [];       // 募集中
 let gameRooms = [];   // 対戦中
