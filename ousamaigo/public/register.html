@@ -63,6 +63,15 @@ button {
     placeholder="パスワード"
     autocomplete="new-password"
 >
+<label style="display:block; font-size:18px; margin:20px 0;">
+    <input
+        type="checkbox"
+        id="igoExperienced"
+        style="display:inline; width:auto; margin:0 8px 0 0;"
+    >
+    囲碁経験者です
+</label>
+
 
 <button onclick="register()">
 とうろくする
@@ -81,8 +90,10 @@ button {
 
 async function register() {
 
-    const id = document.getElementById("userId").value.trim();
-    const password = document.getElementById("password").value;
+const id = document.getElementById("userId").value.trim();
+const password = document.getElementById("password").value;
+const igoExperienced =
+    document.getElementById("igoExperienced").checked;
 
     const message = document.getElementById("message");
 
@@ -104,7 +115,8 @@ async function register() {
 
             body: JSON.stringify({
                 user_id: id,
-                password: password
+                password: password,
+    igoExperienced: igoExperienced
             })
         });
 
