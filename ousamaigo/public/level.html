@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<title>レベル判定</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+
+body{
+    font-family:sans-serif;
+    text-align:center;
+}
+
+#levelBox{
+    width:500px;
+    max-width:90%;
+    margin:40px auto;
+    border:2px solid black;
+    border-radius:12px;
+    padding:25px;
+    box-sizing:border-box;
+}
+
+h2{
+    font-size:32px;
+    margin-top:10px;
+}
+
+#message{
+    font-size:24px;
+    line-height:1.7;
+    margin:25px 0;
+}
+
+.info{
+    font-size:22px;
+    margin:15px 0;
+}
+
+.itemInfo{
+    font-size:20px;
+    margin:20px 0;
+}
+
+.itemInfo img{
+    width:30px;
+    height:30px;
+    vertical-align:middle;
+}
+
+button{
+    display:block;
+    width:90%;
+    margin:15px auto;
+    padding:8px 10px;
+    background-color:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:24px;
+    cursor:pointer;
+}
+
+button:hover{
+    background-color:#45a049;
+}
+
+#backBtn{
+    background-color:#555;
+}
+
+#backBtn:hover{
+    background-color:#444;
+}
+
+#demotionBtn{
+    background-color:#d9534f;
+}
+
+#demotionBtn:hover{
+    background-color:#c9302c;
+}
+
+.hidden{
+    display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="levelBox">
+
+    <!-- =========================
+         昇格画面
+         ========================= -->
+
+    <div id="upArea" class="hidden">
+
+        <h2>レベルアップ！</h2>
+
+        <div id="upMessage">
+        </div>
+
+        <button id="upBackBtn">
+            まちあいしつへ
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         降格画面
+         ========================= -->
+
+    <div id="downArea" class="hidden">
+
+        <h2>降格条件に達しました</h2>
+
+        <div id="downMessage">
+        </div>
+
+        <div class="info">
+            レベル <span id="currentLevel">-</span>
+        </div>
+
+        <div class="info">
+            かちこし <span id="currentWinDiff">-</span>
+        </div>
+
+        <div class="itemInfo">
+
+            <img src="/bin/kiname.webp">
+            きんのあめ
+            <span id="goldenCandy">-</span>
+
+            <br><br>
+
+            <img src="/bin/mahoame.webp">
+            まほうのあめ
+            <span id="magicCandy">-</span>
+
+        </div>
+
+
+        <!-- あめを使う -->
+
+        <button id="useGoldenCandyBtn">
+            きんのあめをつかう
+        </button>
+
+        <button id="useMagicCandyBtn">
+            まほうのあめをつかう
+        </button>
+
+
+        <!-- 降格確定 -->
+
+        <button id="demotionBtn">
+            降格を確定する
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         エラー
+         ========================= -->
+
+    <div id="errorArea" class="hidden">
+
+        <h2>エラー</h2>
+
+        <div id="errorMessage">
+        </div>
+
+        <button id="errorBackBtn">
+            まちあいしつへ
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const params = new URLSearchParams(
+    window.location.search
+);
+
+const type = params.get("type");
+
+
+// =========================
+// 要素
+// =========================
+
+const upArea =
+    document.getElementById("upArea");
+
+const downArea =
+    document.getElementById("downArea");
+
+const errorArea =
+    document.getElementById("errorArea");
+
+const upMessage =
+    document.getElementById("upMessage");
+
+const downMessage =
+    document.getElementById("downMessage");
+
+const currentLevel =
+    document.getElementById("currentLevel");
+
+const currentWinDiff =
+    document.getElementById("currentWinDiff");
+
+const goldenCandy =
+    document.getElementById("goldenCandy");
+
+const magicCandy =
+    document.getElementById("magicCandy");
+
+
+// =========================
+// 昇格画面
+// =========================
+
+if (type === "up") {
+
+    const oldLevel =
+        Number(params.get("oldLevel"));
+
+    const newLevel =
+        Number(params.get("newLevel"));
+
+    upArea.classList.remove("hidden");
+
+    upMessage.innerHTML =
+        `
+        <div>
+            レベル ${oldLevel} から
+            レベル ${newLevel} になりました！
+        </div>
+        <div>
+            おめでとうございます！
+        </div>
+        `;
+
+}
+
+
+// =========================
+// 降格画面
+// =========================
+
+else if (type === "down") {
+
+    downArea.classList.remove("hidden");
+
+    loadUserInfo();
+
+}
+
+
+// =========================
+// 不明なタイプ
+// =========================
+
+else {
+
+    errorArea.classList.remove("hidden");
+
+    document.getElementById("errorMessage").textContent =
+        "レベル情報を取得できませんでした。";
+}
+
+
+// =========================
+// ユーザー情報取得
+// =========================
+
+async function loadUserInfo() {
+
+    try {
+
+        const response =
+            await fetch("/api/me");
+
+        if (!response.ok) {
+
+            showError(
+                "ログイン情報を取得できませんでした。"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if (!data.success || !data.user) {
+
+            showError(
+                "ユーザー情報を取得できませんでした。"
+            );
+
+            return;
+        }
+
+        const user = data.user;
+
+        const level =
+            Number(user.level);
+
+        const winDiff =
+            Number(user.winDiff);
+
+        currentLevel.textContent =
+            level;
+
+        currentWinDiff.textContent =
+            winDiff >= 0
+                ? `+${winDiff}`
+                : winDiff;
+
+        goldenCandy.textContent =
+            Number(user.goldenCandy);
+
+        magicCandy.textContent =
+            Number(user.magicalCandy);
+
+
+        // =========================
+        // 降格条件を確認
+        // =========================
+
+        const downLimit = {
+
+            4: 8,
+            5: 7,
+            6: 6,
+            7: 5,
+            8: 4
+
+        }[level];
+
+
+        // =========================
+        // すでに降格条件から
+        // 外れている場合
+        // =========================
+
+        if (
+            downLimit === undefined ||
+            winDiff > -downLimit
+        ) {
+
+            window.location.href =
+                "/matiai.html";
+
+            return;
+        }
+
+
+        // =========================
+        // メッセージ
+        // =========================
+
+        downMessage.innerHTML =
+            `
+            レベル ${level} の
+            降格条件に達しています。<br>
+            あめを使うと、かちこしを
+            1つ回復できます。
+            `;
+
+
+        // =========================
+        // ボタン状態
+        // =========================
+
+        document.getElementById(
+            "useGoldenCandyBtn"
+        ).disabled =
+            Number(user.goldenCandy) <= 0;
+
+        document.getElementById(
+            "useMagicCandyBtn"
+        ).disabled =
+            Number(user.magicalCandy) <= 0;
+
+
+    } catch (error) {
+
+        console.error(
+            "ユーザー情報取得エラー:",
+            error
+        );
+
+        showError(
+            "ユーザー情報の取得に失敗しました。"
+        );
+    }
+}
+
+
+// =========================
+// あめを使う
+// =========================
+
+document.getElementById(
+    "useGoldenCandyBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        useCandy("golden");
+
+    }
+);
+
+
+document.getElementById(
+    "useMagicCandyBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        useCandy("magic");
+
+    }
+);
+
+
+async function useCandy(type) {
+
+    const button =
+        type === "golden"
+            ? document.getElementById(
+                "useGoldenCandyBtn"
+            )
+            : document.getElementById(
+                "useMagicCandyBtn"
+            );
+
+    button.disabled = true;
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/use-candy",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        type: type
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                "あめを使えませんでした"
+            );
+
+            button.disabled = false;
+
+            return;
+        }
+
+
+        // =========================
+        // あめ使用成功
+        // =========================
+
+        alert(
+            type === "golden"
+                ? "きんのあめを1個使いました！"
+                : "まほうのあめを1個使いました！"
+        );
+
+
+        // =========================
+        // 現在の状態を再確認
+        // =========================
+
+        await loadUserInfo();
+
+
+    } catch (error) {
+
+        console.error(
+            "あめ使用エラー:",
+            error
+        );
+
+        alert(
+            "あめの使用処理に失敗しました"
+        );
+
+        button.disabled = false;
+    }
+
+}
+
+
+// =========================
+// 降格確定
+// =========================
+
+document.getElementById(
+    "demotionBtn"
+).addEventListener(
+    "click",
+    async () => {
+
+        const ok =
+            confirm(
+                "降格を確定しますか？"
+            );
+
+        if (!ok) {
+            return;
+        }
+
+        const button =
+            document.getElementById(
+                "demotionBtn"
+            );
+
+        button.disabled = true;
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/confirm-demotion",
+                    {
+                        method: "POST"
+                    }
+                );
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                alert(
+                    data.message ||
+                    "降格処理に失敗しました"
+                );
+
+                button.disabled = false;
+
+                // 最新状態を取得
+                await loadUserInfo();
+
+                return;
+            }
+
+
+            // =========================
+            // 降格成功
+            // =========================
+
+            alert(
+                `レベルが${data.level}になりました`
+            );
+
+            window.location.href =
+                "/matiai.html";
+
+
+        } catch (error) {
+
+            console.error(
+                "降格処理エラー:",
+                error
+            );
+
+            alert(
+                "降格処理に失敗しました"
+            );
+
+            button.disabled = false;
+        }
+
+    }
+);
+
+
+// =========================
+// エラー表示
+// =========================
+
+function showError(message) {
+
+    upArea.classList.add("hidden");
+    downArea.classList.add("hidden");
+
+    errorArea.classList.remove("hidden");
+
+    document.getElementById(
+        "errorMessage"
+    ).textContent = message;
+}
+
+
+// =========================
+// 待合室へ戻る
+// =========================
+
+document.getElementById(
+    "upBackBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "/matiai.html";
+
+    }
+);
+
+
+document.getElementById(
+    "errorBackBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "/matiai.html";
+
+    }
+);
+
+</script>
+
+</body>
+</html>
