@@ -605,21 +605,39 @@ socket.on("tameru", async data => {
         messageId: data.messageId
     });
 
-
+    // =========================
+    // ためる
+    // =========================
 
     if (data.color === "black") {
         blackTame++;
     } else {
         whiteTame++;
     }
+
+    // =========================
+    // 手番変更
+    // =========================
+
+    currentPlayer =
+        currentPlayer === "black"
+            ? "white"
+            : "black";
+
+    updateTurnControls();
+
+    // =========================
+    // 状態保存
+    // =========================
+
+    saveState();
+
     await showEffectText("きあいを\nためるよ！", 1000);
 
     updateForbiddenPoints();
     updateDisplay();
     draw();
-    saveState();
 });
-
 
 
 socket.on("reverse", async data => {
