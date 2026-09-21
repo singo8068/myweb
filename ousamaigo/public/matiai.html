@@ -84,6 +84,11 @@ input,select{
 <div>
 
 <button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
+
+<select id="memberOnlySelect" style="display:none;">
+    <option value="false">だれでも参加OK</option>
+    <option value="true">会員のみ</option>
+</select>
 <button id="cancelBtn" onclick="cancelRoom()" disabled>ぼしゅうをやめる</button>
 </div>
 <p id="status"></p>
@@ -141,6 +146,7 @@ async function loadUserInfo() {
 
         currentUser = user;
         myLevel = user.level;
+document.getElementById("memberOnlySelect").style.display = "inline-block";
 
         document.getElementById("loginBtn").style.display = "none";
         document.getElementById("registerBtn").style.display = "none";
@@ -204,10 +210,16 @@ function createRoom(){
     document.getElementById("createBtn").disabled = true;
     document.getElementById("cancelBtn").disabled = false;
 
-    socket.emit("createRoom", {
-        name: currentUser ? currentUser.userId : "ゲスト",
-        level: currentUser ? currentUser.level : myLevel
-    });
+const memberOnly =
+    currentUser
+        ? document.getElementById("memberOnlySelect").value === "true"
+        : false;
+
+socket.emit("createRoom", {
+    name: currentUser ? currentUser.userId : "ゲスト",
+    level: currentUser ? currentUser.level : myLevel,
+    memberOnly: memberOnly
+});
 }
 
 function joinRoom(id){
@@ -260,16 +272,21 @@ socket.on("roomList", rooms => {
 
         let roomInfo;
 
-        if (room.hostMember) {
-            roomInfo = `
-                ${room.name}：
-                レベル ${room.level}
-            `;
-        } else {
-            roomInfo = `
-                ${room.name}
-            `;
-        }
+if (room.hostMember) {
+
+    roomInfo = `
+        ${room.name}：
+        レベル ${room.level}
+        ${room.memberOnly ? "【会員のみ】" : ""}
+    `;
+
+} else {
+
+    roomInfo = `
+        ${room.name}
+    `;
+
+}
 
         div.innerHTML = `
             <div class="room-content">
