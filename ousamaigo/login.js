@@ -6,7 +6,7 @@ module.exports = function(app, pool, sessions) {
 
 app.post("/api/register", async (req, res) => {
 
-    const { user_id, password } = req.body;
+    const { user_id, password, igoExperienced } = req.body;
 
     if (!user_id || !password) {
         return res.json({
@@ -33,13 +33,16 @@ app.post("/api/register", async (req, res) => {
         // パスワードをハッシュ化
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 会員登録
-        await pool.query(
-            `INSERT INTO users
-            (user_id, password_hash, level, win_diff, gems, magical_candy, candy_fragments, golden_candy)
-            VALUES ($1, $2, 3, 0, 0, 0, 0, 0)`,
-            [user_id, hashedPassword]
-        );
+// 初期レベル
+const initialLevel = igoExperienced ? 5 : 1;
+
+// 会員登録
+await pool.query(
+    `INSERT INTO users
+    (user_id, password_hash, level, win_diff, gems, magical_candy, candy_fragments, golden_candy)
+    VALUES ($1, $2, $3, 0, 0, 0, 0, 0)`,
+    [user_id, hashedPassword, initialLevel]
+);
 
         console.log("会員登録:", user_id);
 
