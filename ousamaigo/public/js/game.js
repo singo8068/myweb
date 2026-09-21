@@ -581,7 +581,6 @@ socket.on("pawa", async data => {
 
 
 const receivedMessages = new Set();
-
 socket.on("tameru", async data => {
     console.log("受信ためる", data);
 
@@ -589,7 +588,6 @@ socket.on("tameru", async data => {
     if (receivedMessages.has(data.messageId)) {
         console.log("ためる：重複受信なので無視", data.messageId);
 
-        // ACKだけは返す
         socket.emit("ack", {
             messageId: data.messageId
         });
@@ -597,10 +595,8 @@ socket.on("tameru", async data => {
         return;
     }
 
-    // このmessageIdは処理済みとして記録
     receivedMessages.add(data.messageId);
 
-    // 受信確認を返す
     socket.emit("ack", {
         messageId: data.messageId
     });
@@ -616,15 +612,14 @@ socket.on("tameru", async data => {
     }
 
     // =========================
-    // 手番変更
+    // ためた側の次の手番にする
+    // → 相手側の番になる
     // =========================
 
     currentPlayer =
-        currentPlayer === "black"
+        data.color === "black"
             ? "white"
             : "black";
-
-    updateTurnControls();
 
     // =========================
     // 状態保存
@@ -638,7 +633,6 @@ socket.on("tameru", async data => {
     updateDisplay();
     draw();
 });
-
 
 socket.on("reverse", async data => {
 
