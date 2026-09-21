@@ -158,6 +158,8 @@ button:hover{
             まほうのあめをつかう
         </button>
 
+<!-- ショップ --> <button id="buyCandyBtn"> あめを買う </button> <button id="buyGemBtn"> ジェムを買う </button>
+
 
         <!-- 降格確定 -->
 
@@ -630,7 +632,35 @@ function showError(message) {
     ).textContent = message;
 }
 
+// =========================
+// ショップへ
+// =========================
 
+document.getElementById(
+"buyCandyBtn"
+).addEventListener(
+"click",
+() => {
+
+    window.location.href =
+        "/shop.html";
+
+}
+
+);
+
+document.getElementById(
+"buyGemBtn"
+).addEventListener(
+"click",
+() => {
+
+    window.location.href =
+        "/shop.html";
+
+}
+
+);
 // =========================
 // 待合室へ戻る
 // =========================
