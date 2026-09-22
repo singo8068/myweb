@@ -280,7 +280,10 @@ socket.on("startGame", room => {
 // =========================
 
 socket.on("autoMatchError", data => {
-
+console.log(
+    "★ autoMatchError受信:",
+    data
+);
     document.getElementById(
         "message"
     ).textContent =
@@ -295,7 +298,21 @@ socket.on("autoMatchError", data => {
 
 socket.on("connect", () => {
 
+    console.log("★ Socket接続成功:", socket.id);
+
     socket.emit("joinAutoMatch");
+
+    console.log("★ joinAutoMatch送信");
+
+});
+
+
+socket.on("connect_error", (err) => {
+
+    console.error(
+        "★ Socket接続エラー:",
+        err.message
+    );
 
 });
 
