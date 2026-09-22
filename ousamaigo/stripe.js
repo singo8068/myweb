@@ -36,10 +36,10 @@ app.post("/api/stripe-webhook", async (req, res) => {
 
         try {
 
-            // ジェムを100個追加
+            // ジェムを300個追加
             await pool.query(
                 `UPDATE users
-                 SET gems = gems + 100
+                 SET gems = gems + 300
                  WHERE user_id = $1`,
                 [userId]
             );
@@ -47,7 +47,7 @@ app.post("/api/stripe-webhook", async (req, res) => {
             console.log(
                 "ジェム購入成功:",
                 userId,
-                "+100ジェム"
+                "+300ジェム"
             );
 
         } catch (error) {
@@ -98,7 +98,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
 
             line_items: [
                 {
-                    price: "price_1U4XIgPh2txd175gtbvANjzv",
+                    price: "price_1UISQEAwqvnXcTy3jTD1TVLv",
                     quantity: 1
                 }
             ],
