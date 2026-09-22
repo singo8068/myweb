@@ -667,7 +667,13 @@ socket.on("kousan", async data => {
 });
 socket.on("gameEnd", async data => {
 
-    console.log("サーバーからgameEnd受信", data);
+    console.log("★★ クライアントgameEnd受信 ★★", {
+        roomId,
+        myColor,
+        winner: data.winner,
+        reason: data.reason,
+        gameNow
+    });
 
     // =========================
     // 最終ゲーム状態を復元
@@ -749,47 +755,8 @@ socket.on("gameEnd", async data => {
             false
         );
     }
-
-    // =========================
-    // 会員のレベル・勝ち越し表示
-    // =========================
-
-    if (data.member && typeof levelInfo !== "undefined") {
-
-        const beforeWinDiff =
-            data.oldWinDiff + 1;
-
-        const myWon =
-            data.winner === myColor;
-
-        const gameDiff =
-            myWon ? 1 : -1;
-
-        const diffText =
-            gameDiff > 0
-                ? `＋${gameDiff}`
-                : `${gameDiff}`;
-
-        console.log("自分の最終結果", {
-            winner: data.winner,
-            myColor,
-            myWon,
-            oldLevel: data.oldLevel,
-            oldWinDiff: data.oldWinDiff,
-            beforeWinDiff,
-            level: data.level,
-            winDiff: data.winDiff,
-            gameDiff
-        });
-
-        if (data.level > data.oldLevel) {
-
-            levelInfo.innerHTML +=
-                `<br>レベル${data.level}にあがったよ！`;
-
-        }
-    }
 });
+
 socket.on("timeSync", data => {
     blackTime = data.blackTime;
     whiteTime = data.whiteTime;
