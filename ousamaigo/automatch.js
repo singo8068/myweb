@@ -620,7 +620,10 @@ module.exports = function createAutoMatch({
             async () => {
 
                 try {
-
+console.log(
+    "★ joinAutoMatch受信:",
+    socket.id
+);
                     // ------------------------------------------
                     // 会員確認
                     // ------------------------------------------
@@ -655,6 +658,12 @@ module.exports = function createAutoMatch({
                         );
 
 
+console.log(
+    "★ level取得:",
+    socket.id,
+    userId,
+    level
+);
                     if (
                         level === null ||
                         level === undefined
@@ -699,11 +708,14 @@ module.exports = function createAutoMatch({
                     });
 
 
-                    console.log(
-                        "自動マッチング待機:",
-                        userId,
-                        "Lv" + level
-                    );
+console.log(
+    "★ 待機列追加:",
+    autoMatchQueue.map(player => ({
+        socketId: player.socketId,
+        userId: player.userId,
+        level: player.level
+    }))
+);
 
 // ------------------------------------------
 // 自分のレベルを本人へ送信
