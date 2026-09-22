@@ -44,7 +44,7 @@ require("./login")(app, pool, sessions);
 
 const createRating = require("./rating");
 const rating = createRating(pool, sessions);
-
+const createAutoMatch = require("./automatch");
 
 // =========================
 // セッションからユーザーID取得
@@ -252,6 +252,17 @@ app.use(express.static("public", {
 
 let rooms = [];       // 募集中
 let gameRooms = [];   // 対戦中
+// =========================
+// 自動マッチング
+// =========================
+const autoMatch = createAutoMatch({
+    io,
+    pool,
+    rating,
+    onMatchCreated: async room => {
+        gameRooms.push(room);
+    }
+});
 
 function sendGameData(socket, room, eventName, data) {
     if (!room) return;
@@ -448,6 +459,8 @@ socket.on("createRoom", async data => {
 memberOnly: member ? !!data.memberOnly : false,
 
         size: data.size,
+    // 手動マッチング
+    matchType: "manual",
 
         blackTime: 60000,
         whiteTime: 60000,
@@ -916,24 +929,75 @@ const memberVsMember =
 let hostResult;
 let guestResult;
 
-
 if (memberVsMember) {
 
     // =========================
-    // 会員 vs 会員
+    // 勝ち越し反映対象か判定
     // =========================
 
-    hostResult =
-        await rating.finishPlayer(
-            room.hostPlayer,
-            hostWon
-        );
+    const hostCanRate =
+        room.matchType === "auto" ||
+        room.hostLevel <= 6;
 
-    guestResult =
-        await rating.finishPlayer(
-            room.guestPlayer,
-            guestWon
-        );
+    const guestCanRate =
+        room.matchType === "auto" ||
+        room.guestLevel <= 6;
+
+
+    // =========================
+    // ホスト
+    // =========================
+
+    if (hostCanRate) {
+
+        hostResult =
+            await rating.finishPlayer(
+                room.hostPlayer,
+                hostWon
+            );
+
+    } else {
+
+        // Lv7以上の手動マッチング
+        // 勝ち越しを変化させない
+
+        hostResult = {
+            member: true,
+            won: hostWon,
+            level: room.hostPlayer.level,
+            winDiff: room.hostPlayer.winDiff,
+            oldLevel: room.hostPlayer.level,
+            oldWinDiff: room.hostPlayer.winDiff
+        };
+    }
+
+
+    // =========================
+    // ゲスト
+    // =========================
+
+    if (guestCanRate) {
+
+        guestResult =
+            await rating.finishPlayer(
+                room.guestPlayer,
+                guestWon
+            );
+
+    } else {
+
+        // Lv7以上の手動マッチング
+        // 勝ち越しを変化させない
+
+        guestResult = {
+            member: true,
+            won: guestWon,
+            level: room.guestPlayer.level,
+            winDiff: room.guestPlayer.winDiff,
+            oldLevel: room.guestPlayer.level,
+            oldWinDiff: room.guestPlayer.winDiff
+        };
+    }
 
 } else {
 
