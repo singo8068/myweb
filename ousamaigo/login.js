@@ -34,7 +34,7 @@ app.post("/api/register", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
 // 初期レベル
-const initialLevel = igoExperienced ? 5 : 1;
+const initialLevel = igoExperienced ? 4 : 1;
 
 // 会員登録
 await pool.query(
