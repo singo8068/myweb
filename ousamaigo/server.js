@@ -871,7 +871,12 @@ socket.on("restoreGame", ({ roomId }, callback) => {
 
 });
 socket.on("gameEnd", async data => {
-
+    console.log("★★ gameEnd受信 ★★", {
+        socketId: socket.id,
+        roomId: data.roomId,
+        winner: data.winner,
+        reason: data.reason
+    });
     const room =
         gameRooms.find(
             r => r.roomId === data.roomId
@@ -1027,7 +1032,16 @@ if (memberVsMember) {
         // =========================
         // ホストへ「ホスト自身の結果」
         // =========================
-
+console.log("★★ gameEnd送信 ★★", {
+    sender: socket.id,
+    hostId: room.hostId,
+    guestId: room.guestId,
+    hostColor: room.hostColor,
+    guestColor: room.guestColor,
+    winner: data.winner,
+    reason: data.reason,
+    matchType: room.matchType
+});
 io.to(room.hostId).emit(
     "gameEnd",
     {
