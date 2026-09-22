@@ -80,12 +80,6 @@ h2{
     padding:10px 0;
 }
 
-#cancelButton{
-    font-size:20px;
-    padding:5px 25px;
-    cursor:pointer;
-}
-
 #message{
     margin-top:15px;
     color:red;
@@ -98,7 +92,7 @@ h2{
 <body>
 
 <div class="section">
-    <a href="matiai.html" class="back">
+    <a href="matiai.html" class="back" id="backButton">
         まちあいしつにもどる
     </a>
 </div>
@@ -150,14 +144,6 @@ h2{
             現在待機中のプレイヤーはいません
         </span>
     </div>
-
-
-    <!-- キャンセル -->
-
-    <button id="cancelButton">
-        キャンセル
-    </button>
-
 
     <div id="message"></div>
 
@@ -276,11 +262,6 @@ socket.on("startGame", room => {
         "対局画面へ移動しています…";
 
 
-    document.getElementById(
-        "cancelButton"
-    ).disabled = true;
-
-
     // 通常の対局画面へ
 
     location.href =
@@ -309,20 +290,22 @@ socket.on("autoMatchError", data => {
 });
 
 // =========================
-// 自動マッチング開始
+// Socket接続完了後に自動マッチング開始
 // =========================
 
-socket.emit("joinAutoMatch");
+socket.on("connect", () => {
+
+    socket.emit("joinAutoMatch");
+
+});
 
 
 // =========================
-// キャンセル
+// まちあいしつにもどる
 // =========================
 
-document.getElementById("cancelButton").addEventListener("click", () => {
+document.getElementById("backButton").addEventListener("click", () => {
 
     socket.emit("cancelAutoMatch");
-
-    location.href = "matiai.html";
 
 });
