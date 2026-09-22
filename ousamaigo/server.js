@@ -815,8 +815,62 @@ socket.on("cancelRoom", () => {
     io.emit("roomList", rooms);
 });
 socket.on("joinGameRoom", roomId => {
+
+    const room = gameRooms.find(
+        r => r.roomId === roomId
+    );
+
+    if (!room) {
+        console.log("game join: roomが見つからない", roomId);
+        return;
+    }
+
     socket.join(roomId);
-    console.log("game join", socket.id, roomId);
+
+    // =========================
+    // 自動マッチング
+    // 新しいSocket IDへ更新
+    // =========================
+
+    if (room.matchType === "auto") {
+
+        if (room.hostId !== socket.id &&
+            room.guestId !== socket.id) {
+
+            if (!room.hostGameJoined) {
+
+                room.hostId = socket.id;
+                room.hostGameJoined = true;
+
+                console.log(
+                    "自動マッチング：ホストSocket更新",
+                    roomId,
+                    socket.id
+                );
+
+            } else if (!room.guestGameJoined) {
+
+                room.guestId = socket.id;
+                room.guestGameJoined = true;
+
+                console.log(
+                    "自動マッチング：ゲストSocket更新",
+                    roomId,
+                    socket.id
+                );
+            }
+        }
+    }
+
+    console.log(
+        "game join",
+        socket.id,
+        roomId,
+        "hostId:",
+        room.hostId,
+        "guestId:",
+        room.guestId
+    );
 });
 const gameEvents = [
     "putStone",
