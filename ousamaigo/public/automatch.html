@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<title>自動マッチング</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+
+body{
+    font-family:sans-serif;
+    text-align:center;
+}
+
+#autoMatchBox{
+    width:500px;
+    max-width:90%;
+    margin:40px auto;
+    border:2px solid black;
+    border-radius:12px;
+    padding:25px 20px;
+    box-sizing:border-box;
+}
+
+h2{
+    margin-top:0;
+    margin-bottom:25px;
+}
+
+#myLevel{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+#matchRule{
+    font-size:16px;
+    margin-bottom:25px;
+}
+
+#status{
+    font-size:20px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+#waitingCount{
+    font-size:18px;
+    margin-bottom:12px;
+}
+
+#waitingTitle{
+    font-size:17px;
+    margin-bottom:8px;
+}
+
+#waitingPlayers{
+    border:1px solid #aaa;
+    border-radius:8px;
+    padding:12px;
+    min-height:60px;
+    margin-bottom:25px;
+    box-sizing:border-box;
+}
+
+.waitingPlayer{
+    display:inline-block;
+    border:1px solid #888;
+    border-radius:6px;
+    padding:6px 12px;
+    margin:4px;
+    background:#f5f5f5;
+    font-size:18px;
+}
+
+#noPlayers{
+    display:block;
+    padding:10px 0;
+}
+
+#cancelButton{
+    font-size:20px;
+    padding:5px 25px;
+    cursor:pointer;
+}
+
+#message{
+    margin-top:15px;
+    color:red;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="section">
+    <a href="matiai.html" class="back">
+        まちあいしつにもどる
+    </a>
+</div>
+
+
+<div id="autoMatchBox">
+
+    <h2>自動マッチング</h2>
+
+
+    <!-- 自分のレベル -->
+
+    <div id="myLevel">
+        あなたのレベル：
+        <span id="levelValue">---</span>
+    </div>
+
+
+    <!-- マッチング条件 -->
+
+    <div id="matchRule">
+        レベル差2以内の相手とマッチングします
+    </div>
+
+
+    <!-- 状態 -->
+
+    <div id="status">
+        マッチング相手を探しています…
+    </div>
+
+
+    <!-- 待機人数 -->
+
+    <div id="waitingCount">
+        現在の待機人数：
+        <span id="countValue">0</span>人
+    </div>
+
+
+    <!-- 待機中プレイヤー -->
+
+    <div id="waitingTitle">
+        待機中のプレイヤー
+    </div>
+
+    <div id="waitingPlayers">
+        <span id="noPlayers">
+            現在待機中のプレイヤーはいません
+        </span>
+    </div>
+
+
+    <!-- キャンセル -->
+
+    <button id="cancelButton">
+        キャンセル
+    </button>
+
+
+    <div id="message"></div>
+
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+
+const socket = io();
+
+let myLevel = 0;
+
+
+// =========================
+// 待機状況更新
+// =========================
+
+socket.on("autoMatchStatus", data => {
+
+    // -------------------------
+    // 自分のレベル
+    // -------------------------
+
+    if (data.myLevel !== undefined) {
+
+        myLevel =
+            Number(data.myLevel);
+
+        document.getElementById(
+            "levelValue"
+        ).textContent =
+            myLevel;
+
+    }
+
+
+    // -------------------------
+    // 待機人数
+    // -------------------------
+
+    document.getElementById(
+        "countValue"
+    ).textContent =
+        data.count || 0;
+
+
+    // -------------------------
+    // 待機プレイヤー
+    // -------------------------
+
+    const players =
+        document.getElementById(
+            "waitingPlayers"
+        );
+
+    players.innerHTML = "";
+
+
+    if (
+        !data.players ||
+        data.players.length === 0
+    ) {
+
+        const noPlayers =
+            document.createElement("span");
+
+        noPlayers.id =
+            "noPlayers";
+
+        noPlayers.textContent =
+            "現在待機中のプレイヤーはいません";
+
+        players.appendChild(
+            noPlayers
+        );
+
+        return;
+    }
+
+
+    data.players.forEach(player => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "waitingPlayer";
+
+        div.textContent =
+            "Lv" + player.level;
+
+        players.appendChild(div);
+
+    });
+
+});
+
+
+// =========================
+// マッチング成立
+// =========================
+
+socket.on("startGame", room => {
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "マッチングしました！";
+
+
+    document.getElementById(
+        "message"
+    ).textContent =
+        "対局画面へ移動しています…";
+
+
+    document.getElementById(
+        "cancelButton"
+    ).disabled = true;
+
+
+    // 通常の対局画面へ
+
+    location.href =
+        `hutari.html?size=${room.size}` +
+        `&room=${room.roomId}` +
+        `&color=${room.color}` +
+        `&maji=true` +
+        `&mylv=${room.mylv}` +
+        `&enlv=${room.enlv}`;
+
+});
+
+
+// =========================
+// マッチングエラー
+// =========================
+
+socket.on("autoMatchError", data => {
+
+    document.getElementById(
+        "message"
+    ).textContent =
+        data.message ||
+        "エラーが発生しました";
+
+});
+
+// =========================
+// 自動マッチング開始
+// =========================
+
+socket.emit("joinAutoMatch");
+
+
+// =========================
+// キャンセル
+// =========================
+
+document.getElementById("cancelButton").addEventListener("click", () => {
+
+    socket.emit("cancelAutoMatch");
+
+    location.href = "matiai.html";
+
+});

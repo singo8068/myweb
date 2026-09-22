@@ -84,7 +84,12 @@ input,select{
 <div>
 
 <button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
-
+<button
+    id="autoMatchBtn"
+    onclick="location.href='automatch.html'"
+    style="display:none;">
+    自動マッチング
+</button>
 <select id="memberOnlySelect" style="display:none; width:160px; height:32px; font-size:16px;">
     <option value="false">だれでも参加OK</option>
     <option value="true">会員のみ</option>
@@ -147,6 +152,7 @@ async function loadUserInfo() {
         currentUser = user;
         myLevel = user.level;
 document.getElementById("memberOnlySelect").style.display = "inline-block";
+document.getElementById("autoMatchBtn").style.display = "inline-block";
 
         document.getElementById("loginBtn").style.display = "none";
         document.getElementById("registerBtn").style.display = "none";
