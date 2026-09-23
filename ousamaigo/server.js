@@ -621,15 +621,99 @@ if (memberVsMember) {
     // 会員 vs 会員
     // -------------------------
 
-    room.hostPlayer =
-        await rating.startPlayer({
-            userId: room.hostUserId
-        });
+    // Lv7以上の手動マッチングは
+    // 対戦開始時の -1 を含めて
+    // かちこしを一切変動させない
 
-    room.guestPlayer =
-        await rating.startPlayer({
-            userId: guestUserId
-        });
+    const hostCanRate =
+        room.matchType === "auto" ||
+        hostLevel <= 6;
+
+    const guestCanRate =
+        room.matchType === "auto" ||
+        guestLevel <= 6;
+
+
+    // -------------------------
+    // ホスト
+    // -------------------------
+
+    if (hostCanRate) {
+
+        room.hostPlayer =
+            await rating.startPlayer({
+                userId: room.hostUserId
+            });
+
+    } else {
+
+        // Lv7以上・手動マッチング
+        // DBの現在値をそのまま使用
+
+        const result =
+            await pool.query(
+                `
+                SELECT level, win_diff
+                FROM users
+                WHERE user_id = $1
+                `,
+                [room.hostUserId]
+            );
+
+        if (result.rows.length === 0) {
+            throw new Error(
+                `ユーザーが見つかりません: ${room.hostUserId}`
+            );
+        }
+
+        room.hostPlayer = {
+            member: true,
+            userId: room.hostUserId,
+            level: Number(result.rows[0].level),
+            winDiff: Number(result.rows[0].win_diff)
+        };
+    }
+
+
+    // -------------------------
+    // ゲスト
+    // -------------------------
+
+    if (guestCanRate) {
+
+        room.guestPlayer =
+            await rating.startPlayer({
+                userId: guestUserId
+            });
+
+    } else {
+
+        // Lv7以上・手動マッチング
+        // DBの現在値をそのまま使用
+
+        const result =
+            await pool.query(
+                `
+                SELECT level, win_diff
+                FROM users
+                WHERE user_id = $1
+                `,
+                [guestUserId]
+            );
+
+        if (result.rows.length === 0) {
+            throw new Error(
+                `ユーザーが見つかりません: ${guestUserId}`
+            );
+        }
+
+        room.guestPlayer = {
+            member: true,
+            userId: guestUserId,
+            level: Number(result.rows[0].level),
+            winDiff: Number(result.rows[0].win_diff)
+        };
+    }
 
 } else {
 
