@@ -3,6 +3,7 @@
 // ============================================================
 
 // LINEログイン開始
+module.exports = function(app, pool, sessions) {
 app.get("/api/line/login", async (req, res) => {
 
     try {
@@ -628,3 +629,4 @@ try {
         });
     }
 });
+};
