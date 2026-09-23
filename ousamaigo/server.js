@@ -41,6 +41,7 @@ app.use(express.json());
 require("./stripe")(app, stripe, pool, sessions);
 require("./shop")(app, pool, sessions);
 require("./login")(app, pool, sessions);
+require("./line")(app, pool, sessions);
 
 const createRating = require("./rating");
 const rating = createRating(pool, sessions);
