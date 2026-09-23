@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -14,6 +12,7 @@ body{
     font-family:sans-serif;
     text-align:center;
 }
+
 #createBtn,
 #autoMatchBtn,
 #cancelBtn,
@@ -24,13 +23,16 @@ body{
     height: 45px;
     font-size: 25px;
 }
+
 #rooms{
     width:800px;
     margin:auto;
 }
+
 .room-info {
     white-space: nowrap;
 }
+
 .room{
     border:2px solid black;
     border-radius:10px;
@@ -59,46 +61,91 @@ body{
 .waiting {
     white-space: nowrap;
 }
+
 input,select{
     font-size:20px;
 }
 
-    button:hover {
-      background-color: #45a049;
-    }
-    button {
-      display: inline-block;
-      margin-top: 0px;
-      padding: 0px 10px;
-      background-color: #4CAF50;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-size:24px;
-    }
+button:hover {
+    background-color: #45a049;
+}
+
+button {
+    display: inline-block;
+    margin-top: 0px;
+    padding: 0px 10px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size:24px;
+}
 
 </style>
 
 </head>
 
 <body>
+
 <div class="section">
   <a href="index.html" class="back" onclick="cancelRoom()">メニューにもどる</a>
 </div>
+
 <h2>まちあいしつ</h2>
-<div id="authButtons"> <button id="loginBtn" onclick="location.href='login.html'">ログイン</button> <button id="registerBtn" onclick="location.href='register.html'">かいいんとうろく</button> <button id="logoutBtn" onclick="logout()" style="display:none;">ログアウト</button>
- <a href="ranking.html">ランキング</a> <a href="shop.html">ショップ</a> </div>
+
+<div id="authButtons">
+
+    <button id="loginBtn"
+            onclick="location.href='login.html'">
+        ログイン
+    </button>
+
+    <button id="registerBtn"
+            onclick="location.href='register.html'">
+        かいいんとうろく
+    </button>
+
+    <button id="logoutBtn"
+            onclick="logout()"
+            style="display:none;">
+        ログアウト
+    </button>
+
+    <a href="ranking.html">ランキング</a>
+
+    <!-- LINE認証していない会員だけ表示 -->
+    <a id="lineAuthLink"
+       href="line.html"
+       style="display:none;">
+        LINE認証
+    </a>
+
+    <a href="shop.html">ショップ</a>
+
+</div>
 
 <div id="userStatus"></div>
 
 <div>
 
-<button id="createBtn" onclick="createRoom()">ぼしゅうする</button>
+<button id="createBtn"
+        onclick="createRoom()">
+    ぼしゅうする
+</button>
 
-<select id="memberOnlySelect" style="display:none; width:160px; height:32px; font-size:16px;">
-    <option value="false">だれでもさんかOK</option>
-    <option value="true">かいいんのみ</option>
+<select id="memberOnlySelect"
+        style="display:none; width:160px; height:32px; font-size:16px;">
+
+    <option value="false">
+        だれでもさんかOK
+    </option>
+
+    <option value="true">
+        かいいんのみ
+    </option>
+
 </select>
+
 <button
     id="autoMatchBtn"
     onclick="location.href='automatch.html'"
@@ -106,17 +153,33 @@ input,select{
     じどうマッチング
 </button>
 
-<button id="cancelBtn" onclick="cancelRoom()" disabled>ぼしゅうをやめる</button>
+<button id="cancelBtn"
+        onclick="cancelRoom()"
+        disabled>
+    ぼしゅうをやめる
+</button>
+
 </div>
+
 <p id="status"></p>
+
 <hr>
+
 <div id="rooms"></div>
+
 <script src="/socket.io/socket.io.js"></script>
+
 <script>
-const socket=io();
-const roomsDiv=document.getElementById("rooms");
+
+const socket = io();
+
+const roomsDiv =
+    document.getElementById("rooms");
+
 let waiting = false;
+
 let currentUser = null;
+
 let myLevel = 0;
 
 
@@ -130,47 +193,127 @@ async function loadUserInfo() {
 
         console.log("ユーザー情報取得開始");
 
-        const response = await fetch("/api/me");
+        const response =
+            await fetch("/api/me");
 
-        console.log("/api/me status:", response.status);
+        console.log(
+            "/api/me status:",
+            response.status
+        );
 
+
+        // ==============================
         // ログインしていない
+        // ==============================
+
         if (!response.ok) {
 
             myLevel = 0;
             currentUser = null;
 
-            document.getElementById("userStatus").textContent = "ゲスト";
+            document.getElementById(
+                "userStatus"
+            ).textContent = "ゲスト";
 
-            document.getElementById("loginBtn").style.display = "inline-block";
-            document.getElementById("registerBtn").style.display = "inline-block";
-            document.getElementById("logoutBtn").style.display = "none";
 
-            console.log("ゲストとして認識");
+            document.getElementById(
+                "loginBtn"
+            ).style.display = "inline-block";
+
+            document.getElementById(
+                "registerBtn"
+            ).style.display = "inline-block";
+
+            document.getElementById(
+                "logoutBtn"
+            ).style.display = "none";
+
+
+            // LINE認証リンクは非表示
+            document.getElementById(
+                "lineAuthLink"
+            ).style.display = "none";
+
+
+            console.log(
+                "ゲストとして認識"
+            );
 
             return;
         }
 
-        const data = await response.json();
 
-        console.log("/api/me response:", data);
+        const data =
+            await response.json();
+
+        console.log(
+            "/api/me response:",
+            data
+        );
+
 
         if (!data.success) {
-            throw new Error("ユーザー情報を取得できませんでした");
+            throw new Error(
+                "ユーザー情報を取得できませんでした"
+            );
         }
+
 
         const user = data.user;
 
         currentUser = user;
+
         myLevel = user.level;
-document.getElementById("memberOnlySelect").style.display = "inline-block";
-document.getElementById("autoMatchBtn").style.display = "inline-block";
 
-        document.getElementById("loginBtn").style.display = "none";
-        document.getElementById("registerBtn").style.display = "none";
-        document.getElementById("logoutBtn").style.display = "inline-block";
 
-        document.getElementById("userStatus").innerHTML =
+        document.getElementById(
+            "memberOnlySelect"
+        ).style.display = "inline-block";
+
+        document.getElementById(
+            "autoMatchBtn"
+        ).style.display = "inline-block";
+
+
+        document.getElementById(
+            "loginBtn"
+        ).style.display = "none";
+
+        document.getElementById(
+            "registerBtn"
+        ).style.display = "none";
+
+        document.getElementById(
+            "logoutBtn"
+        ).style.display = "inline-block";
+
+
+        // ==============================
+        // LINE認証リンク
+        // ==============================
+
+        const lineAuthLink =
+            document.getElementById(
+                "lineAuthLink"
+            );
+
+
+        // lineIdがない会員だけ表示
+        if (!user.lineId) {
+
+            lineAuthLink.style.display =
+                "inline-block";
+
+        } else {
+
+            lineAuthLink.style.display =
+                "none";
+        }
+
+
+        document.getElementById(
+            "userStatus"
+        ).innerHTML =
             `${user.userId}　レベル ${user.level}　かちこし ${user.winDiff}　　 
             <span class="itemInfo">
                 <img src="/bin/gyem.webp"> ${user.gems}
@@ -179,158 +322,288 @@ document.getElementById("autoMatchBtn").style.display = "inline-block";
                 <img src="/bin/amekakera.webp"> ${user.candyFragments}
             </span>`;
 
-        console.log("ログインユーザー:", user);
+
+        console.log(
+            "ログインユーザー:",
+            user
+        );
 
     } catch (error) {
 
-        console.error("ユーザー情報取得エラー:", error);
+        console.error(
+            "ユーザー情報取得エラー:",
+            error
+        );
 
-        document.getElementById("userStatus").textContent =
+        document.getElementById(
+            "userStatus"
+        ).textContent =
             "ユーザー情報を取得できませんでした";
     }
 }
+
 
 async function logout() {
 
     try {
 
-        await fetch("/api/logout", {
-            method: "POST"
-        });
+        await fetch(
+            "/api/logout",
+            {
+                method: "POST"
+            }
+        );
 
         location.reload();
 
     } catch (error) {
 
-        console.error("ログアウトエラー:", error);
+        console.error(
+            "ログアウトエラー:",
+            error
+        );
 
     }
 }
+
 
 // ページを開いたらユーザー情報を取得
 loadUserInfo();
 
+
 function createRoom(){
 
-    console.log("ぼしゅうするボタンを押しました");
+    console.log(
+        "ぼしゅうするボタンを押しました"
+    );
+
 
     if(waiting) {
-        console.log("すでに募集しています");
+
+        console.log(
+            "すでに募集しています"
+        );
+
         return;
     }
-    console.log("Socket接続状態:", socket.connected);
-    console.log("currentUser:", currentUser);
-    console.log("myLevel:", myLevel);
+
+
+    console.log(
+        "Socket接続状態:",
+        socket.connected
+    );
+
+    console.log(
+        "currentUser:",
+        currentUser
+    );
+
+    console.log(
+        "myLevel:",
+        myLevel
+    );
+
+
     waiting = true;
 
-    document.getElementById("status").textContent = "ぼしゅうちゅうです…";
 
-    document.getElementById("createBtn").disabled = true;
-    document.getElementById("cancelBtn").disabled = false;
+    document.getElementById(
+        "status"
+    ).textContent =
+        "ぼしゅうちゅうです…";
 
-const memberOnly =
-    currentUser
-        ? document.getElementById("memberOnlySelect").value === "true"
-        : false;
 
-socket.emit("createRoom", {
-    name: currentUser ? currentUser.userId : "ゲスト",
-    level: currentUser ? currentUser.level : myLevel,
-    memberOnly: memberOnly
-});
+    document.getElementById(
+        "createBtn"
+    ).disabled = true;
+
+    document.getElementById(
+        "cancelBtn"
+    ).disabled = false;
+
+
+    const memberOnly =
+        currentUser
+            ? document.getElementById(
+                "memberOnlySelect"
+              ).value === "true"
+            : false;
+
+
+    socket.emit(
+        "createRoom",
+        {
+            name:
+                currentUser
+                    ? currentUser.userId
+                    : "ゲスト",
+
+            level:
+                currentUser
+                    ? currentUser.level
+                    : myLevel,
+
+            memberOnly:
+                memberOnly
+        }
+    );
 }
+
 
 function joinRoom(id){
-    socket.emit("joinRoom", {
-        id: id,
-        level: myLevel
-});
+
+    socket.emit(
+        "joinRoom",
+        {
+            id: id,
+            level: myLevel
+        }
+    );
 }
 
-socket.on("startGame", room => {
 
-    waiting = false;
+socket.on(
+    "startGame",
+    room => {
 
-    document.getElementById("status").textContent = "";
+        waiting = false;
 
-    document.getElementById("createBtn").disabled = false;
-    document.getElementById("cancelBtn").disabled = true;
 
-    location.href =
-        `hutari.html?size=${room.size}` +
-        `&room=${room.roomId}` +
-        `&color=${room.color}` +
-        `&maji=true` +
-        `&mylv=${room.mylv}` +
-        `&enlv=${room.enlv}`;
+        document.getElementById(
+            "status"
+        ).textContent = "";
 
-});
 
-socket.on("roomList", rooms => {
+        document.getElementById(
+            "createBtn"
+        ).disabled = false;
 
-    roomsDiv.innerHTML = "";
 
-    if (rooms.length === 0) {
-        roomsDiv.innerHTML = "<p>ぼしゅうちゅうのひとはいません。</p>";
-        return;
+        document.getElementById(
+            "cancelBtn"
+        ).disabled = true;
+
+
+        location.href =
+            `hutari.html?size=${room.size}` +
+            `&room=${room.roomId}` +
+            `&color=${room.color}` +
+            `&maji=true` +
+            `&mylv=${room.mylv}` +
+            `&enlv=${room.enlv}`;
+
     }
+);
 
-    rooms.forEach(room => {
 
-        const div = document.createElement("div");
-        div.className = "room";
+socket.on(
+    "roomList",
+    rooms => {
 
-        let buttonHtml;
+        roomsDiv.innerHTML = "";
 
-        if (room.hostId === socket.id) {
-            buttonHtml = "<b class=\"waiting\">ぼしゅうちゅう…</b>";
-        } else {
-            buttonHtml = `<button onclick="joinRoom('${room.roomId}')">さんか</button>`;
+
+        if (rooms.length === 0) {
+
+            roomsDiv.innerHTML =
+                "<p>ぼしゅうちゅうのひとはいません。</p>";
+
+            return;
         }
 
-        let roomInfo;
 
-if (room.hostMember) {
+        rooms.forEach(
+            room => {
 
-    roomInfo = `
-        ${room.name}：
-        レベル ${room.level}
-        ${room.memberOnly ? "【会員のみ】" : ""}
-    `;
+                const div =
+                    document.createElement("div");
 
-} else {
+                div.className = "room";
 
-    roomInfo = `
-        ${room.name}
-    `;
 
-}
+                let buttonHtml;
 
-        div.innerHTML = `
-            <div class="room-content">
-                <span class="room-info">
-                    ${roomInfo}
-                </span>
-                <span class="room-button">
-                    ${buttonHtml}
-                </span>
-            </div>
-        `;
 
-        roomsDiv.appendChild(div);
-    });
+                if (
+                    room.hostId === socket.id
+                ) {
 
-});
+                    buttonHtml =
+                        "<b class=\"waiting\">ぼしゅうちゅう…</b>";
+
+                } else {
+
+                    buttonHtml =
+                        `<button onclick="joinRoom('${room.roomId}')">さんか</button>`;
+                }
+
+
+                let roomInfo;
+
+
+                if (room.hostMember) {
+
+                    roomInfo = `
+                        ${room.name}：
+                        レベル ${room.level}
+                        ${room.memberOnly ? "【会員のみ】" : ""}
+                    `;
+
+                } else {
+
+                    roomInfo = `
+                        ${room.name}
+                    `;
+
+                }
+
+
+                div.innerHTML = `
+                    <div class="room-content">
+
+                        <span class="room-info">
+                            ${roomInfo}
+                        </span>
+
+                        <span class="room-button">
+                            ${buttonHtml}
+                        </span>
+
+                    </div>
+                `;
+
+
+                roomsDiv.appendChild(div);
+
+            }
+        );
+
+    }
+);
+
+
 function cancelRoom(){
 
     if(!waiting) return;
 
+
     waiting = false;
 
-    document.getElementById("status").textContent = "";
 
-    document.getElementById("createBtn").disabled = false;
-    document.getElementById("cancelBtn").disabled = true;
+    document.getElementById(
+        "status"
+    ).textContent = "";
+
+
+    document.getElementById(
+        "createBtn"
+    ).disabled = false;
+
+
+    document.getElementById(
+        "cancelBtn"
+    ).disabled = true;
+
 
     socket.emit("cancelRoom");
 }
