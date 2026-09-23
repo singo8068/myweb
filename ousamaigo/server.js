@@ -46,6 +46,22 @@ const createRating = require("./rating");
 const rating = createRating(pool, sessions);
 const createAutoMatch = require("./automatch");
 
+app.get("/api/ranking", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT user_id, level, win_diff
+            FROM users
+            ORDER BY level DESC, win_diff DESC
+        `);
+
+        res.json(result.rows);
+
+    } catch (err) {
+        console.error("ランキング取得エラー:", err);
+        res.status(500).json({ error: "ランキング取得に失敗しました" });
+    }
+});
+
 // =========================
 // セッションからユーザーID取得
 // =========================
