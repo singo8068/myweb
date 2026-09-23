@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>LINE認証</title>
+
+<link rel="stylesheet"
+      href="css/style.css">
+
+<style>
+
+body {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+#lineBox {
+    width: 500px;
+    max-width: 90%;
+    margin: 50px auto;
+    padding: 30px 20px;
+    border: 2px solid black;
+    border-radius: 12px;
+}
+
+#lineButton {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #06C755;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#lineButton:hover {
+    opacity: 0.85;
+}
+
+#message {
+    margin: 20px 0;
+    font-size: 18px;
+}
+
+#backButton {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a id="backButton" href="matiai.html">
+まちあいしつにもどる
+</a>
+
+<div id="lineBox">
+
+    <h2>LINE認証</h2>
+
+    <div id="message">
+        LINEとアカウントを連携できます。
+    </div>
+
+    <a id="lineButton"
+       href="/api/line/login">
+        LINEで認証する
+    </a>
+
+</div>
+
+
+<script>
+
+const params = new URLSearchParams(
+    window.location.search
+);
+
+const message =
+    document.getElementById("message");
+
+const lineButton =
+    document.getElementById("lineButton");
+
+
+// LINE認証成功
+if (params.get("success") === "1") {
+
+    message.textContent =
+        "LINE認証が完了しました！";
+
+    lineButton.style.display = "none";
+
+}
+
+
+// すでに別の会員が使用
+else if (params.get("error") === "already_used") {
+
+    message.textContent =
+        "このLINEアカウントは、すでに別の会員IDと連携されています。";
+
+    lineButton.style.display = "none";
+
+}
+
+
+// LINE側でキャンセル
+else if (params.get("error") === "cancel") {
+
+    message.textContent =
+        "LINE認証がキャンセルされました。";
+
+}
+
+</script>
+
+</body>
+</html>
