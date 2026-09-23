@@ -19,7 +19,12 @@ body{
     width:400px;
     margin:auto;
 }
-
+#shopButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
 .room{
     border:2px solid black;
     border-radius:10px;
@@ -57,19 +62,17 @@ input,select{
 
 <div id="userStatus"></div>
 <br>
-<div>
-    <button id="useGoldenCandyBtn">きんのあめをつかう</button>　　
-</div>
-<br>
-<div>
+<div id="shopButtons">
+
+    <button id="useGoldenCandyBtn">きんのあめをつかう</button>
+
     <button id="useMagicCandyBtn">まほうのあめをつかう</button>
-</div>
-<br>
-<div>
+
     <button id="buyGoldenCandyBtn">きんのあめをかう</button>
+
+    <button id="buyGemBtn">300円で300ジェムをかう</button>
+
 </div>
-<br>
-<button id="buyGemBtn">300円で300ジェムをかう</button>
 
 <div>
 <script src="/socket.io/socket.io.js"></script>
