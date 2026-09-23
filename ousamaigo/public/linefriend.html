@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<title>LINE友達紹介キャンペーン</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+
+body{
+    font-family:sans-serif;
+    text-align:center;
+}
+
+#friendBox{
+    width:500px;
+    max-width:90%;
+    margin:40px auto;
+    border:2px solid black;
+    border-radius:12px;
+    padding:25px;
+    box-sizing:border-box;
+}
+
+#friendBox h2{
+    margin-top:0;
+}
+
+#friendBox p{
+    line-height:1.7;
+}
+
+#userIdInput{
+    width:80%;
+    max-width:350px;
+    padding:10px;
+    font-size:18px;
+    box-sizing:border-box;
+    border:1px solid #999;
+    border-radius:6px;
+    text-align:center;
+}
+
+#registerReferralBtn{
+    margin-top:15px;
+    padding:10px 25px;
+    font-size:18px;
+    cursor:pointer;
+    border:2px solid black;
+    border-radius:8px;
+    background:white;
+}
+
+#registerReferralBtn:hover{
+    background:#eee;
+}
+
+#message{
+    margin-top:20px;
+    font-weight:bold;
+}
+
+#registered{
+    display:none;
+}
+
+#inputArea{
+    display:none;
+}
+
+#backBtn{
+    display:inline-block;
+    margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<a id="backBtn" href="matiai.html">まちあいしつにもどる</a>
+
+<div id="friendBox">
+
+    <h2>LINE友達紹介キャンペーン</h2>
+
+    <p>
+        お友達から紹介された方は、<br>
+        紹介してくれたお友達の<br>
+        <strong>ユーザーID</strong>を入力してください。
+    </p>
+
+    <p>
+        ※紹介者・紹介された方の<strong>両方がLINE認証済み</strong>の場合に、
+        キャンペーンが成立します。
+    </p>
+
+    <div id="inputArea">
+
+        <input
+            type="text"
+            id="userIdInput"
+            placeholder="紹介者のユーザーID"
+            autocomplete="off"
+        >
+
+        <br>
+
+        <button id="registerReferralBtn">
+            紹介者を登録する
+        </button>
+
+    </div>
+
+    <div id="registered">
+
+        <p>
+            紹介者の登録は完了しています。
+        </p>
+
+        <p>
+            紹介者ユーザーID：<br>
+            <strong id="registeredUserId"></strong>
+        </p>
+
+    </div>
+
+    <div id="message"></div>
+
+</div>
+
+
+<script>
+
+async function checkLogin(){
+
+    try{
+
+        const res = await fetch("/api/me", {
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if(!data.loggedIn){
+
+            document.getElementById("message").textContent =
+                "このページを利用するにはログインしてください。";
+
+            return;
+        }
+
+        /*
+         * LINE認証済みかどうかは、
+         * サーバー側の情報を使って確認する予定です。
+         */
+
+        document.getElementById("inputArea").style.display = "block";
+
+    }catch(error){
+
+        console.error(error);
+
+        document.getElementById("message").textContent =
+            "情報の取得に失敗しました。";
+
+    }
+
+}
+
+
+document.getElementById("registerReferralBtn")
+.addEventListener("click", async function(){
+
+    const userId =
+        document.getElementById("userIdInput").value.trim();
+
+    const message =
+        document.getElementById("message");
+
+    message.textContent = "";
+
+    if(!userId){
+
+        message.textContent =
+            "紹介者のユーザーIDを入力してください。";
+
+        return;
+    }
+
+    try{
+
+        const res = await fetch("/api/referral", {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            credentials:"include",
+
+body:JSON.stringify({
+    referrerId:userId
+})
+
+        });
+
+        const data = await res.json();
+
+        if(!res.ok){
+
+            message.textContent =
+                data.message || "登録できませんでした。";
+
+            return;
+        }
+
+        message.textContent =
+            data.message || "紹介者の登録が完了しました。";
+
+        document.getElementById("inputArea").style.display =
+            "none";
+
+        document.getElementById("registered").style.display =
+            "block";
+
+        document.getElementById("registeredUserId")
+            .textContent = userId;
+
+    }catch(error){
+
+        console.error(error);
+
+        message.textContent =
+            "通信エラーが発生しました。";
+
+    }
+
+});
+
+
+checkLogin();
+
+</script>
+
+</body>
+</html>
