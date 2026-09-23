@@ -250,7 +250,8 @@ sessions.set(sessionId, userId);
                 magical_candy,
                 candy_fragments,
                 golden_candy,
-                line_id
+                line_id,
+		referred_by
             FROM users
             WHERE user_id = $1
             `,
@@ -276,7 +277,8 @@ sessions.set(sessionId, userId);
                 magicalCandy: user.magical_candy,
                 candyFragments: user.candy_fragments,
                 goldenCandy: user.golden_candy,
-  		lineId: user.line_id
+  		lineId: user.line_id,
+		referredBy: user.referred_by
             }
         });
 
