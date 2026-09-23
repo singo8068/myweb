@@ -249,7 +249,8 @@ sessions.set(sessionId, userId);
                 gems,
                 magical_candy,
                 candy_fragments,
-                golden_candy
+                golden_candy,
+                line_id
             FROM users
             WHERE user_id = $1
             `,
@@ -274,7 +275,8 @@ sessions.set(sessionId, userId);
                 gems: user.gems,
                 magicalCandy: user.magical_candy,
                 candyFragments: user.candy_fragments,
-                goldenCandy: user.golden_candy
+                goldenCandy: user.golden_candy,
+  		lineId: user.line_id
             }
         });
 
