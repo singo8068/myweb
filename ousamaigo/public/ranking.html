@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<title>ランキング - おうさまいご</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+
+body {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+#rankingBox {
+    width: 600px;
+    max-width: 95%;
+    margin: 30px auto;
+}
+
+#myRanking {
+    margin: 20px auto;
+    padding: 15px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background: #f8f8f8;
+    font-size: 18px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+}
+
+th,
+td {
+    border: 1px solid #999;
+    padding: 10px 5px;
+}
+
+th {
+    background: #eee;
+}
+
+.rank {
+    width: 60px;
+}
+
+.level {
+    width: 90px;
+}
+
+.windiff {
+    width: 100px;
+}
+
+.top1 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.top2 {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.top3 {
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.myRow {
+    background: #fff3b0;
+    font-weight: bold;
+}
+
+#loading {
+    margin: 30px;
+}
+
+#error {
+    color: red;
+    margin: 20px;
+}
+
+#backMenu {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a id="backMenu" href="matiai.html">まちあいにもどる</a>
+
+<h2>🏆 おうさまいご ランキング</h2>
+
+<div id="rankingBox">
+
+```
+<div id="myRanking" style="display:none;"></div>
+
+<div id="loading">
+    ランキングを読み込んでいます……
+</div>
+
+<div id="error" style="display:none;"></div>
+
+<table id="rankingTable" style="display:none;">
+    <thead>
+        <tr>
+            <th class="rank">順位</th>
+            <th>ユーザー</th>
+            <th class="level">レベル</th>
+            <th class="windiff">かちこし</th>
+        </tr>
+    </thead>
+
+    <tbody id="rankingBody">
+    </tbody>
+</table>
+```
+
+</div>
+
+<script>
+
+async function loadRanking() {
+
+    try {
+
+        const response = await fetch("/api/ranking", {
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            throw new Error("ランキング取得失敗");
+        }
+
+        const data = await response.json();
+
+        console.log("ランキング:", data);
+
+        /*
+         * server.jsから
+         *
+         * {
+         *     ranking: [...],
+         *     myRank: 3
+         * }
+         *
+         * の形式で返ってくる場合に対応
+         *
+         * もし配列だけ返ってきた場合も対応
+         */
+
+        let ranking;
+        let myRank = null;
+
+        if (Array.isArray(data)) {
+
+            ranking = data;
+
+        } else {
+
+            ranking = data.ranking || [];
+            myRank = data.myRank ?? null;
+
+        }
+
+
+        const tbody = document.getElementById("rankingBody");
+
+        tbody.innerHTML = "";
+
+
+        ranking.forEach((player, index) => {
+
+            const tr = document.createElement("tr");
+
+            const rank = player.rank ?? (index + 1);
+
+            const userId = player.user_id ?? player.userId ?? "";
+
+            const level = player.level ?? 0;
+
+            const winDiff = player.win_diff ?? player.winDiff ?? 0;
+
+
+            if (rank === 1) {
+                tr.classList.add("top1");
+            } else if (rank === 2) {
+                tr.classList.add("top2");
+            } else if (rank === 3) {
+                tr.classList.add("top3");
+            }
+
+
+            /*
+             * 自分の順位を判定
+             *
+             * server.jsから isMe:true が来る場合
+             *
+             * または data.myRank と順位を比較
+             */
+
+            if (player.isMe === true ||
+                (myRank !== null && Number(myRank) === Number(rank))) {
+
+                tr.classList.add("myRow");
+            }
+
+
+            const rankTd = document.createElement("td");
+
+            if (rank === 1) {
+                rankTd.textContent = "🥇";
+            } else if (rank === 2) {
+                rankTd.textContent = "🥈";
+            } else if (rank === 3) {
+                rankTd.textContent = "🥉";
+            } else {
+                rankTd.textContent = rank;
+            }
+
+
+            const userTd = document.createElement("td");
+            userTd.textContent = userId;
+
+
+            const levelTd = document.createElement("td");
+            levelTd.textContent = "Lv" + level;
+
+
+            const winDiffTd = document.createElement("td");
+
+            if (Number(winDiff) > 0) {
+                winDiffTd.textContent = "+" + winDiff;
+            } else {
+                winDiffTd.textContent = winDiff;
+            }
+
+
+            tr.appendChild(rankTd);
+            tr.appendChild(userTd);
+            tr.appendChild(levelTd);
+            tr.appendChild(winDiffTd);
+
+            tbody.appendChild(tr);
+
+        });
+
+
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("rankingTable").style.display = "table";
+
+
+        /*
+         * ログイン中の自分の順位
+         */
+
+        if (myRank !== null) {
+
+            const myBox = document.getElementById("myRanking");
+
+            myBox.innerHTML =
+                "あなたの順位　<b>" +
+                myRank +
+                "位</b>";
+
+            myBox.style.display = "block";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("loading").style.display = "none";
+
+        const errorBox = document.getElementById("error");
+
+        errorBox.textContent =
+            "ランキングを取得できませんでした。";
+
+        errorBox.style.display = "block";
+
+    }
+
+}
+
+
+loadRanking();
+
+</script>
+
+</body>
+</html>
