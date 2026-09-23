@@ -14,7 +14,16 @@ body{
     font-family:sans-serif;
     text-align:center;
 }
-
+#createBtn,
+#autoMatchBtn,
+#cancelBtn,
+#loginBtn,
+#registerBtn,
+#logoutBtn {
+    cursor: pointer;
+    height: 45px;
+    font-size: 25px;
+}
 #rooms{
     width:800px;
     margin:auto;
@@ -89,7 +98,6 @@ input,select{
     <option value="false">だれでも参加OK</option>
     <option value="true">会員のみ</option>
 </select>
-<br>
 <button
     id="autoMatchBtn"
     onclick="location.href='automatch.html'"
