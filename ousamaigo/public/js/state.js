@@ -47,7 +47,10 @@ sirokingImg.src = "./bin/siroking.webp";
 const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
 let MAXTEKAZU=0;
-if(SIZE===6)MAXTEKAZU=37;
+if(SIZE===4)MAXTEKAZU=21;
+if(SIZE===5)MAXTEKAZU=31;
+if(SIZE===6)MAXTEKAZU=41;
+if(SIZE===7)MAXTEKAZU=51;
 if(SIZE===9)MAXTEKAZU=81;
 if(SIZE===11)MAXTEKAZU=121;
 

@@ -87,7 +87,11 @@ async function draw() {
   // 星を描く
   if (SIZE === 9) {
     drawDot(4, 4);
-  } else if (SIZE === 11) {
+  } else if (SIZE === 5) {
+    drawDot(2, 2);
+  } else if (SIZE === 7) {
+    drawDot(3, 3);
+  }else if (SIZE === 11) {
     drawDot(2, 2);
     drawDot(8, 2);
     drawDot(5, 5);
