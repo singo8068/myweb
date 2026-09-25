@@ -179,7 +179,7 @@ button {
 <script>
 
 const socket = io();
-
+const matchSound = new Audio("sounds/match.mp3");
 const roomsDiv =
     document.getElementById("rooms");
 
@@ -550,8 +550,7 @@ socket.on(
 
             console.log("★ 音を鳴らします");
 
-            const matchSound =
-                new Audio("sounds/match.mp3");
+
 
             matchSound.play().then(() => {
 
