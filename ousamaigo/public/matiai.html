@@ -517,23 +517,25 @@ socket.on(
     "startGame",
     room => {
 
-        // ホストかどうか
+        console.log("★ startGame受信");
+        console.log("room:", room);
+        console.log("room.hostId:", room.hostId);
+        console.log("socket.id:", socket.id);
+
         const isHost =
             room.hostId === socket.id;
 
+        console.log("isHost:", isHost);
 
         waiting = false;
-
 
         document.getElementById(
             "status"
         ).textContent = "";
 
-
         document.getElementById(
             "createBtn"
         ).disabled = false;
-
 
         document.getElementById(
             "cancelBtn"
@@ -541,18 +543,24 @@ socket.on(
 
 
         // ==============================
-        // ホストだけ対戦開始音を鳴らす
+        // ホストだけ対戦開始音
         // ==============================
 
         if (isHost) {
 
+            console.log("★ 音を鳴らします");
+
             const matchSound =
                 new Audio("sounds/match.mp3");
 
-            matchSound.play().catch(error => {
+            matchSound.play().then(() => {
 
-                console.log(
-                    "対戦開始音を再生できませんでした:",
+                console.log("★ 音声再生成功");
+
+            }).catch(error => {
+
+                console.error(
+                    "★ 音声再生失敗:",
                     error
                 );
 
@@ -560,10 +568,6 @@ socket.on(
 
         }
 
-
-        // ==============================
-        // 少し待ってから対局画面へ
-        // ==============================
 
         setTimeout(() => {
 
