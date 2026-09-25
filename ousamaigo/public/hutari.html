@@ -79,7 +79,11 @@ const levelInfo = document.getElementById("levelInfo");
 if (ISNET) {
     backMenu.style.display = "none";
     backMati.style.display = "none";
+    const matchSound = new Audio("sounds/match.mp3");
 
+    matchSound.play().catch(error => {
+        console.log("対戦開始音を再生できませんでした:", error);
+    });
     // 両方とも会員のときだけレベル表示
     if (MYLV !== 0 && ENLV !== 0) {
         levelInfo.textContent = `じぶんは${colmoji}でレベル ${MYLV}　あいてレベル ${ENLV}`;
