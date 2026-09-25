@@ -887,7 +887,8 @@ hostSocket?.emit("startGame", {
     color: hostColor,
     mylv: room.hostPlayer.level,
     enlv: room.guestPlayer.level,
-    member: room.hostPlayer.member
+    member: room.hostPlayer.member,
+    hostId: room.hostId
 });
 
 
