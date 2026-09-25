@@ -517,6 +517,11 @@ socket.on(
     "startGame",
     room => {
 
+        // ホストかどうか
+        const isHost =
+            room.hostId === socket.id;
+
+
         waiting = false;
 
 
@@ -535,17 +540,45 @@ socket.on(
         ).disabled = true;
 
 
-        location.href =
-            `hutari.html?size=${room.size}` +
-            `&room=${room.roomId}` +
-            `&color=${room.color}` +
-            `&maji=true` +
-            `&mylv=${room.mylv}` +
-            `&enlv=${room.enlv}`;
+        // ==============================
+        // ホストだけ対戦開始音を鳴らす
+        // ==============================
+
+        if (isHost) {
+
+            const matchSound =
+                new Audio("sounds/match.mp3");
+
+            matchSound.play().catch(error => {
+
+                console.log(
+                    "対戦開始音を再生できませんでした:",
+                    error
+                );
+
+            });
+
+        }
+
+
+        // ==============================
+        // 少し待ってから対局画面へ
+        // ==============================
+
+        setTimeout(() => {
+
+            location.href =
+                `hutari.html?size=${room.size}` +
+                `&room=${room.roomId}` +
+                `&color=${room.color}` +
+                `&maji=true` +
+                `&mylv=${room.mylv}` +
+                `&enlv=${room.enlv}`;
+
+        }, 800);
 
     }
 );
-
 
 socket.on(
     "roomList",
