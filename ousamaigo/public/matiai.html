@@ -179,6 +179,7 @@ button {
 <script>
 
 const socket = io();
+const matchSound = new Audio("sounds/match.mp3");
 
 const roomsDiv =
     document.getElementById("rooms");
@@ -461,7 +462,7 @@ function createRoom(){
     document.getElementById(
         "status"
     ).textContent =
-        "ぼしゅうちゅうです…";
+        "ぼしゅうちゅうです（だれかくるとおとがなるのでちゅういしてください）";
 
 
     document.getElementById(
@@ -516,6 +517,11 @@ function joinRoom(id){
 socket.on(
     "startGame",
     room => {
+
+        // 対戦相手が参加した音
+        matchSound.play().catch(error => {
+            console.log("音声再生できませんでした:", error);
+        });
 
         waiting = false;
 
@@ -580,7 +586,7 @@ socket.on(
                 ) {
 
                     buttonHtml =
-                        "<b class=\"waiting\">ぼしゅうちゅう…</b>";
+                        "<b class=\"waiting\">ぼしゅうちゅう（だれかくるとおとがなるのでちゅういしてください）</b>";
 
                 } else {
 

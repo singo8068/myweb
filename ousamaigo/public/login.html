@@ -1,10 +1,39 @@
 <h2>ログイン</h2>
 
-<input id="userId" placeholder="ID">
-<input id="password" type="password" placeholder="パスワード">
+<div class="login-form">
 
-<button onclick="login()">ログイン</button>
+    <input id="userId" placeholder="ID">
 
-<p id="message"></p>
+    <input id="password" type="password" placeholder="パスワード">
+
+    <button onclick="login()">ログイン</button>
+
+    <p id="message"></p>
+
+</div>
+
+<style>
+.login-form {
+    text-align: center;
+}
+
+.login-form input {
+    display: block;
+    width: 280px;
+    height: 45px;
+    margin: 12px auto;
+    padding: 0 12px;
+    box-sizing: border-box;
+    font-size: 18px;
+}
+
+.login-form button {
+    width: 280px;
+    height: 50px;
+    margin-top: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+</style>
 
 <script src="js/login.js"></script>
