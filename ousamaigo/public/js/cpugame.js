@@ -498,7 +498,7 @@ undoBtn.addEventListener("click", () => {
 
 
 function saveState() {
-if (undoHistory.length<1) {aiMove();}
+//if (undoHistory.length<1) {aiMove();}
     undoHistory.push({
         board: board.map(row => [...row]),
         drawBoard: drawBoard.map(row => [...row]),
