@@ -250,7 +250,9 @@ resetBtn.addEventListener("click", async function () {
  });
 resetBtn2.addEventListener("click", async function () {
  document.getElementById("effectText").style.display = "none";
- initBoard()});
+ initBoard();
+aiMove()
+});
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
     document.getElementById("confirmControls").style.display = "none";
