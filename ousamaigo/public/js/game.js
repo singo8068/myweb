@@ -336,8 +336,8 @@ async function passMove(fromNetwork = false) {
         });
     }
 
-    await showEffectText("きあいを\nためるよ！", 1000);
-
+    await showEffectText("パワーを\nためるよ！", 1000);
+　
     updateForbiddenPoints();
     updateDisplay();
     draw();
@@ -627,7 +627,7 @@ socket.on("tameru", async data => {
 
     saveState();
 
-    await showEffectText("きあいを\nためるよ！", 1000);
+    await showEffectText("パワーを\nためるよ！", 1000);
 
     updateForbiddenPoints();
     updateDisplay();

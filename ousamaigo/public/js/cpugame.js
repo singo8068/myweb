@@ -96,12 +96,8 @@ async function placeStone(
     if (!fromNetwork) {
       await showEffectText("パワーうち\nはつどう！", 1500);
     }
+ document.getElementById("mainControls").style.display = "block";
 
-    if (changeTurn) {
-      if (!ISNET) {
-        playerChange();
-      }
-    }
   }
 
   updateForbiddenPoints();
@@ -143,17 +139,22 @@ if (point && gameMode === "main") {
   if (point && gameMode === "pawa" &&
      (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
-    pawatorisu=0;
-    placeStone(point.x, point.y,false,false);
-    draw();
-    if (currentPlayer === "black") blackTame = blackTame - 1;
-    if (currentPlayer === "white") whiteTame = whiteTame - 1;
+pawatorisu = 0;
 
-    gameMode = "main";
+await placeStone(point.x, point.y, false, false);
+
+draw();
+
+if (currentPlayer === "black") blackTame = blackTame - 1;
+if (currentPlayer === "white") whiteTame = whiteTame - 1;
+
+gameMode = "main";
+
 if (!ISNET) {
     playerChange();
 }
-    updateDisplay();
+
+updateDisplay();
   }
 
 if (point && gameMode === "osero" &&
@@ -221,14 +222,15 @@ async function passMove(fromNetwork = false) {
         whiteTame++;
     }
 
+
+    await showEffectText("パワーを\nためるよ！", 1000);
     // 手番変更
     playerChange();
 
     // 手番変更後の状態を保存
     saveState();
 
-    await showEffectText("きあいを\nためるよ！", 1000);
-
+document.getElementById("mainControls").style.display = "block";
     updateForbiddenPoints();
     updateDisplay();
     draw();
