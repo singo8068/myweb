@@ -291,7 +291,22 @@ function playerChange(addByoyomi = true) {
       updateDisplay();
       draw();
 document.getElementById("mainControls").style.display = "block";
+
+
     }
+    // 今の手番の王様ねこを表示
+    uemsg="のばんだよ";
+    const turnImg = document.createElement("img");
+    turnImg.src =sirokingImg.src;
+
+    turnImg.style.height = "50px";
+    turnImg.style.verticalAlign = "middle";
+turnDisplay.removeChild(turnDisplay.lastChild);
+turnDisplay.removeChild(turnDisplay.lastChild);
+
+    turnDisplay.appendChild(turnImg);
+    turnDisplay.appendChild(document.createTextNode(uemsg));
+
 }
 
 async function aiMove() {
@@ -300,7 +315,7 @@ async function aiMove() {
     draw();
      if (currentPlayer === "white" || !gameNow) return;
      const tengen=Math.floor(SIZE / 2);
-     if (uteruka(tengen,tengen)){placeStone(tengen,tengen);return;}
+     if (uteruka(tengen,tengen)){await placeStone(tengen,tengen,true);return;}
      const candidates = [];
 
       
@@ -335,7 +350,7 @@ async function aiMove() {
         if(candidates.length>0){
           const i = Math.floor(Math.random() * candidates.length);
           const { x, y } = candidates.splice(i, 1)[0];
-          placeStone(x, y);
+          await placeStone(x, y);
           return;
         }
       }//next i
@@ -483,7 +498,7 @@ undoBtn.addEventListener("click", () => {
     undoHistory.pop();
     undoHistory.pop();
     // 2手前の状態を取得
-    const lastState = undoHistory[undoHistory.length - 2];
+    const lastState = undoHistory[undoHistory.length - 1];
 
     board = lastState.board.map(row => [...row]);
     drawBoard = lastState.drawBoard.map(row => [...row]);
