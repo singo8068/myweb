@@ -96,8 +96,6 @@ async function placeStone(
     if (!fromNetwork) {
       await showEffectText("パワーうち\nはつどう！", 1500);
     }
- document.getElementById("mainControls").style.display = "block";
-
   }
 
   updateForbiddenPoints();
@@ -181,7 +179,6 @@ if (point && gameMode === "osero" &&
     saveState();
 
     playerChange();
-
     updateForbiddenPoints();
     updateDisplay();
     draw();
@@ -229,8 +226,6 @@ async function passMove(fromNetwork = false) {
 
     // 手番変更後の状態を保存
     saveState();
-
-document.getElementById("mainControls").style.display = "block";
     updateForbiddenPoints();
     updateDisplay();
     draw();
@@ -286,18 +281,18 @@ function playerChange(addByoyomi = true) {
         if (addByoyomi) blackTime += 10000;
 
     } else {
-        currentPlayer = "black";
-        if (addByoyomi) whiteTime += 10000;
-    //CPUは黒番
-    aiMove();
-    updateForbiddenPoints();
-    updateDisplay();
-    draw();
-
+      currentPlayer = "black";
+      if (addByoyomi) whiteTime += 10000;
+      //CPUは黒番
+      aiMove();
+      updateForbiddenPoints();
+      updateDisplay();
+      draw();
+document.getElementById("mainControls").style.display = "block";
     }
 }
 
- function aiMove() {
+async function aiMove() {
     updateForbiddenPoints();
     updateDisplay();
     draw();
@@ -342,12 +337,17 @@ function playerChange(addByoyomi = true) {
           return;
         }
       }//next i
+        blackTame++;
+ await showEffectText("パワーを\nためるよ！", 1000);
+playerChange();
 
-    }
-    function uteruka(x,y){
-       if (board[y][x] === null&&drawBoard[y][x] === null)return true;
-       return false;
-    }
+}
+
+
+function uteruka(x,y){
+   if (board[y][x] === null&&drawBoard[y][x] === null)return true;
+   return false;
+}
 
 
 
