@@ -290,7 +290,7 @@ function playerChange(addByoyomi = true) {
       updateForbiddenPoints();
       updateDisplay();
       draw();
-document.getElementById("mainControls").style.display = "block";
+
 
 
     }
@@ -306,58 +306,7 @@ turnDisplay.removeChild(turnDisplay.lastChild);
 
     turnDisplay.appendChild(turnImg);
     turnDisplay.appendChild(document.createTextNode(uemsg));
-
-}
-
-async function aiMove() {
-    updateForbiddenPoints();
-    updateDisplay();
-    draw();
-     if (currentPlayer === "white" || !gameNow) return;
-     const tengen=Math.floor(SIZE / 2);
-     if (uteruka(tengen,tengen)){await placeStone(tengen,tengen,true);return;}
-     const candidates = [];
-
-      
-     for(let i=1;i<=tengen;i++){
-      if (SIZE % 2 === 0) {
-        for (let y = tengen-i; y < tengen+i; y++) {
-          for (let x = tengen-i; x < tengen+i; x++) {
-            if (uteruka(x,y)) {
-              candidates.push({ x, y });
-            }
-          }
-        }
-       }else{//奇数の場合
-        for (let y = tengen-i; y <= tengen+i; y++) {
-          for (let x = tengen-i; x <= tengen+i; x++) {
-            if (uteruka(x,y)) {if(x===tengen||y===tengen){
-              candidates.push({ x, y });
-            }}
-          }
-        }
-      if(candidates.length===0){
-        for (let y = tengen-i; y <= tengen+i; y++) {
-          for (let x = tengen-i; x <= tengen+i; x++) {
-            if (uteruka(x,y)) {
-              candidates.push({ x, y });
-            }
-          }
-        }
-       }
-      }//奇数終わり
-
-        if(candidates.length>0){
-          const i = Math.floor(Math.random() * candidates.length);
-          const { x, y } = candidates.splice(i, 1)[0];
-          await placeStone(x, y);
-          return;
-        }
-      }//next i
-        blackTame++;
- await showEffectText("パワーを\nためるよ！", 1000);
-playerChange();
-
+document.getElementById("mainControls").style.display = "block";
 }
 
 
