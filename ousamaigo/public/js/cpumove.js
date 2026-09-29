@@ -1,11 +1,18 @@
 let blackCount = 0;
 let whiteCount = 0;
 async function aiMove() {
+if(gameNow === false)return;
  updateForbiddenPoints();
  updateDisplay();
  draw();
+
+if(gameNow === false)return;
+
  if (currentPlayer === "white" || !gameNow) return;
 await delay(300);
+if (gameNow === false) return;
+if (currentPlayer !== "black") return;
+
 const center = (SIZE - 1) / 2;
 // 白石を取れる場所があれば、最優先で取る
 // 天元から外側へ向かって調べる

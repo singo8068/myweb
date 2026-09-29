@@ -286,7 +286,9 @@ function playerChange(addByoyomi = true) {
       currentPlayer = "black";
       if (addByoyomi) whiteTime += 10000;
       //CPUは黒番
-      aiMove();
+if (gameNow) {
+    aiMove();
+}
       updateForbiddenPoints();
       updateDisplay();
       draw();
@@ -323,6 +325,7 @@ function delay(ms) {
 async function hantei(){
 //console.log=MAXTEKAZU;
   if (undoHistory.length < MAXTEKAZU)return;
+gameNow=false;
   MAXTEKAZU=MAXTEKAZU-1;
   await showEffectText(MAXTEKAZU+"てうっても\nしょうぶが\nつかないので\nはんていするよ", 3000);
   let blackCount=0;
@@ -333,7 +336,7 @@ async function hantei(){
     if(board[y][x]==="white")whiteCount++;
    }
   }
-  //await showEffectText( 3000);
+  //await showEffectText(3000);
   syouhai(
     "くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので",
     blackCount > whiteCount,
@@ -466,7 +469,6 @@ undoBtn.addEventListener("click", () => {
 
 
 function saveState() {
-//if (undoHistory.length<1) {aiMove();}
     undoHistory.push({
         board: board.map(row => [...row]),
         drawBoard: drawBoard.map(row => [...row]),
