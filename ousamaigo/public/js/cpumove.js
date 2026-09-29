@@ -4,12 +4,10 @@ async function aiMove() {
 if(gameNow === false)return;
  updateForbiddenPoints();
  updateDisplay();
- draw();
-
-if(gameNow === false)return;
 
  if (currentPlayer === "white" || !gameNow) return;
 await delay(300);
+// draw();
 if (gameNow === false) return;
 if (currentPlayer !== "black") return;
 
