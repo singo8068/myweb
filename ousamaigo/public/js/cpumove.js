@@ -296,6 +296,7 @@ async function aiTame() {
  blackTame++;
  await showEffectText("パワーを\nためるよ！", 1000);
 playerChange();
+saveState();
 updateForbiddenPoints();
       updateDisplay();
       draw();
