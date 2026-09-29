@@ -9,7 +9,7 @@ await delay(300);
 const center = (SIZE - 1) / 2;
 // 白石を取れる場所があれば、最優先で取る
 // 天元から外側へ向かって調べる
-for (let d = 0; d <= center; d++) {
+for (let d = 0; d < center+0.7; d++) {
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
 
@@ -58,7 +58,7 @@ await showEffectText("パワーうち\nはつどう！", 1500);
 // ========================================
 if (blackTame >= 4) {
   const su = Math.floor(blackTame / 2) - 1;
-for (let d = 0; d <= center; d++) {
+for (let d = 0; d < center+0.7; d++) {
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       if (board[y][x] !== null) continue;
