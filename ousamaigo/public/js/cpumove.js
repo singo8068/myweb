@@ -11,15 +11,11 @@ await delay(300);
 if (gameNow === false) return;
 if (currentPlayer !== "black") return;
 
-const center = (SIZE - 1) / 2;
 // 白石を取れる場所があれば、最優先で取る
-// 天元から外側へ向かって調べる
-for (let d = 0; d < center+0.7; d++) {
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
 
     if (board[y][x] !== null) continue;
-    if (Math.max(Math.abs(x - center),Math.abs(y - center)) > d) continue;
 
     const isForbid =
       drawBoard[y][x] === "forbid_black" ||
@@ -37,9 +33,7 @@ for (let d = 0; d < center+0.7; d++) {
         break;
       }
     }
-
     if (!canCapture) continue;
-
     // 通常着手できるなら普通に取る
     if (!isForbid) {
       await placeStone(x, y, true);
@@ -57,17 +51,17 @@ await showEffectText("パワーうち\nはつどう！", 1500);
     }
   }
 }
-}
 // ========================================
 // パワーが4以上ならリバース
 // ========================================
 if (blackTame >= 4) {
-  const su = Math.floor(blackTame / 2) - 1;
-for (let d = 0; d < center+0.7; d++) {
+ const su = Math.floor(blackTame / 2) - 1;
+const center = (SIZE - 1) / 2;
+for (let d = 2; d < SIZE; d++) {// 天元から外側へ向かって調べる
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       if (board[y][x] !== null) continue;
-      if (Math.max(Math.abs(x - center),Math.abs(y - center)) > d) continue;
+      if (Math.abs(x - center)+Math.abs(y - center) > d) continue;
       if (oseroCheck(x, y, su) === "kouho_black") {
         const reverseColor = "black";
         await showEffectText("リバース\nはつどう！", 1500);
@@ -80,7 +74,6 @@ for (let d = 0; d < center+0.7; d++) {
 updateForbiddenPoints();
       updateDisplay();
       draw();
-
         return;
       }
     }
@@ -100,203 +93,6 @@ updateForbiddenPoints();
  await ban5ro();
 }
 
-async function ban4ro() {//４路盤
- const tengen=2;
-     const candidates = [];      
-for(let i=1; i<=tengen; i++){
-  for (let y = tengen-i; y < tengen+i; y++) {
-    for (let x = tengen-i; x < tengen+i; x++) {
-      if (uteruka(x, y) &&
-        !(x === 0 && y === 0) &&
-        !(x === 0 && y === 3) &&
-        !(x === 3 && y === 0) &&
-        !(x === 3 && y === 3)
-      ) {
-        candidates.push({ x, y });
-      }
-    }
-  }
-
-  if (candidates.length > 0) {
-    const i = Math.floor(Math.random() * candidates.length);
-    const { x, y } = candidates.splice(i, 1)[0];
-    await placeStone(x, y);
-    return;
-  }
-}
- aiTame();
-}
-async function ban6ro() {//６路盤
- const tengen=3;
- const candidates = [];
- for(let x=2; x<=tengen; x++){
-  for(let y=2; y<=tengen; y++){
-   if (uteruka(x, y)) {
-     await placeStone(x, y);
-     return;
-   }
-  }
- }//中央４マスここまで
- for (let y = 1; y < 5; y++) {
-   for (let x = 1; x < 5; x++) {
-    if (!uteruka(x, y)) continue;
-    countAround(x, y);
-    if (blackCount === 1 && whiteCount === 1) {
-      candidates.push({ x, y });
-    }
-   }
- }
-if (candidates.length === 0) {
- for (let y = 1; y < 5; y++) {
-    for (let x = 1; x < 5; x++) {
-     if (!uteruka(x, y)) continue;
-     countAround(x, y);
-     if (blackCount === 1 && whiteCount === 2) {
-       candidates.push({ x, y });
-     }
-     if (blackCount === 2 && whiteCount === 1) {
-       candidates.push({ x, y });
-     }
-     if (blackCount === 2 && whiteCount === 2) {
-       candidates.push({ x, y });
-     }
-     if (blackCount === 2 && whiteCount === 3) {
-       candidates.push({ x, y });
-     }
-
-    }
-  }
- }
-if (candidates.length === 0) {
- for (let y = 0; y < 6; y++) {
-    for (let x = 0; x < 6; x++) {
-     if (!uteruka(x, y)) continue;
-     if (hencountAround(x, y)) {
-       candidates.push({ x, y });
-     }
-    }
-  }
- }
-
- if (candidates.length > 0) {
-   const i = Math.floor(Math.random() * candidates.length);
-   const { x, y } = candidates.splice(i, 1)[0];
-   await placeStone(x, y);
-   return;
- }
- aiTame();
-}
-
-async function ban5ro() {//奇数路盤
- const tengen=Math.floor(SIZE / 2);
-     const candidates = [];      
-     for(let i=1;i<tengen;i++){//１：１調べる
-        for (let y = tengen-i; y <= tengen+i; y++) {
-          for (let x = tengen-i; x <= tengen+i; x++) {
-            if (uteruka(x,y)) {if(x===tengen||y===tengen){
-              if (!uteruka(x, y)) continue;
-              countAround(x, y);
-              if (blackCount === 1 && whiteCount === 1) {
-               candidates.push({ x, y });
-             }
-            }}
-          }
-        }
-      if(candidates.length===0){
-        for (let y = tengen-i; y <= tengen+i; y++) {
-          for (let x = tengen-i; x <= tengen+i; x++) {
-            if (!uteruka(x, y)) continue;
-              countAround(x, y);
-              if (blackCount === 1 && whiteCount === 1) {
-               candidates.push({ x, y });
-             }
-          }
-        }
-       }
-        if(candidates.length>0){
-          const i = Math.floor(Math.random() * candidates.length);
-          const { x, y } = candidates.splice(i, 1)[0];
-          await placeStone(x, y);
-          return;
-        }
-      }//next i
-     for(let i=1;i<tengen;i++){//０調べる
-        for (let y = tengen-i; y <= tengen+i; y++) {
-          for (let x = tengen-i; x <= tengen+i; x++) {
-            if (!uteruka(x, y)) continue;
-              countAround(x, y);
-              if (blackCount === 0 && whiteCount === 0) {
-               candidates.push({ x, y });
-             }
-          }
-        }
-        if(candidates.length>0){
-          const i = Math.floor(Math.random() * candidates.length);
-          const { x, y } = candidates.splice(i, 1)[0];
-          await placeStone(x, y);
-          return;
-        }
-      }//next i
-
-      for(let i=1;i<tengen;i++){//２調べる
-       for (let y = tengen-i; y <= tengen+i; y++) {
-        for (let x = tengen-i; x <= tengen+i; x++) {
-         if (!uteruka(x, y)) continue;
-         countAround(x, y);
-         if (blackCount === 1 && whiteCount === 2) {
-          candidates.push({ x, y });
-         }
-         if (blackCount === 2 && whiteCount === 1) {
-          candidates.push({ x, y });
-         }
-         if (blackCount === 2 && whiteCount === 2) {
-          candidates.push({ x, y });
-         }
-        }
-       }       
-      }//next i
-/*
- if (candidates.length === 0) {
-  for(let i=1;i<tengen;i++){//３調べる
-       for (let y = tengen-i; y <= tengen+i; y++) {
-        for (let x = tengen-i; x <= tengen+i; x++) {
-         if (!uteruka(x, y)) continue;
-         countAround(x, y);
-         if (blackCount === 2 && whiteCount === 3) {
-          candidates.push({ x, y });
-         }
-         if (blackCount === 3 && whiteCount === 2) {
-          candidates.push({ x, y });
-         }
-         if (blackCount === 3 && whiteCount === 3) {
-          candidates.push({ x, y });
-         }
-        }
-       }       
-      }//next i
-  }
-*/
-if (candidates.length === 0) {
- for (let y = 0; y < SIZE; y++) {
-    for (let x = 0; x < SIZE; x++) {
-     if (!uteruka(x, y)) continue;
-     if (hencountAround(x, y)) {
-       candidates.push({ x, y });
-     }
-    }
-  }
- }
-
-   if(candidates.length>0){
-     const i = Math.floor(Math.random() * candidates.length);
-     const { x, y } = candidates.splice(i, 1)[0];
-     await placeStone(x, y);
-     return;
-    }
- aiTame();
-}
-
-
 async function aiTame() {
  blackTame++;
  await showEffectText("パワーを\nためるよ！", 1000);
@@ -305,89 +101,89 @@ saveState();
 updateForbiddenPoints();
       updateDisplay();
       draw();
-
 }
 
 function countAround(x, y) {
   blackCount = 0;
   whiteCount = 0;
-
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
-
       // 自分自身は除外
       if (dx === 0 && dy === 0) continue;
-
       const nx = x + dx;
       const ny = y + dy;
-
       // 盤外は除外
       if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE) continue;
-
       if (board[ny][nx] === "black") {
         blackCount++;
       }
-
       if (board[ny][nx] === "white") {
         whiteCount++;
       }
     }
   }
 }
-function hencountAround(x, y) {
-
+function henhaneAround(x, y) {//上と隣に白が１つで周囲に黒が１つ以上
   // 第一線でなければ対象外
-  if (
-    x !== 0 && x !== SIZE - 1 &&
-    y !== 0 && y !== SIZE - 1
-  ) {
-    return false;
-  }
+  if ( x !== 0 && x !== SIZE - 1 && y !== 0 && y !== SIZE - 1 ) return false;
 // １の１も対象外
-  if (x === 0 && y === 0) {return false;}
-  if (x === 0 && y === SIZE - 1) {return false;}
-  if (x === SIZE - 1 && y === 0) {return false;}
-  if (x === SIZE - 1 && y === SIZE - 1) {return false;}
-
-  let secondX = x;
-  let secondY = y;
-
-  // 第二線の座標
-  if (x === 0) secondX = 1;
-  if (x === SIZE - 1) secondX = SIZE - 2;
-  if (y === 0) secondY = 1;
-  if (y === SIZE - 1) secondY = SIZE - 2;
-
-  // 自分の一つ上（盤の内側）の石が黒
-  if (board[secondY][secondX] !== "black") {
-    return false;
-  }
+  if (x === 0 && y === 0) return false;
+  if (x === 0 && y === SIZE - 1) return false;
+  if (x === SIZE - 1 && y === 0) return false;
+  if (x === SIZE - 1 && y === SIZE - 1) return false;
 
   let whiteCount = 0;
+if(x!==0&&board[y][x-1] === "white")whiteCount++;
+if(y!==0&&board[y-1][x] === "white")whiteCount++;
+if(x!==SIZE - 1&&board[y][x+1] === "white")whiteCount++;
+if(y!==SIZE - 1&&board[y+1][x] === "white")whiteCount++;
+if(whiteCount!==1)return false;
   let blackCount = 0;
-
   // 周囲8マス
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
-
       if (dx === 0 && dy === 0) continue;
-
       const nx = x + dx;
       const ny = y + dy;
-
       // 盤外は無視
       if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE) continue;
-
-      if (board[ny][nx] === "white") {
-        whiteCount++;
-      }
-
       if (board[ny][nx] === "black") {
         blackCount++;
       }
     }
   }
+  // 黒があれば打つ
+  return blackCount >0;
+}
+function hencountAround(x, y) {//上と隣に黒が１つで周囲に白が１つ以上
+  // 第一線でなければ対象外
+  if ( x !== 0 && x !== SIZE - 1 && y !== 0 && y !== SIZE - 1 ) return false;
+// １の１も対象外
+  if (x === 0 && y === 0) return false;
+  if (x === 0 && y === SIZE - 1) return false;
+  if (x === SIZE - 1 && y === 0) return false;
+  if (x === SIZE - 1 && y === SIZE - 1) return false;
 
-  // 白の方が多ければ打つ
-  return whiteCount >= blackCount;
+  let blackCount = 0;
+if(x!==0&&board[y][x-1] === "black")blackCount++;
+if(y!==0&&board[y-1][x] === "black")blackCount++;
+if(x!==SIZE - 1&&board[y][x+1] === "black")blackCount++;
+if(y!==SIZE - 1&&board[y+1][x] === "black")blackCount++;
+if(blackCount===0)return false;
+  let whiteCount = 0;
+  // 周囲8マス
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      if (dx === 0 && dy === 0) continue;
+      const nx = x + dx;
+      const ny = y + dy;
+      // 盤外は無視
+      if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE) continue;
+      if (board[ny][nx] === "white") {
+        whiteCount++;
+      }
+    }
+  }
+  // 白があれば打つ
+  return whiteCount >0;
 }
