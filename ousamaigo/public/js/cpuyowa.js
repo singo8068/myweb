@@ -39,10 +39,8 @@ async function ban6ro() {//６路盤
    for (let x = 1; x < 5; x++) {
     if (!uteruka(x, y)) continue;
     countAround(x, y);
-    if (blackCount === 1 && whiteCount === 1)candidates.push({ x, y });
-    if (blackCount === 1 && whiteCount === 2)candidates.push({ x, y });
-    if (blackCount === 2 && whiteCount === 1)candidates.push({ x, y });
-    if (blackCount === 2 && whiteCount === 2)candidates.push({ x, y });
+    if (whiteCount === 1 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
+    if (whiteCount === 2 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
    }
  }
  for (let y = 0; y < 6; y++) {
@@ -68,7 +66,7 @@ async function ban6ro() {//６路盤
 async function ban5ro() {//奇数路盤
  const tengen=Math.floor(SIZE / 2);
   const candidates = [];      
-     for (let y = tengen-1; y <= tengen+1; y++) {//１：１調べる
+     for (let y = tengen-1; y <= tengen+1; y++) {//天元の上下左右で１：１調べる
        for (let x = tengen-1; x <= tengen+1; x++) {
          if(x===tengen||y===tengen){
            if (!uteruka(x, y)) continue;
@@ -92,10 +90,8 @@ async function ban5ro() {//奇数路盤
          if (!uteruka(x, y)) continue;
            countAround(x, y);
            if (blackCount === 0 && whiteCount === 0)candidates.push({ x, y });
-           if (blackCount === 1 && whiteCount === 1)candidates.push({ x, y });
-           if (blackCount === 1 && whiteCount === 2)candidates.push({ x, y });
-           if (blackCount === 2 && whiteCount === 1)candidates.push({ x, y });
-           if (blackCount === 2 && whiteCount === 2)candidates.push({ x, y });
+           if (whiteCount === 1 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
+           if (whiteCount === 2 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
        }
      }
 
