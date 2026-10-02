@@ -11,6 +11,7 @@ await delay(300);
 if (gameNow === false) return;
 if (currentPlayer !== "black") return;
 
+
 // 白石を取れる場所があれば、最優先で取る
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
@@ -46,6 +47,7 @@ await showEffectText("パワーうち\nはつどう！", 1500);
       await placeStone(x, y, true);
       blackTame--;
       gameMode = "main";
+updateDisplay();
       draw();
       return;
     }
@@ -82,15 +84,8 @@ updateForbiddenPoints();
 }
  const tengen=Math.floor((SIZE-1) / 2);//天元に打つ
  if (uteruka(tengen,tengen)){await placeStone(tengen,tengen,true);return;}
-  if (SIZE === 4) {
-    await ban4ro();
-    return;
-  }
-  if (SIZE === 6) {
-    await ban6ro();
-    return;
-  }
- await ban5ro();
+　await tuyosaBetu();
+
 }
 
 async function aiTame() {
@@ -101,6 +96,8 @@ saveState();
 updateForbiddenPoints();
       updateDisplay();
       draw();
+}
+async function torerunaraToru() {//取れるなら取る
 }
 
 function countAround(x, y) {

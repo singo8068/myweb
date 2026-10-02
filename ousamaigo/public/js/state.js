@@ -48,6 +48,7 @@ const CELL = canvas.width / SIZE ;
 const OFFSET = CELL/2;
 let MAXTEKAZU=0;
 MAXTEKAZU=SIZE*10+1;
+if(SIZE===11)MAXTEKAZU=141;
 
 let board = [];
 let drawBoard = [];
