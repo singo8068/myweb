@@ -29,6 +29,7 @@ async function placeStone(
   // パワーうち
   // =========================
   if (gameMode === "pawa") {
+if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
 
     if (ISNET && fromNetwork) {
       console.log("受信パワー", roomId, x, y);
@@ -56,8 +57,12 @@ async function placeStone(
     if (singleCaptureCount === 1) {
       const [rx, ry] = extraStone;
       board[ry][rx] = stoneColor;
-    }
+  // 埋めた結果、自分の呼吸点がなくなるなら埋めない
+  if (!hasLiberties(rx, ry, stoneColor, {})) {
+    board[ry][rx] = null;
   }
+ }
+ }
 
   // =========================
   // 自殺手チェック
@@ -193,13 +198,7 @@ function uteruka(x, y) {
 }
 
 canvas.addEventListener("click", async (e) => {
-    console.log("クリック判定", {
-        ISNET,
-        currentPlayer,
-        myColor,
-        gameNow,
-        gameMode
-    });
+
 if (ISNET && currentPlayer !== myColor) {
   uemsg="あいてのばんだよ";
 return;

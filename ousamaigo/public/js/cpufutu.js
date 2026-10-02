@@ -21,17 +21,19 @@ async function tuyosaBetu() {//奇数路盤
        return;
      }
       
-
-    for (let y = 1; y < SIZE-1; y++) {
-      for (let x = 1; x < SIZE-1; x++) {
+   for(let i=1;i<tengen;i++){
+      for (let y = tengen-i; y <= tengen+i; y++) {
+        for (let x = tengen-i; x <= tengen+i; x++) {
          if (!uteruka(x, y)) continue;
            countAround(x, y);
            if (blackCount === 0 && whiteCount === 0)candidates.push({ x, y });
            if (whiteCount === 1 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
            if (whiteCount === 2 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
-       }
      }
-
+   }
+   if (candidates.length>4) break;
+  }
+if (candidates.length<4){
  for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
      if (!uteruka(x, y)) continue;
@@ -39,6 +41,7 @@ async function tuyosaBetu() {//奇数路盤
      if (hencountAround(x, y))candidates.push({ x, y });
     }
   }
+}
      if(candidates.length>0){
        const i = Math.floor(Math.random() * candidates.length);
        const { x, y } = candidates.splice(i, 1)[0];
