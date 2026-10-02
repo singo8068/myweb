@@ -61,7 +61,7 @@ const SIZE = Number(params.get("size")) || 9;
 const MAJI = params.get("maji") === "true";
 const MYLV = Number(params.get("mylv"));
 const ENLV = Number(params.get("enlv"));
-const ISTUYO = params.get("istuyo") === "true";
+const ISTUYO = Number(params.get("istuyo")) || 2;
 const LVDIF = (MYLV === 0 || ENLV === 0)
     ? 0
     : Math.abs(MYLV - ENLV);
@@ -95,11 +95,9 @@ const socket = ISNET ? io() : null;
 <script src="js/cpugame.js"></script>
 <script src="js/cpumove.js"></script>
 <script>
-  if (ISTUYO) {
-    document.write('<script src="js/cputuyo.js"><\/script>');
-  } else {
-    document.write('<script src="js/cpuyowa.js"><\/script>');
-  }
+  if (ISTUYO===4)document.write('<script src="js/cputuyo.js"><\/script>');
+  if (ISTUYO===3)document.write('<script src="js/cpufutu.js"><\/script>');
+  if (ISTUYO===2)document.write('<script src="js/cpuyowa.js"><\/script>');
 </script>
 <script src="js/igosyori.js"></script>
 <script src="js/tokugi.js"></script>
