@@ -9,8 +9,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-    const BYOYOMI_ADD =
-        room.size === 11 ? 15000 : 10000;
+
 
 const sessions = new Map();
 
@@ -288,6 +287,8 @@ function sendGameData(socket, room, eventName, data) {
     const now = Date.now();
     const elapsed = Math.max(0, now - room.lastUpdate);
     const moveColor = room.turn;
+    const BYOYOMI_ADD =
+        room.size === 11 ? 15000 : 10000;
 
     if (room.turn === "black") {
         room.blackTime = room.blackTime - elapsed + BYOYOMI_ADD;
