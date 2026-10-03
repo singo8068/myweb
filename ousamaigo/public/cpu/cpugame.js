@@ -408,36 +408,6 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     gameNow = false;
 }
 
-	
-
-setInterval(() => {
- if(!MAJI)return;
- if(!gameNow)return;
-    if (currentPlayer === "black") {
-   blackTime -= 100;
- } else {
-   whiteTime -= 100;
- }
- blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
- whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
-if (blackTime <= 0) {
-    syouhai(
-        "じかんぎれで",
-        false,
-        true,
-        "time"
-    );
-}
-
-if (whiteTime <= 0) {
-    syouhai(
-        "じかんぎれで",
-        true,
-        true,
-        "time"
-    );
-}
-}, 100);
 
 if(!MAJI){
 undoBtn.addEventListener("click", () => {
