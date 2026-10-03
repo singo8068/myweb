@@ -54,6 +54,11 @@ if (MAJI) {
 //盤面描写
 async function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.imageSmoothingEnabled = true;
+
+  const stoneLayer = document.getElementById("stoneLayer");
+  stoneLayer.innerHTML = "";
+
   ctx.strokeStyle = "#000";
 
   // 星を描く関数
@@ -105,16 +110,45 @@ async function draw() {
       const mark = drawBoard[y][x];
       const cx = OFFSET + x * CELL;
       const cy = OFFSET + y * CELL;
-
       if (val === "black" || val === "white") {
-        if ((blackKing && blackKing.x === x && blackKing.y === y) || (whiteKing && whiteKing.x === x && whiteKing.y === y)) {
-          const img = (val === "black") ? kurokingImg : sirokingImg;
-          ctx.drawImage(img, cx - CELL * 0.55, cy - CELL * 0.55, CELL*1.1, CELL*1.1);
+
+        const img = document.createElement("img");
+
+        const isKing =
+          (blackKing && blackKing.x === x && blackKing.y === y) ||
+          (whiteKing && whiteKing.x === x && whiteKing.y === y);
+
+        if (isKing) {
+          img.src = (val === "black")
+            ? kurokingImg.src
+            : sirokingImg.src;
+
+          img.style.width = `${CELL * 1.1}px`;
+          img.style.height = `${CELL * 1.1}px`;
+
+          img.style.left = `${cx - CELL * 0.55}px`;
+          img.style.top = `${cy - CELL * 0.55}px`;
+
         } else {
-          const img = (val === "black") ? kuronekoImg : sironekoImg;
-          ctx.drawImage(img, cx - CELL * 0.5, cy - CELL * 0.5, CELL, CELL);
+          img.src = (val === "black")
+            ? kuronekoImg.src
+            : sironekoImg.src;
+
+          img.style.width = `${CELL}px`;
+          img.style.height = `${CELL}px`;
+
+          img.style.left = `${cx - CELL * 0.5}px`;
+          img.style.top = `${cy - CELL * 0.5}px`;
         }
-      } else if (mark === "forbid_black" || mark === "forbid_white") {
+
+        img.style.position = "absolute";
+        img.style.pointerEvents = "none";
+
+        stoneLayer.appendChild(img);
+      }
+if (val === "black" || val === "white") {
+  // 猫はHTMLのimgで表示するので、Canvasには描かない
+} else if (mark === "forbid_black" || mark === "forbid_white") {
         ctx.strokeStyle = mark === "forbid_black" ? "#fff" : "#000";
         ctx.lineWidth = 2;
         ctx.beginPath();
