@@ -103,12 +103,12 @@ const socket = ISNET ? io() : null;
 </script>
 <script src="js/state.js"></script>
 <script src="js/draw.js"></script>
-<script src="js/cpugame.js"></script>
-<script src="js/cpumove.js"></script>
+<script src="cpu/cpugame.js"></script>
+<script src="cpu/cpumove.js"></script>
 <script>
-  if (ISTUYO===4)document.write('<script src="js/cputuyo.js"><\/script>');
-  if (ISTUYO===3)document.write('<script src="js/cpufutu.js"><\/script>');
-  if (ISTUYO===2)document.write('<script src="js/cpuyowa.js"><\/script>');
+  if (ISTUYO===4)document.write('<script src="cpu/cputuyo.js"><\/script>');
+  if (ISTUYO===3)document.write('<script src="cpu/cpufutu.js"><\/script>');
+  if (ISTUYO===2)document.write('<script src="cpu/cpuyowa.js"><\/script>');
 </script>
 <script src="js/igosyori.js"></script>
 <script src="js/tokugi.js"></script>
