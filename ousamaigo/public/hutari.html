@@ -15,6 +15,17 @@
 </div>
 <div style="position: relative; display: inline-block;">
   <canvas id="goban" width="650" height="650"></canvas>
+  <!-- 猫を表示する場所 -->
+  <div id="stoneLayer"
+       style="
+         position: absolute;
+         left: 0;
+         top: 0;
+         width: 650px;
+         height: 650px;
+         pointer-events: none;
+       ">
+  </div>
   <div id="effectText"
     style="
       display: none;
