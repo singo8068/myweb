@@ -48,10 +48,13 @@
 </div>
 <div>
 あと<span id="tesuLibs">0</span>て　　
-<span id="blackLabel"></span><span id="blackKingLibs"></span><span id="blackTimeLibs">60</span> ため<span id="blackTameLibs">0</span>　　
-<span id="whiteLabel"></span><span id="whiteKingLibs"></span><span id="whiteTimeLibs">60</span> ため<span id="whiteTameLibs">1</span>
+<span id="blackLabel"></span><span id="blackKingLibs"></span> ため<span id="blackTameLibs">0</span>　　
+<span id="whiteLabel"></span><span id="whiteKingLibs"></span> ため<span id="whiteTameLibs">1</span>
 </div>
-
+<span id="blackTimeLibsDisplay" style="display:none;"></span>
+<span id="whiteTimeLibsDisplay" style="display:none;"></span>
+<span id="blackTimeLibs" style="display:none;"></span>
+<span id="whiteTimeLibs" style="display:none;"></span>
 <div class="controls" id="mainControls">
   <button id="pawaBtn">パワーうち</button>
   <button id="oseBtn">リバース</button>
@@ -70,6 +73,8 @@
 const params = new URLSearchParams(location.search);
 const SIZE = Number(params.get("size")) || 9;
 const MAJI = params.get("maji") === "true";
+const GAZOU = params.get("gazou");
+const KINGE = params.get("kinge");
 const MYLV = Number(params.get("mylv"));
 const ENLV = Number(params.get("enlv"));
 const ISTUYO = Number(params.get("istuyo")) || 2;
@@ -89,11 +94,9 @@ const levelInfo = document.getElementById("levelInfo");
 
 
 if (MAJI) {
-    document.getElementById("undoBtn").remove();
-} else {
-    document.getElementById("blackTimeLibs").remove();
-    document.getElementById("whiteTimeLibs").remove();
-}
+   document.getElementById("undoBtn").remove();
+   document.getElementById("backMenu").remove();
+} 
 
 </script>
 
@@ -102,6 +105,12 @@ if (MAJI) {
 const socket = ISNET ? io() : null;
 </script>
 <script src="js/state.js"></script>
+<script>
+if(GAZOU!==null){
+kuronekoImg.src = `./cpu/pic/${GAZOU}.webp`;
+kurokingImg.src = `./cpu/pic/${KINGE}.webp`;
+}
+</script>
 <script src="js/draw.js"></script>
 <script src="cpu/cpugame.js"></script>
 <script src="cpu/cpumove.js"></script>
@@ -109,6 +118,7 @@ const socket = ISNET ? io() : null;
   if (ISTUYO===4)document.write('<script src="cpu/cputuyo.js"><\/script>');
   if (ISTUYO===3)document.write('<script src="cpu/cpufutu.js"><\/script>');
   if (ISTUYO===2)document.write('<script src="cpu/cpuyowa.js"><\/script>');
+  if (ISTUYO===1)document.write('<script src="cpu/cpurand.js"><\/script>');
 </script>
 <script src="js/igosyori.js"></script>
 <script src="js/tokugi.js"></script>
