@@ -9,7 +9,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const BYOYOMI_ADD = 10000;
+if(SIZE===9)const BYOYOMI_ADD = 10000;
+if(SIZE===11)const BYOYOMI_ADD = 15000;
 
 const sessions = new Map();
 
