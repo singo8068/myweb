@@ -73,7 +73,6 @@ console.log("initBoard", {
   currentPlayer = "black";
   blackKing = null;
   whiteKing = null;
-  
   if (LVDIF===0){blackTame=0;whiteTame=1;}else{whiteTame=0;}
   if (LVDIF===1)blackTame=0;
   if (LVDIF===2)blackTame=1;
@@ -85,6 +84,7 @@ console.log("initBoard", {
   if (LVDIF===8)blackTame=1;
   if (LVDIF===9)blackTame=0;
   if (LVDIF>9)blackTame=1;
+if(SIZE===9){  
   if (LVDIF>2){
    currentPlayer = "white";
    board[4][4] = "black";
@@ -93,7 +93,19 @@ console.log("initBoard", {
   }
   if (LVDIF>4)board[4][6] = "black";
   if (LVDIF>6)board[2][4] = "black";
-  if (LVDIF>8)board[2][4] = "black";
+  if (LVDIF>8)board[6][4] = "black";
+}if(SIZE===11){  
+  if (LVDIF>2){
+   currentPlayer = "white";
+   board[5][5] = "black";
+   blackKing = { x: 5, y: 5 };
+   board[5][2] = "black";
+  }
+  if (LVDIF>4)board[5][8] = "black";
+  if (LVDIF>6)board[2][5] = "black";
+  if (LVDIF>8)board[8][5] = "black";
+}
+
 
   blackTime = 60000; 
   whiteTime = 60000;

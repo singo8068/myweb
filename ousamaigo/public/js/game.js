@@ -390,10 +390,12 @@ gameNow = true;
 function playerChange(addByoyomi = true) {
     if (currentPlayer === "black") {
         currentPlayer = "white";
-        if (addByoyomi) blackTime += 10000;
+        if (addByoyomi&&SIZE===9) blackTime += 10000;
+        if (addByoyomi&&SIZE===11) blackTime += 15000;
     } else {
         currentPlayer = "black";
-        if (addByoyomi) whiteTime += 10000;
+        if (addByoyomi&&SIZE===9) whiteTime += 10000;
+        if (addByoyomi&&SIZE===11) whiteTime += 15000;
     }
 
     updateTurnControls();

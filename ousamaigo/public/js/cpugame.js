@@ -50,11 +50,8 @@ async function placeStone(
 
     // 1個だけ取った場合は、取った場所にも置く
     if (singleCaptureCount === 1 && extraStone) {
-
       const [rx, ry] = extraStone;
-
       board[ry][rx] = stoneColor;
-
       // そこに置いた石自身に呼吸点があるか確認
       if (!hasLiberties(rx, ry, stoneColor, {})) {
         board[ry][rx] = null;

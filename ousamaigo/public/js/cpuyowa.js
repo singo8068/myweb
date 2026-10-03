@@ -50,7 +50,7 @@ async function ban6ro() {//６路盤弱い
     if (uteruka(x, y)) candidates.push({ x, y });
    }
  }
-if (candidates.length === 0) {
+if (candidates.length <3) {
  for (let y = 0; y < 6; y++) {
     for (let x = 0; x < 6; x++) {
      if (uteruka(x, y)) candidates.push({ x, y });
@@ -76,14 +76,14 @@ async function ban5ro() {//奇数路盤
          }
         }
        }
-if (candidates.length === 0) {
+if (candidates.length <4) {
     for (let y = 1; y < SIZE-1; y++) {
       for (let x = 1; x < SIZE-1; x++) {
          if (uteruka(x, y)) candidates.push({ x, y });
        }
      }
 }
-if (candidates.length === 0) {
+if (candidates.length <3) {
  for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
      if (uteruka(x, y)) candidates.push({ x, y });
