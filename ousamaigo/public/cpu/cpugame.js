@@ -255,7 +255,7 @@ resetBtn.addEventListener("click", async function () {
 resetBtn2.addEventListener("click", async function () {
  document.getElementById("effectText").style.display = "none";
  initBoard();
-aiMove()
+if(myColor === "white")aiMove()
 });
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
@@ -285,21 +285,29 @@ function playerChange(addByoyomi = true) {
     if (currentPlayer === "black") {
         currentPlayer = "white";
         if (addByoyomi) blackTime += 10000;
-
-    } else {
-      currentPlayer = "black";
-      if (addByoyomi) whiteTime += 10000;
-      //CPUは黒番
+//CPUは白番
+if(myColor === "white"){
 if (gameNow) {
     aiMove();
 }
       updateForbiddenPoints();
       updateDisplay();
       draw();
+}//CPUは白番
+    } else {
+      currentPlayer = "black";
+      if (addByoyomi) whiteTime += 10000;
+//CPUは黒番
+if(myColor === "white"){
+if (gameNow) {
+    aiMove();
+}
+      updateForbiddenPoints();
+      updateDisplay();
+      draw();
+}//CPUは黒番
+}
 
-
-
-    }
     // 今の手番の王様ねこを表示
     uemsg="のばんだよ";
     const turnImg = document.createElement("img");
@@ -366,27 +374,12 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     turnDisplay.appendChild(winImg);
     turnDisplay.appendChild(winText);
 
-    if (ISNET) {
-
-        if (myColor === "black") {
-            winMessage =
-                isBlackWin
-                    ? "きみのかち！"
-                    : "きみのまけ";
-        } else {
-            winMessage =
-                isBlackWin
-                    ? "きみのまけ"
-                    : "きみのかち！";
-        }
-
-    } else {
 
         winMessage =
             isBlackWin
                 ? "くろのかち！"
                 : "しろのかち！";
-    }
+    
 
     const effectDiv =
         document.getElementById("effectText");
