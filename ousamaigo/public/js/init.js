@@ -8,12 +8,7 @@ async function initBoard() {
         });
     }
 
-console.log("initBoard", {
-    SIZE,
-    LVDIF,
-    ISNET,
-    myColor
-});
+
 
     if (ISNET) {
 
