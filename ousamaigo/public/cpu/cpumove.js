@@ -1,15 +1,15 @@
-let blackCount = 0;
-let whiteCount = 0;
+let comCount = 0;
+let myCount = 0;
 async function aiMove() {
 if(gameNow === false)return;
  updateForbiddenPoints();
  updateDisplay();
 
- if (currentPlayer === "white" || !gameNow) return;
+ if (currentPlayer === MYCOLOR || !gameNow) return;
 await delay(300);
 // draw();
 if (gameNow === false) return;
-if (currentPlayer !== "black") return;
+if (currentPlayer !== COMCOLOR) return;
 
 
 // 白石を取れる場所があれば、最優先で取る
@@ -27,7 +27,7 @@ if (currentPlayer !== "black") return;
 
     for (const [nx, ny] of getNeighbors(x, y)) {
       if (
-        board[ny][nx] === "white" &&
+        board[ny][nx] === MYCOLOR &&
         countLiberties(nx, ny) === 1
       ) {
         canCapture = true;
@@ -65,7 +65,7 @@ for (let d = 2; d < SIZE; d++) {// 天元から外側へ向かって調べる
       if (board[y][x] !== null) continue;
       if (Math.abs(x - center)+Math.abs(y - center) > d) continue;
       if (oseroCheck(x, y, su) === "kouho_black") {
-        const reverseColor = "black";
+        const reverseColor = COMCOLOR;
         await showEffectText("リバース\nはつどう！", 1500);
         board[y][x] = reverseColor;
         oseroGaesi(x, y, reverseColor);
@@ -101,8 +101,8 @@ async function torerunaraToru() {//取れるなら取る
 }
 
 function countAround(x, y) {
-  blackCount = 0;
-  whiteCount = 0;
+  comCount = 0;
+  myCount = 0;
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
       // 自分自身は除外
@@ -111,11 +111,11 @@ function countAround(x, y) {
       const ny = y + dy;
       // 盤外は除外
       if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE) continue;
-      if (board[ny][nx] === "black") {
-        blackCount++;
+      if (board[ny][nx] === COMCOLOR) {
+        comCount++;
       }
-      if (board[ny][nx] === "white") {
-        whiteCount++;
+      if (board[ny][nx] === MYCOLOR) {
+        myCount++;
       }
     }
   }
@@ -129,13 +129,13 @@ function henhaneAround(x, y) {//上と隣に白が１つで周囲に黒が１つ
   if (x === SIZE - 1 && y === 0) return false;
   if (x === SIZE - 1 && y === SIZE - 1) return false;
 
-  let whiteCount = 0;
-if(x!==0&&board[y][x-1] === "white")whiteCount++;
-if(y!==0&&board[y-1][x] === "white")whiteCount++;
-if(x!==SIZE - 1&&board[y][x+1] === "white")whiteCount++;
-if(y!==SIZE - 1&&board[y+1][x] === "white")whiteCount++;
-if(whiteCount!==1)return false;
-  let blackCount = 0;
+  let myCount = 0;
+if(x!==0&&board[y][x-1] === MYCOLOR)myCount++;
+if(y!==0&&board[y-1][x] === MYCOLOR)myCount++;
+if(x!==SIZE - 1&&board[y][x+1] === MYCOLOR)myCount++;
+if(y!==SIZE - 1&&board[y+1][x] === MYCOLOR)myCount++;
+if(myCount!==1)return false;
+  let comCount = 0;
   // 周囲8マス
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
@@ -144,13 +144,13 @@ if(whiteCount!==1)return false;
       const ny = y + dy;
       // 盤外は無視
       if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE) continue;
-      if (board[ny][nx] === "black") {
-        blackCount++;
+      if (board[ny][nx] === COMCOLOR) {
+        comCount++;
       }
     }
   }
   // 黒があれば打つ
-  return blackCount >0;
+  return comCount >0;
 }
 function hencountAround(x, y) {//上と隣に黒が１つで周囲に白が１つ以上
   // 第一線でなければ対象外
@@ -161,13 +161,13 @@ function hencountAround(x, y) {//上と隣に黒が１つで周囲に白が１�
   if (x === SIZE - 1 && y === 0) return false;
   if (x === SIZE - 1 && y === SIZE - 1) return false;
 
-  let blackCount = 0;
-if(x!==0&&board[y][x-1] === "black")blackCount++;
-if(y!==0&&board[y-1][x] === "black")blackCount++;
-if(x!==SIZE - 1&&board[y][x+1] === "black")blackCount++;
-if(y!==SIZE - 1&&board[y+1][x] === "black")blackCount++;
-if(blackCount===0)return false;
-  let whiteCount = 0;
+  let comCount = 0;
+if(x!==0&&board[y][x-1] === COMCOLOR)comCount++;
+if(y!==0&&board[y-1][x] === COMCOLOR)comCount++;
+if(x!==SIZE - 1&&board[y][x+1] === COMCOLOR)comCount++;
+if(y!==SIZE - 1&&board[y+1][x] === COMCOLOR)comCount++;
+if(comCount===0)return false;
+  let myCount = 0;
   // 周囲8マス
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
@@ -176,11 +176,11 @@ if(blackCount===0)return false;
       const ny = y + dy;
       // 盤外は無視
       if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE) continue;
-      if (board[ny][nx] === "white") {
-        whiteCount++;
+      if (board[ny][nx] === MYCOLOR) {
+        myCount++;
       }
     }
   }
   // 白があれば打つ
-  return whiteCount >0;
+  return myCount >0;
 }

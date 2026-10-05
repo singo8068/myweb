@@ -8,7 +8,7 @@ async function tuyosaBetu() {//奇数路盤
          if(x===tengen||y===tengen){
            if (!uteruka(x, y)) continue;
            countAround(x, y);
-           if (blackCount === 1 && whiteCount === 1) {
+           if (comCount === 1 && myCount === 1) {
             candidates.push({ x, y });
           }
          }
@@ -26,9 +26,9 @@ async function tuyosaBetu() {//奇数路盤
         for (let x = tengen-i; x <= tengen+i; x++) {
          if (!uteruka(x, y)) continue;
            countAround(x, y);
-           if (blackCount === 0 && whiteCount === 0)candidates.push({ x, y });
-           if (whiteCount === 1 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
-           if (whiteCount === 2 && blackCount >0 &&blackCount <4)candidates.push({ x, y });
+           if (comCount === 0 && myCount === 0)candidates.push({ x, y });
+           if (myCount === 1 && comCount >0 &&comCount <4)candidates.push({ x, y });
+           if (myCount === 2 && comCount >0 &&comCount <4)candidates.push({ x, y });
      }
    }
    if (candidates.length>4) break;

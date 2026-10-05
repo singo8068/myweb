@@ -14,7 +14,7 @@ if (countLiberties(tengen, tengen) <= 2) {
             if (uteruka(x,y)) {if(x===tengen||y===tengen){
               if (!uteruka(x, y)) continue;
               countAround(x, y);
-              if (blackCount === 1 && whiteCount === 1) {
+              if (comCount === 1 && myCount === 1) {
                candidates.push({ x, y });
              }
             }}
@@ -25,7 +25,7 @@ if (countLiberties(tengen, tengen) <= 2) {
           for (let x = tengen-i; x <= tengen+i; x++) {
             if (!uteruka(x, y)) continue;
               countAround(x, y);
-              if (blackCount === 1 && whiteCount === 1) {
+              if (comCount === 1 && myCount === 1) {
                candidates.push({ x, y });
              }
           }
@@ -51,7 +51,7 @@ if (countLiberties(tengen, tengen) <= 3) {
           for (let x = tengen-i; x <= tengen+i; x++) {
             if (!uteruka(x, y)) continue;
               countAround(x, y);
-              if (blackCount === 0 && whiteCount === 0) {
+              if (comCount === 0 && myCount === 0) {
                candidates.push({ x, y });
              }
           }
@@ -69,9 +69,9 @@ if (countLiberties(tengen, tengen) <= 3) {
      for (let x = tengen-i; x <= tengen+i; x++) {
       if (!uteruka(x, y)) continue;
       countAround(x, y);
-      if (blackCount === 1 && whiteCount === 2)candidates.push({ x, y });
-      if (blackCount === 2 && whiteCount === 1)candidates.push({ x, y });
-      if (blackCount === 2 && whiteCount === 2)candidates.push({ x, y });
+      if (comCount === 1 && myCount === 2)candidates.push({ x, y });
+      if (comCount === 2 && myCount === 1)candidates.push({ x, y });
+      if (comCount === 2 && myCount === 2)candidates.push({ x, y });
      }
     }
      if(candidates.length>0){
@@ -86,8 +86,8 @@ if (countLiberties(tengen, tengen) <= 3) {
      for (let x = tengen-i; x <= tengen+i; x++) {
       if (!uteruka(x, y)) continue;
       countAround(x, y);
-      if (blackCount === 3 && whiteCount === 2)candidates.push({ x, y });
-      if (blackCount === 3 && whiteCount === 1)candidates.push({ x, y });
+      if (comCount === 3 && myCount === 2)candidates.push({ x, y });
+      if (comCount === 3 && myCount === 1)candidates.push({ x, y });
      }
     }
      if(candidates.length>0){
@@ -136,7 +136,7 @@ function findKingBestLibertyMove() {
     for (let x = 0; x < SIZE; x++) {
       if (board[y][x] !== null) continue;
       // 黒を仮置き
-      board[y][x] = "black";
+      board[y][x] = COMCOLOR;
       const liberties = countLiberties(kingX, kingY);
       // 元に戻す
       board[y][x] = null;

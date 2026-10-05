@@ -117,13 +117,6 @@ function uteruka(x, y) {
 }
 
 canvas.addEventListener("click", async (e) => {
-    console.log("クリック判定", {
-        ISNET,
-        currentPlayer,
-        myColor,
-        gameNow,
-        gameMode
-    });
 
   if (!gameNow) return;
   const rect = canvas.getBoundingClientRect();
@@ -255,7 +248,7 @@ resetBtn.addEventListener("click", async function () {
 resetBtn2.addEventListener("click", async function () {
  document.getElementById("effectText").style.display = "none";
  initBoard();
-if(myColor === "white")aiMove()
+if(MYCOLOR === "white")aiMove()
 });
 
 document.getElementById("cancelBtn").addEventListener("click", function () {
@@ -284,28 +277,14 @@ gameNow = true;
 function playerChange(addByoyomi = true) {
     if (currentPlayer === "black") {
         currentPlayer = "white";
-        if (addByoyomi) blackTime += 10000;
-//CPUは白番
-if(myColor === "white"){
-if (gameNow) {
-    aiMove();
-}
-      updateForbiddenPoints();
-      updateDisplay();
-      draw();
-}//CPUは白番
     } else {
       currentPlayer = "black";
-      if (addByoyomi) whiteTime += 10000;
-//CPUは黒番
-if(myColor === "white"){
-if (gameNow) {
-    aiMove();
 }
+if(COMCOLOR === currentPlayer){
+if (gameNow)aiMove();
       updateForbiddenPoints();
       updateDisplay();
       draw();
-}//CPUは黒番
 }
 
     // 今の手番の王様ねこを表示
@@ -321,12 +300,6 @@ turnDisplay.removeChild(turnDisplay.lastChild);
     turnDisplay.appendChild(turnImg);
     turnDisplay.appendChild(document.createTextNode(uemsg));
 document.getElementById("mainControls").style.display = "block";
-}
-
-
-function uteruka(x,y){
-   if (board[y][x] === null&&drawBoard[y][x] === null)return true;
-   return false;
 }
 
 
