@@ -4,31 +4,152 @@
   <meta charset="UTF-8" />
   <title>おうさまいご</title>
 
-<link rel="stylesheet" href="css/style.css">
-<style>
-a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
+  <link rel="stylesheet" href="css/style.css">
 
-</style>
+  <style>
+    a {
+      display: inline-block;
+      width: auto;
+      margin: 30px auto 0;
+      padding: 10px 40px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: background-color 0.3s;
+    }
+
+.color-select {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.color-button {
+  width: 180px;
+  padding: 8px 10px;
+  margin: 0 12px;
+  font-size: 30px;
+  font-weight: bold;
+  background-color: #4CAF50;
+  border: 6px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.color-button.selected {
+  border: 12px solid blue;
+}
+
+.color-button[data-color="white"] {
+  color: white;
+}
+
+.color-button[data-color="black"] {
+  color: black;
+}
+  </style>
 </head>
+
 <body>
+
 <div class="section">
   <a href="index.html" class="back">メニューにもどる</a>
 </div>
+
 <h2>ＣＰＵたいせん</h2>
+
+<div class="color-select">
+  <button type="button" class="color-button" data-color="white" data-lvdif="0">しろばんパワー10</button>
+  <button type="button" class="color-button" data-color="black" data-lvdif="0">くろばんパワー01</button>
+  <button type="button" class="color-button" data-color="white" data-lvdif="1">しろばんパワー00</button>
+  <button type="button" class="color-button" data-color="black" data-lvdif="1">くろばんパワー00</button>
+</div>
+
 <a href="vscpu.html?size=4&maji=false&istuyo=2&color=white">４×４</a>
 　　　<a href="vscpu.html?size=5&maji=false&istuyo=2&color=white">５×５</a>
 　　　<a href="vscpu.html?size=6&maji=false&istuyo=2&color=white">６×６</a>
+
 <br/><br/>
+
 <a href="vscpu.html?size=7&maji=false&istuyo=2&color=white">７×７<br/>よわい</a>
 　　　　<a href="vscpu.html?size=7&maji=false&istuyo=3&color=white">７×７<br/>ふつう</a>
+
 <br/><br/>
+
 <a href="vscpu.html?size=9&maji=false&istuyo=2&color=white">９×９<br/>よわい</a>
 　　　<a href="vscpu.html?size=9&maji=false&istuyo=3&color=white">９×９<br/>ふつう</a>
 　　　<a href="vscpu.html?size=9&maji=false&istuyo=4&color=white">９×９<br/>つよい</a>
+
 <br/><br/>
+
 <a href="vscpu.html?size=11&maji=false&istuyo=2&color=white">１１×１１<br/>よわい</a>
 　<a href="vscpu.html?size=11&maji=false&istuyo=3&color=white">１１×１１<br/>ふつう</a>
 　<a href="vscpu.html?size=11&maji=false&istuyo=4&color=white">１１×１１<br/>つよい</a>
+
+
+<script>
+  const colorButtons = document.querySelectorAll(".color-button");
+
+  // 保存されている選択番号を取得
+  let savedIndex = localStorage.getItem("cpuColorButton");
+
+  // 保存されていなければ、最初のボタン（しろばんパワー10）
+  if (savedIndex === null) {
+    savedIndex = 0;
+  }
+
+  // 保存されていたボタンを選択
+  const selectedButton = colorButtons[savedIndex];
+
+  if (selectedButton) {
+    selectedButton.classList.add("selected");
+
+    const color = selectedButton.dataset.color;
+    const lvdif = selectedButton.dataset.lvdif;
+
+    // CPU対戦リンクに反映
+    document.querySelectorAll('a[href*="vscpu.html"]').forEach(link => {
+      const url = new URL(link.href);
+
+      url.searchParams.set("color", color);
+      url.searchParams.set("lvdif", lvdif);
+
+      link.href = url.toString();
+    });
+  }
+
+  // ボタンを押したとき
+  colorButtons.forEach((button, index) => {
+
+    button.addEventListener("click", () => {
+
+      // 青枠を移動
+      document.querySelector(".color-button.selected")
+        ?.classList.remove("selected");
+
+      button.classList.add("selected");
+
+      // 選択した番号を保存
+      localStorage.setItem("cpuColorButton", index);
+
+      // 選択した色とレベル差
+      const color = button.dataset.color;
+      const lvdif = button.dataset.lvdif;
+
+      // CPU対戦リンクを変更
+      document.querySelectorAll('a[href*="vscpu.html"]').forEach(link => {
+        const url = new URL(link.href);
+
+        url.searchParams.set("color", color);
+        url.searchParams.set("lvdif", lvdif);
+
+        link.href = url.toString();
+      });
+
+    });
+
+  });
+</script>
 
 </body>
 </html>
