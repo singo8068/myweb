@@ -19,6 +19,7 @@ if (currentPlayer !== COMCOLOR) return;
     if (board[y][x] !== null) continue;
 
     const isForbid =
+      drawBoard[y][x] === "forbid_white" ||
       drawBoard[y][x] === "forbid_black" ||
       drawBoard[y][x] === "forbid_both";
 
@@ -40,14 +41,24 @@ if (currentPlayer !== COMCOLOR) return;
       await placeStone(x, y, true);
       return;
     }
-    // 着手禁止点でも、黒のパワーがあればパワーうち
-    if (blackTame > 0) {
+    // 着手禁止点でも、パワーがあればパワーうち
+    if (COMCOLOR==="black"&&blackTame > 0) {
       gameMode = "pawa";
-await showEffectText("パワーうち\nはつどう！", 1500);
+      await showEffectText("パワーうち\nはつどう！", 1500);
       await placeStone(x, y, true);
       blackTame--;
       gameMode = "main";
-updateDisplay();
+      updateDisplay();
+      draw();
+      return;
+    }
+    if (COMCOLOR==="white"&&whiteTame > 0) {
+      gameMode = "pawa";
+      await showEffectText("パワーうち\nはつどう！", 1500);
+      await placeStone(x, y, true);
+      whiteTame--;
+      gameMode = "main";
+      updateDisplay();
       draw();
       return;
     }
@@ -56,7 +67,7 @@ updateDisplay();
 // ========================================
 // パワーが4以上ならリバース
 // ========================================
-if (blackTame >= 4) {
+if (COMCOLOR==="black"&&blackTame >= 4) {
  const su = Math.floor(blackTame / 2) - 1;
 const center = (SIZE - 1) / 2;
 for (let d = 2; d < SIZE; d++) {// 天元から外側へ向かって調べる
@@ -73,23 +84,54 @@ for (let d = 2; d < SIZE; d++) {// 天元から外側へ向かって調べる
         gameMode = "main";
         playerChange();
         saveState();
-updateForbiddenPoints();
+       updateForbiddenPoints();
       updateDisplay();
       draw();
         return;
-      }
-    }
-  }
-}
-}
+      }//endif
+    }//next x
+  }//next y
+}//next d
+}//endif
+if (COMCOLOR==="white"&&whiteTame >= 4) {
+ const su = Math.floor(whiteTame / 2) - 1;
+const center = (SIZE - 1) / 2;
+for (let d = 2; d < SIZE; d++) {// 天元から外側へ向かって調べる
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      if (board[y][x] !== null) continue;
+      if (Math.abs(x - center)+Math.abs(y - center) > d) continue;
+      if (oseroCheck(x, y, su) === "kouho_white") {
+        const reverseColor = COMCOLOR;
+        await showEffectText("リバース\nはつどう！", 1500);
+        board[y][x] = reverseColor;
+        oseroGaesi(x, y, reverseColor);
+        whiteTame = whiteTame - 2 - kaesisu * 2;
+        gameMode = "main";
+        playerChange();
+        saveState();
+       updateForbiddenPoints();
+      updateDisplay();
+      draw();
+        return;
+      }//endif
+    }//next x
+  }//next y
+}//next d
+}//endif
  const tengen=Math.floor((SIZE-1) / 2);//天元に打つ
  if (uteruka(tengen,tengen)){await placeStone(tengen,tengen,true);return;}
+ if(SIZE<8&&COMCOLOR==="white"){
+  if (uteruka(tengen+1,tengen+1)){await placeStone(tengen+1,tengen+1,true);return;}
+  if (uteruka(tengen,tengen+1)){await placeStone(tengen,tengen+1,true);return;}
+  if (uteruka(tengen+1,tengen)){await placeStone(tengen+1,tengen,true);return;}
+ }
 　await tuyosaBetu();
 
 }
 
 async function aiTame() {
- blackTame++;
+ if(COMCOLOR==="black"){blackTame++;}else{whiteTame++;}
  await showEffectText("パワーを\nためるよ！", 1000);
 playerChange();
 saveState();

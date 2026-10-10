@@ -1,13 +1,15 @@
  const tengen=Math.floor(SIZE / 2);
 async function tuyosaBetu() {//奇数路盤
    const candidates = [];  
-if (countLiberties(tengen, tengen) <= 2) {
-  const move = findKingBestLibertyMove();
-  if (move) {
+let move = false;
+if (COMCOLOR==="black"&&countLiberties(tengen, tengen) <= 2){move= findKingBestLibertyMove();}
+if (whiteKing &&COMCOLOR==="white"&&countLiberties(whiteKing.y, whiteKing.x) <= 2){move= findKingBestLibertyMove();}
+
+ if (move) {
     await placeStone(move.x, move.y, false);
     return;
   }
-}
+
      for(let i=1;i<tengen;i++){//１：１調べる
         for (let y = tengen-i; y <= tengen+i; y++) {
           for (let x = tengen-i; x <= tengen+i; x++) {
@@ -38,13 +40,13 @@ if (countLiberties(tengen, tengen) <= 2) {
           return;
         }
       }//next i
-if (countLiberties(tengen, tengen) <= 3) {
-  const move = findKingBestLibertyMove();
+move=false;
+if (COMCOLOR==="black"&&countLiberties(tengen, tengen) <= 3){move= findKingBestLibertyMove();}
+if (whiteKing &&COMCOLOR==="white"&&countLiberties(whiteKing.y, whiteKing.x) <= 3){move= findKingBestLibertyMove();}
   if (move) {
     await placeStone(move.x, move.y, false);
     return;
   }
-}
 
      for(let i=1;i<tengen-1;i++){//０調べる
         for (let y = tengen-i; y <= tengen+i; y++) {
@@ -127,8 +129,15 @@ if (candidates.length === 0) {
  aiTame();
 }
 function findKingBestLibertyMove() {
-  const kingX = tengen;
-  const kingY = tengen;
+let kingX;
+let kingY;
+if(COMCOLOR==="black"){
+  kingX = tengen;
+  kingY = tengen;
+}else{
+  kingX = whiteKing.x;
+  kingY = whiteKing.y;
+}
   const before = countLiberties(kingX, kingY);
   let bestMove = null;
   let maxLiberties = before;
