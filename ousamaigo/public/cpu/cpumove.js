@@ -1,5 +1,6 @@
 let comCount = 0;
 let myCount = 0;
+let isForbid;
 async function aiMove() {
 if(gameNow === false)return;
  updateForbiddenPoints();
@@ -18,10 +19,9 @@ if (currentPlayer !== COMCOLOR) return;
 
     if (board[y][x] !== null) continue;
 
-    const isForbid =
-      drawBoard[y][x] === "forbid_white" ||
-      drawBoard[y][x] === "forbid_black" ||
-      drawBoard[y][x] === "forbid_both";
+    if(COMCOLOR==="black"){isForbid = drawBoard[y][x] === "forbid_black" || drawBoard[y][x] === "forbid_both";
+    }else{isForbid =drawBoard[y][x] === "forbid_white" ||drawBoard[y][x] === "forbid_both";}
+
 
     // 周囲に、あと1呼吸で取れる白石があるか
     let canCapture = false;
