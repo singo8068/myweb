@@ -51,12 +51,7 @@ body {
 
 <script>
 const key = "win_うさぎ";
-
-const row = document.cookie
-    .split("; ")
-    .find(row => row.startsWith(key + "="));
-
-const wins = row ? Number(row.split("=")[1]) || 0 : 0;
+const wins = Number(localStorage.getItem(key)) || 0;
 
 document.getElementById("usagiWins").textContent = wins;
 </script>

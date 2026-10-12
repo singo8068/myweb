@@ -375,26 +375,20 @@ if (
     }, 3000);
 } else {
 
-    const key = "win_" + character;
-    const row = document.cookie
-        .split("; ")
-        .find(row => row.startsWith(key + "="));
-    const wins = row ? Number(row.split("=")[1]) || 0 : 0;
-    document.cookie = key + "=" + (wins + 1) + "; path=/";
+const key = "win_" + character;
 
-alert("テスト開始");
+try {
+    const wins = Number(localStorage.getItem(key)) || 0;
+    const newWins = wins + 1;
 
-document.cookie = "test_cookie=123; path=/";
+    localStorage.setItem(key, String(newWins));
 
-alert("テストCookie：" + document.cookie);
-  
-    // 保存できたか確認
     console.log("キャラクター:", character);
-alert(
-    "保存後のCookie：\n" +
-    document.cookie +
-    "\n\n今回の勝利数：" + (wins + 1)
-);
+    console.log("今回の勝利数:", newWins);
+    console.log("保存結果:", localStorage.getItem(key));
+} catch (error) {
+    console.error("勝利数の保存に失敗:", error);
+}
 
     setTimeout(() => {
     location.href = "cpu/talk.html?character="
