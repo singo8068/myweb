@@ -382,8 +382,10 @@ if (
     const wins = row ? Number(row.split("=")[1]) || 0 : 0;
     document.cookie = key + "=" + (wins + 1) + "; path=/";
 
-  
+alert("テスト開始");
+
 document.cookie = "test_cookie=123; path=/";
+
 alert("テストCookie：" + document.cookie);
   
     // 保存できたか確認
