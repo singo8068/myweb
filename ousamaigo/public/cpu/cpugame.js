@@ -365,12 +365,33 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     document.getElementById("mainControls").style.display = "none";
     if (MAJI) {
     // 3秒待ってトークページへ戻る
+
+if (
+    (MYCOLOR === "white" && isBlackWin) ||
+    (MYCOLOR === "black" && !isBlackWin)
+) {
     setTimeout(() => {
-        location.href =
-            "cpu/talk.html?character=" +
-            encodeURIComponent(character) +
-            "&after=true";
+    location.href = "cpu/mainstory.html";
     }, 3000);
+} else {
+
+    const key = "win_" + character;
+    const row = document.cookie
+        .split("; ")
+        .find(row => row.startsWith(key + "="));
+    const wins = row ? Number(row.split("=")[1]) || 0 : 0;
+    document.cookie = key + "=" + (wins + 1) + "; path=/";
+    // 保存できたか確認
+    console.log("キャラクター:", character);
+    console.log("保存したCookie:", document.cookie);
+    console.log("今回の勝利数:", wins + 1);
+    setTimeout(() => {
+    location.href = "cpu/talk.html?character="
+        + encodeURIComponent(character)
+        + "&after=true";
+    }, 3000);
+}
+
 
     } else {
         document.getElementById("saigoControls").style.display = "block";

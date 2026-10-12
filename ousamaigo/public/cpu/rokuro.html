@@ -12,11 +12,12 @@ a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px;
     align-items: center;
     justify-content: center;
     gap: 8px;
+ font-size: 40px;
   padding: 8px 10px;
 }
 .animal-button img {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     object-fit: contain;
 }
 body {
@@ -29,20 +30,35 @@ body {
 </style>
 </head>
 <body>
+
+
 <div class="section">
   <a href="mainstory.html" class="back">マップにもどる</a>
 </div>
 <h2>ろくろそうげん</h2>
 <a href="talk.html?character=うさぎ" class="animal-button">
     <img src="pic/usagi.webp">
-    <span> うさぎ</span>
+    <span> うさぎ<br/><span id="usagiWins">0</span> かち</span>
+</a>
+<br/>
+<br/>
+<a href="">
+    <span> ？？？<br/>じゅんびちゅう</span>
 </a>
 
 <br/>
-
-
-
 <br/><br/>
 
+<script>
+const key = "win_うさぎ";
+
+const row = document.cookie
+    .split("; ")
+    .find(row => row.startsWith(key + "="));
+
+const wins = row ? Number(row.split("=")[1]) || 0 : 0;
+
+document.getElementById("usagiWins").textContent = wins;
+</script>
 </body>
 </html>
