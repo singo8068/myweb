@@ -1,3 +1,4 @@
+
 {
   "うさぎ": {
     "name": "うさぎ",
@@ -63,19 +64,149 @@
     ],
 
     "returnPage": "rokuro.html"
-    
   },
 
   "ひつじ": {
     "name": "ひつじ",
-    "image": "hitsuji.webp",
-    "kingImage": "hitsujiking.webp",
+    "pimage": "kuroneko.webp",
+    "image": "hituji.webp",
+    "kingImage": "hituking.webp",
     "color": "black",
     "size": 6,
     "maji": true,
     "istuyo": 2,
     "lvdif": 1,
-    "gazou": "hitsuji",
-    "kinge": "hitsujiking"
+    "gazou": "hituji",
+    "kinge": "hituking",
+
+    "beforeTalk": [
+      {
+        "text": "こんにちは……。きみのおにいさん、\nうさぎさんにかったんだってね。",
+        "speaker": "image"
+      },
+      {
+        "text": "うん！　ぼくはひつじさんとしょうぶするんだ。",
+        "speaker": "pimage"
+      },
+      {
+        "text": "そうなんだ……。\nぼくは、くさをたべながらのんびりしてたんだけど……。",
+        "speaker": "image"
+      },
+      {
+        "text": "えへへ。じゃあ、しょうぶはしない？",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ううん。しょうぶはするよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "おっとりしてるけど、まけるつもりはないんだ。",
+        "speaker": "image"
+      },
+      {
+        "text": "ひつじさん、けっこうつよそう……！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ふふふ……。\nじゃあ、ぼくのもこもこパワーをみせてあげるよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "もこもこパワー！？",
+        "speaker": "pimage"
+      },
+      {
+        "text": "それじゃあ……\nしょうぶ、はじめようか。",
+        "speaker": "image"
+      }
+    ],
+
+    "afterTalk": [
+      {
+        "text": "あれ……まけちゃった……。",
+        "speaker": "image"
+      },
+      {
+        "text": "でも、たのしかったよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "またこのそうげんで、いっしょにあそぼうね。",
+        "speaker": "image"
+      }
+    ],
+
+    "returnPage": "rokuro.html"
+  },
+
+  "うし": {
+    "name": "うし",
+    "pimage": "sironeko.webp",
+    "image": "usi.webp",
+    "kingImage": "usiking.webp",
+    "color": "white",
+    "size": 6,
+    "maji": true,
+    "istuyo": 2,
+    "lvdif": 0,
+    "gazou": "usi",
+    "kinge": "usiking",
+
+    "beforeTalk": [
+      {
+        "text": "こんにちは。きみたち、\nうさぎさんとひつじさんにかったんだね。",
+        "speaker": "image"
+      },
+      {
+        "text": "うん！　つぎは、うしさんとしょうぶするんだ。",
+        "speaker": "pimage"
+      },
+      {
+        "text": "そうか……。ひつじさんも、がんばったんだけどな。",
+        "speaker": "image"
+      },
+      {
+        "text": "うしさんも、つよそうだね！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ぼくは、ちからならだれにもまけないよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "ちから！？　ちょっとこわいかも……。",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ふふふ。でも、しょうぶはたのしくやろう。",
+        "speaker": "image"
+      },
+      {
+        "text": "うん！　ぼくだって、まけないよ！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "それじゃあ……しょうぶ、はじめようか。",
+        "speaker": "image"
+      }
+    ],
+
+    "afterTalk": [
+      {
+        "text": "まけちゃったか……。",
+        "speaker": "image"
+      },
+      {
+        "text": "でも、きみはほんとうにつよいね。",
+        "speaker": "image"
+      },
+      {
+        "text": "またいつでも、しょうぶしにおいで。",
+        "speaker": "image"
+      }
+    ],
+
+    "returnPage": "rokuro.html"
   }
 }
