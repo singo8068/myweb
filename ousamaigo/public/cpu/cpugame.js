@@ -332,7 +332,6 @@ gameNow=false;
 
 
 async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other") {
-
     while (turnDisplay.firstChild) {
         turnDisplay.removeChild(turnDisplay.lastChild);
     }
@@ -364,9 +363,15 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     effectDiv.style.opacity = "0.7";
 
     document.getElementById("mainControls").style.display = "none";
+    if (MAJI) {
+    // 3秒待ってトークページへ戻る
+    setTimeout(() => {
+        location.href =
+            "cpu/talk.html?character=" +
+            encodeURIComponent(character) +
+            "&after=true";
+    }, 3000);
 
-    if (ISNET) {
-        backMati.style.display = "block";
     } else {
         document.getElementById("saigoControls").style.display = "block";
     }

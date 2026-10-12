@@ -11,14 +11,59 @@
     "lvdif": 0,
     "gazou": "usagi",
     "kinge": "usaking",
-"beforeTalk": [
-  {"text": "こんにちは！　\nここ、いいところだね。","speaker": "pimage"},
-  {"text": "うん。くさもいっぱいあるし、\nかぜもきもちいいよ。","speaker": "image"}
-],
+
+    "beforeTalk": [
+      {
+        "text": "こんにちは！\nここ、いいところだね。",
+        "speaker": "pimage"
+      },
+      {
+        "text": "うん。くさもいっぱいあるし、\nかぜもきもちいいよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "じゃあ、ここであそんでいってもいい？",
+        "speaker": "pimage"
+      },
+      {
+        "text": "もちろん。でも、あそぶならしょうぶしようよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "しょうぶ？",
+        "speaker": "pimage"
+      },
+      {
+        "text": "うん。どっちがつよいか、やってみよう。",
+        "speaker": "image"
+      },
+      {
+        "text": "いいね！　まけないよ！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ぼくだってまけないよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "それじゃあ、しょうぶだ！",
+        "speaker": "pimage"
+      }
+    ],
+
     "afterTalk": [
-      "やった！勝った！",
-      "また遊ぼうね！"
-    ]
+      {
+        "text": "やった！　かった！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "またあそぼうね！",
+        "speaker": "image"
+      }
+    ],
+
+    "returnPage": "rokuro.html"
+    
   },
 
   "ひつじ": {
@@ -34,4 +79,3 @@
     "kinge": "hitsujiking"
   }
 }
-

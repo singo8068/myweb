@@ -128,8 +128,12 @@ async function main() {
 
   const params = new URLSearchParams(location.search);
 
-  // 呼び出し元から渡されたキャラクター名
+  // キャラクター名
   const name = params.get("character");
+
+  // ★対局後かどうか
+  const after = params.get("after") === "true";
+
 
   // JSONからキャラクター情報を取得
   const character = await getCharacter(name);
@@ -139,9 +143,11 @@ async function main() {
     return;
   }
 
+
   console.log("キャラクター:", character);
   console.log("image:", character.image);
   console.log("pimage:", character.pimage);
+  console.log("after:", after);
 
 
   // 左下：プレイヤー画像
@@ -152,7 +158,8 @@ async function main() {
 
   } else {
 
-    document.getElementById("playerImage").style.display = "none";
+    document.getElementById("playerImage").style.display =
+      "none";
 
   }
 
@@ -165,7 +172,8 @@ async function main() {
 
   } else {
 
-    document.getElementById("characterImage").style.display = "none";
+    document.getElementById("characterImage").style.display =
+      "none";
 
   }
 
@@ -176,6 +184,14 @@ async function main() {
 
   let talkIndex = 0;
 
+
+  // ★対局前なら beforeTalk
+  // ★対局後なら afterTalk
+  const talks = after
+    ? character.afterTalk
+    : character.beforeTalk;
+
+
   const speechBubble =
     document.getElementById("speechBubble");
 
@@ -184,23 +200,22 @@ async function main() {
 
     // 全部しゃべり終わった
     if (
-      !character.beforeTalk ||
-      talkIndex >= character.beforeTalk.length
+      !talks ||
+      talkIndex >= talks.length
     ) {
 
-      // ここでは何もしない
       return;
     }
 
 
     // 今のセリフ
     const talk =
-      character.beforeTalk[talkIndex];
+      talks[talkIndex];
 
 
-// セリフを表示
-document.getElementById("speechText").textContent =
-  talk.text;
+    // セリフを表示
+    document.getElementById("speechText").textContent =
+      talk.text;
 
 
     // 吹き出しの向きを変更
@@ -212,12 +227,12 @@ document.getElementById("speechText").textContent =
 
     if (talk.speaker === "pimage") {
 
-      // 白猫側
+      // 左側
       speechBubble.classList.add("player");
 
     } else if (talk.speaker === "image") {
 
-      // うさぎ側
+      // 右側
       speechBubble.classList.add("character");
 
     }
@@ -233,13 +248,59 @@ document.getElementById("speechText").textContent =
   showTalk();
 
 
-  // クリック・タップで次のセリフ
+  // =========================
+  // クリック・タップ
+  // =========================
+
   document.addEventListener("click", () => {
 
-    // 次のセリフへ
+    // 次のセリフ
     talkIndex++;
 
-    showTalk();
+
+    // まだセリフがある
+    if (
+      talks &&
+      talkIndex < talks.length
+    ) {
+
+      showTalk();
+
+      return;
+    }
+
+
+    // =========================
+    // 対局後
+    // =========================
+
+    if (after) {
+
+      console.log("対局後トーク終了");
+  location.href = character.returnPage;
+      return;
+    }
+
+
+    // =========================
+    // 対局前トーク終了
+    // → 対局開始
+    // =========================
+
+    const url =
+      "../vscpu.html" +
+      "?size=" + character.size +
+      "&maji=" + character.maji +
+      "&istuyo=" + character.istuyo +
+      "&color=" + character.color +
+      "&lvdif=" + character.lvdif +
+      "&gazou=" + character.gazou +
+      "&kinge=" + character.kinge +
+      "&character=" +
+      encodeURIComponent(name);
+
+
+    location.href = url;
 
   });
 
