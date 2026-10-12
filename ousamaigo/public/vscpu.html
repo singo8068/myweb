@@ -106,8 +106,13 @@ const socket = ISNET ? io() : null;
 <script src="js/state.js"></script>
 <script>
 if(GAZOU!==null){
+if(MYCOLOR === "white"){
 kuronekoImg.src = `./cpu/pic/${GAZOU}.webp`;
 kurokingImg.src = `./cpu/pic/${KINGE}.webp`;
+}else{
+sironekoImg.src = `./cpu/pic/${GAZOU}.webp`;
+sirokingImg.src = `./cpu/pic/${KINGE}.webp`;
+}
 }
 </script>
 <script src="js/draw.js"></script>
