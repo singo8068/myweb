@@ -56,7 +56,13 @@ body {
 </div>
 
 <br/>
-<br/><br/>
+<div id="3ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<br/>
 
 <script>
 const usagiWins = Number(localStorage.getItem("win_うさぎ")) || 0;
@@ -79,8 +85,7 @@ if (usagiWins >= 1) {
 
     // 羊に1勝以上していたら牛を表示
     if (hitsujiWins >= 1) {
-        document.getElementById("2ani").innerHTML += `
-            <br/><br/>
+        document.getElementById("3ani").innerHTML = `
             <a href="talk.html?character=うし" class="animal-button">
                 <img src="pic/usi.webp">
                 <span>うし<br/><span id="usiWins">0</span> かち</span>
