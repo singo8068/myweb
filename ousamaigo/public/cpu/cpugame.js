@@ -381,6 +381,11 @@ if (
         .find(row => row.startsWith(key + "="));
     const wins = row ? Number(row.split("=")[1]) || 0 : 0;
     document.cookie = key + "=" + (wins + 1) + "; path=/";
+
+  
+document.cookie = "test_cookie=123; path=/";
+alert("テストCookie：" + document.cookie);
+  
     // 保存できたか確認
     console.log("キャラクター:", character);
 alert(
