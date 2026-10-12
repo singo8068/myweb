@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<style>
+a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
+.animal-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+ font-size: 40px;
+  padding: 8px 10px;
+}
+.animal-button img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+body {
+    background-image: url("pic/mati.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="section">
+  <a href="mainstory.html" class="back">マップにもどる</a>
+</div>
+
+<h2>ななろのまち</h2>
+
+<!-- ねずみ -->
+<a href="talk.html?character=ねずみ" class="animal-button">
+    <img src="pic/nezumi.webp">
+    <span>ねずみ<br/><span id="nezumiWins">0</span> かち</span>
+</a>
+
+<br/>
+<br/>
+
+<!-- 次の動物 -->
+<div id="2ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<br/>
+<div id="3ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<br/>
+
+<script>
+const nezumiWins = Number(localStorage.getItem("win_ねずみ")) || 0;
+document.getElementById("nezumiWins").textContent = nezumiWins;
+/*
+// うさぎに1勝以上していたら羊を表示
+if (usagiWins >= 1) {
+    document.getElementById("2ani").innerHTML = `
+        <a href="talk.html?character=ひつじ" class="animal-button">
+            <img src="pic/hituji.webp">
+            <span>ひつじ<br/><span id="hitsujiWins">0</span> かち</span>
+        </a>
+    `;
+
+    // 羊の勝利数を取得
+    const hitsujiWins = Number(localStorage.getItem("win_ひつじ")) || 0;
+    document.getElementById("hitsujiWins").textContent = hitsujiWins;
+
+    // 羊に1勝以上していたら牛を表示
+    if (hitsujiWins >= 1) {
+        document.getElementById("3ani").innerHTML = `
+            <a href="talk.html?character=うし" class="animal-button">
+                <img src="pic/usi.webp">
+                <span>うし<br/><span id="usiWins">0</span> かち</span>
+            </a>
+        `;
+
+        // 牛の勝利数を取得
+        const usiWins = Number(localStorage.getItem("win_うし")) || 0;
+        document.getElementById("usiWins").textContent = usiWins;
+    }
+}*/
+
+</script>
+
+
+
+</body>
+</html>

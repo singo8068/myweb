@@ -3,8 +3,6 @@
   "うさぎ": {
     "name": "うさぎ",
     "pimage": "sironeko.webp",
-    "image": "usagi.webp",
-    "kingImage": "usaking.webp",
     "color": "white",
     "size": 6,
     "maji": true,
@@ -69,8 +67,6 @@
   "ひつじ": {
     "name": "ひつじ",
     "pimage": "kuroneko.webp",
-    "image": "hituji.webp",
-    "kingImage": "hituking.webp",
     "color": "black",
     "size": 6,
     "maji": true,
@@ -143,8 +139,6 @@
   "うし": {
     "name": "うし",
     "pimage": "sironeko.webp",
-    "image": "usi.webp",
-    "kingImage": "usiking.webp",
     "color": "white",
     "size": 6,
     "maji": true,
@@ -208,5 +202,84 @@
     ],
 
     "returnPage": "rokuro.html"
+  },
+
+  "ねずみ": {
+    "name": "ねずみ",
+    "pimage": "kuroneko.webp",
+    "color": "black",
+    "size": 7,
+    "maji": true,
+    "istuyo": 2,
+    "lvdif": 1,
+    "gazou": "nezumi",
+    "kinge": "nezuking",
+ "beforeTalk": [
+      {
+        "text": "こんにちは！",
+        "speaker": "image"
+      },
+      {
+        "text": "きみは どこから きたの？",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ぼく？ ぼくは ねずみだよ！",
+        "speaker": "image"
+      },
+      {
+        "text": "まっしろで かわいいね！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "えへへ。よく そういわれるよ。",
+        "speaker": "image"
+      },
+      {
+        "text": "まえは へやのなかに いたんだけどね。",
+        "speaker": "image"
+      },
+      {
+        "text": "いまは いろんなところを みてまわるのが だいすき！",
+        "speaker": "image"
+      },
+      {
+        "text": "それじゃあ ここでは なにを してるの？",
+        "speaker": "pimage"
+      },
+      {
+        "text": "もちろん！ いごの れんしゅうだよ！",
+        "speaker": "image"
+      },
+      {
+        "text": "ぼくと しょうぶしてみる？",
+        "speaker": "image"
+      },
+      {
+        "text": "まけないよ",
+        "speaker": "pimage"
+      }
+    ],
+
+    "afterTalk": [
+      {
+        "text": "やったー！ たのしかった！",
+        "speaker": "pimage"
+      },
+      {
+        "text": "ぼくも ちょっと つよくなったかな？",
+        "speaker": "image"
+      },
+      {
+        "text": "もっと いろんなところへ いってみたいな！",
+        "speaker": "image"
+      },
+      {
+        "text": "また しょうぶしようね！",
+        "speaker": "pimage"
+      }
+    ],
+
+    "returnPage": "nanaro.html"
   }
 }

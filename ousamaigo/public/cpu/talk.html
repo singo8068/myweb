@@ -144,11 +144,6 @@ async function main() {
   }
 
 
-  console.log("キャラクター:", character);
-  console.log("image:", character.image);
-  console.log("pimage:", character.pimage);
-  console.log("after:", after);
-
 
   // 左下：プレイヤー画像
   if (character.pimage) {
@@ -165,10 +160,10 @@ async function main() {
 
 
   // 右下：相手キャラクター画像
-  if (character.image) {
+  if (character.gazou) {
 
     document.getElementById("characterImage").src =
-      "pic/" + character.image;
+      "pic/" + character.gazou+".webp";
 
   } else {
 

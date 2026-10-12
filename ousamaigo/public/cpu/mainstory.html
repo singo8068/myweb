@@ -4,20 +4,68 @@
   <meta charset="UTF-8" />
   <title>おうさまいご</title>
 
-<link rel="stylesheet" href="../css/style.css">
-<style>
-a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
+  <link rel="stylesheet" href="../css/style.css">
 
-</style>
+  <style>
+    a {
+      display: inline-block;
+      width: auto;
+      margin: 30px auto 0;
+      padding: 10px 40px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: background-color 0.3s;
+    }
+
+    #nanaroLocked {
+      display: inline-block;
+      width: auto;
+      margin: 30px auto 0;
+      padding: 10px 40px;
+      background-color: #999;
+      color: white;
+      border-radius: 12px;
+    }
+  </style>
 </head>
+
 <body>
+
 <div class="section">
   <a href="../index.html" class="back">メニューにもどる</a>
 </div>
+
 <h2>ストーリーモード</h2>
+
 <a href="rokuro.html">ろくろそうげん</a>
+
 <br/><br/>
-<a href="nanaro.html">？？？<br/>じゅんびちゅう</a>
+
+<!-- ななろのまち -->
+<div id="nanaroArea"></div>
+
+<script>
+  // 牛の勝利数を取得
+  const usiWins = Number(localStorage.getItem("win_うし")) || 0;
+
+  // 牛に1勝以上していたら「ななろのまち」を表示
+  if (usiWins >= 1) {
+
+    document.getElementById("nanaroArea").innerHTML = `
+      <a href="nanaro.html">ななろのまち</a>
+    `;
+
+  } else {
+
+    // まだ牛に勝っていない場合
+    document.getElementById("nanaroArea").innerHTML = `
+      <span id="nanaroLocked">？？？</span>
+    `;
+
+  }
+</script>
 
 </body>
 </html>
