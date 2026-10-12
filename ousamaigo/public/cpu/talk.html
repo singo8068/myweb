@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご</title>
+
+  <style>
+  body {
+      background-image: url("pic/sougen.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+  }
+
+  /* 左下のキャラクター */
+  #playerImage {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: 200px;
+  }
+
+  /* 右下のキャラクター */
+  #characterImage {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 200px;
+  }
+
+/* 吹き出し */
+#speechBubble {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 800px;
+    min-height: 300px;
+
+    border: none;
+    border-radius: 0;
+
+    padding: 30px 40px;
+    box-sizing: border-box;
+
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    /* 疑似要素より前に文字を表示 */
+    z-index: 1;
+}
+
+/* 吹き出し画像 */
+#speechBubble::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background-image: url("pic/fukidasi.webp");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    z-index: -1;
+
+    /* 通常はそのまま */
+    transform: scaleX(1);
+}
+
+/* 右側のキャラクターがしゃべる */
+#speechBubble.character::before {
+    transform: scaleX(-1);
+}
+
+/* セリフ */
+#speechText {
+    position: relative;
+    z-index: 2;
+
+    white-space: pre-line;
+}
+
+/* 白猫側・うさぎ側の疑似要素は使わない */
+#speechBubble.player::after,
+#speechBubble.character::after {
+    content: none;
+}
+#speechText {
+    white-space: pre-line;
+}
+
+  </style>
+</head>
+
+<body>
+
+<img id="playerImage">
+<img id="characterImage">
+
+<div id="speechBubble">
+  <div id="speechText"></div>
+</div>
+
+
+<script>
+
+async function getCharacter(name) {
+
+  const response = await fetch("characters.json");
+
+  const data = await response.json();
+
+  return data[name];
+}
+
+
+async function main() {
+
+  const params = new URLSearchParams(location.search);
+
+  // 呼び出し元から渡されたキャラクター名
+  const name = params.get("character");
+
+  // JSONからキャラクター情報を取得
+  const character = await getCharacter(name);
+
+  if (!character) {
+    console.error("キャラクターが見つかりません:", name);
+    return;
+  }
+
+  console.log("キャラクター:", character);
+  console.log("image:", character.image);
+  console.log("pimage:", character.pimage);
+
+
+  // 左下：プレイヤー画像
+  if (character.pimage) {
+
+    document.getElementById("playerImage").src =
+      "pic/" + character.pimage;
+
+  } else {
+
+    document.getElementById("playerImage").style.display = "none";
+
+  }
+
+
+  // 右下：相手キャラクター画像
+  if (character.image) {
+
+    document.getElementById("characterImage").src =
+      "pic/" + character.image;
+
+  } else {
+
+    document.getElementById("characterImage").style.display = "none";
+
+  }
+
+
+  // =========================
+  // セリフ
+  // =========================
+
+  let talkIndex = 0;
+
+  const speechBubble =
+    document.getElementById("speechBubble");
+
+
+  function showTalk() {
+
+    // 全部しゃべり終わった
+    if (
+      !character.beforeTalk ||
+      talkIndex >= character.beforeTalk.length
+    ) {
+
+      // ここでは何もしない
+      return;
+    }
+
+
+    // 今のセリフ
+    const talk =
+      character.beforeTalk[talkIndex];
+
+
+// セリフを表示
+document.getElementById("speechText").textContent =
+  talk.text;
+
+
+    // 吹き出しの向きを変更
+    speechBubble.classList.remove(
+      "player",
+      "character"
+    );
+
+
+    if (talk.speaker === "pimage") {
+
+      // 白猫側
+      speechBubble.classList.add("player");
+
+    } else if (talk.speaker === "image") {
+
+      // うさぎ側
+      speechBubble.classList.add("character");
+
+    }
+
+
+    console.log("セリフ:", talk.text);
+    console.log("話しているキャラ:", talk.speaker);
+
+  }
+
+
+  // 最初のセリフ
+  showTalk();
+
+
+  // クリック・タップで次のセリフ
+  document.addEventListener("click", () => {
+
+    // 次のセリフへ
+    talkIndex++;
+
+    showTalk();
+
+  });
+
+}
+
+
+main();
+
+</script>
+
+</body>
+</html>

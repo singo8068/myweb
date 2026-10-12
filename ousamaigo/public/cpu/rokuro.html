@@ -7,7 +7,25 @@
 <link rel="stylesheet" href="../css/style.css">
 <style>
 a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
-
+.animal-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  padding: 8px 10px;
+}
+.animal-button img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+body {
+    background-image: url("pic/sougen.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
 </style>
 </head>
 <body>
@@ -15,7 +33,19 @@ a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px;
   <a href="mainstory.html" class="back">マップにもどる</a>
 </div>
 <h2>ろくろそうげん</h2>
-<a href="../vscpu.html?size=6&maji=true&istuyo=1&gazou=usagi&kinge=usaking">うさぎ</a>
+<a href="talk.html?character=うさぎ" class="animal-button">
+    <img src="pic/usagi.webp">
+    <span> うさぎ</span>
+</a>
+
+<br/>
+
+<a href="../vscpu.html?size=6&maji=true&istuyo=1&color=white&lvdif=0&gazou=usagi&kinge=usaking" class="animal-button">
+    <img src="pic/usagi.webp">
+    <span> うさぎ</span>
+</a>
+
+
 <br/><br/>
 
 </body>

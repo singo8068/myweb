@@ -1,0 +1,37 @@
+{
+  "うさぎ": {
+    "name": "うさぎ",
+    "pimage": "sironeko.webp",
+    "image": "usagi.webp",
+    "kingImage": "usaking.webp",
+    "color": "white",
+    "size": 6,
+    "maji": true,
+    "istuyo": 1,
+    "lvdif": 0,
+    "gazou": "usagi",
+    "kinge": "usaking",
+"beforeTalk": [
+  {"text": "こんにちは！　\nここ、いいところだね。","speaker": "pimage"},
+  {"text": "うん。くさもいっぱいあるし、\nかぜもきもちいいよ。","speaker": "image"}
+],
+    "afterTalk": [
+      "やった！勝った！",
+      "また遊ぼうね！"
+    ]
+  },
+
+  "ひつじ": {
+    "name": "ひつじ",
+    "image": "hitsuji.webp",
+    "kingImage": "hitsujiking.webp",
+    "color": "black",
+    "size": 6,
+    "maji": true,
+    "istuyo": 2,
+    "lvdif": 1,
+    "gazou": "hitsuji",
+    "kinge": "hitsujiking"
+  }
+}
+
