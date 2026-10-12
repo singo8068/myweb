@@ -383,8 +383,12 @@ if (
     document.cookie = key + "=" + (wins + 1) + "; path=/";
     // 保存できたか確認
     console.log("キャラクター:", character);
-    console.log("保存したCookie:", document.cookie);
-    console.log("今回の勝利数:", wins + 1);
+alert(
+    "保存後のCookie：\n" +
+    document.cookie +
+    "\n\n今回の勝利数：" + (wins + 1)
+);
+
     setTimeout(() => {
     location.href = "cpu/talk.html?character="
         + encodeURIComponent(character)
