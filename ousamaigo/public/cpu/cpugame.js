@@ -372,7 +372,7 @@ if (
 ) {
     setTimeout(() => {
     location.href = "cpu/mainstory.html";
-    }, 3000);
+    }, 2000);
 } else {
 
 const key = "win_" + character;
@@ -394,7 +394,7 @@ try {
     location.href = "cpu/talk.html?character="
         + encodeURIComponent(character)
         + "&after=true";
-    }, 3000);
+    }, 2000);
 }
 
 
