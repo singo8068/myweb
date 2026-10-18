@@ -4,6 +4,40 @@
   <meta charset="UTF-8" />
   <title>おうさまいご　チュートリアル</title>
 <link rel="stylesheet" href="css/style.css">
+  <style>
+#playerImage {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    width: 200px;
+    z-index: 1000;
+}
+
+#speechBubble {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+
+    width: 800px;
+    height: 300px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 999;
+}
+
+#speechText {
+    position: relative;
+    z-index: 1;
+
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+  </style>
 </head>
 <body>
 
@@ -77,18 +111,70 @@ const ISNET = false;
 const LVDIF = 0;
 </script>
 
-<script src="js/state.js"></script>
 
+<!-- 左下の白猫 -->
+<img
+  id="playerImage"
+  src="bin/siroking.webp"
+  style="
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    width: 200px;
+    z-index: 1000;
+  "
+>
+
+<!-- 下中央の吹き出し -->
+<div
+  id="speechBubble"
+  style="
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 300px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  "
+>
+  <img
+    src="cpu/pic/fukidasi.webp"
+    style="
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      z-index: 0;
+    "
+  >
+
+  <div
+    id="speechText"
+    style="
+      position: relative;
+      z-index: 1;
+      font-size: 28px;
+      font-weight: bold;
+      text-align: center;
+    "
+  >
+    こんにちは！<br/>おうさまいごのせかいへようこそ
+  </div>
+</div>
+
+<script src="js/state.js"></script>
 <script src="js/draw.js"></script>
 <script src="js/tutogame.js"></script>
 <script src="js/igosyori.js"></script>
 <script src="js/tokugi.js"></script>
-<script>
-kuronekoImg.src = `./cpu/pic/usagi.webp`;
-kurokingImg.src = `./cpu/pic/usaking.webp`;
-</script>
 <script src="js/init.js"></script>
-
+<script>
+gameNow=false;
+</script>
 </body>
 </html>
 
