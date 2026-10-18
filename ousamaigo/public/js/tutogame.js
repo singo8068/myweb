@@ -180,10 +180,6 @@ function uteruka(x, y) {
 
 canvas.addEventListener("click", async (e) => {
 
-if (ISNET && currentPlayer !== myColor) {
-  uemsg="あいてのばんだよ";
-return;
-}
   if (!gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
