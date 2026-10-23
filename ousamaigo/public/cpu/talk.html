@@ -136,7 +136,8 @@ async function main() {
 
   // JSONからキャラクター情報を取得
   const character = await getCharacter(name);
-
+console.log("URLのcharacter:", name);
+console.log("取得したcharacter:", character);
   if (!character) {
     console.error("キャラクターが見つかりません:", name);
     return;

@@ -63,38 +63,52 @@ body {
 </div>
 
 <br/>
+<div id="4ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
 
 <script>
 const nezumiWins = Number(localStorage.getItem("win_ねずみ")) || 0;
+const karasuWins = Number(localStorage.getItem("win_からす")) || 0;
+const inuWins = Number(localStorage.getItem("win_いぬ")) || 0;
+const hitoWins = Number(localStorage.getItem("win_ひと")) || 0;
 document.getElementById("nezumiWins").textContent = nezumiWins;
-/*
-// うさぎに1勝以上していたら羊を表示
-if (usagiWins >= 1) {
+
+// ねずみに1勝以上していたら羊を表示
+if (nezumiWins >= 1) {
     document.getElementById("2ani").innerHTML = `
-        <a href="talk.html?character=ひつじ" class="animal-button">
-            <img src="pic/hituji.webp">
-            <span>ひつじ<br/><span id="hitsujiWins">0</span> かち</span>
+        <a href="talk.html?character=からす" class="animal-button">
+            <img src="pic/karasu.webp">
+            <span>からす<br/><span id="karasuWins">0</span> かち</span>
         </a>
     `;
-
-    // 羊の勝利数を取得
-    const hitsujiWins = Number(localStorage.getItem("win_ひつじ")) || 0;
-    document.getElementById("hitsujiWins").textContent = hitsujiWins;
-
-    // 羊に1勝以上していたら牛を表示
-    if (hitsujiWins >= 1) {
-        document.getElementById("3ani").innerHTML = `
-            <a href="talk.html?character=うし" class="animal-button">
-                <img src="pic/usi.webp">
-                <span>うし<br/><span id="usiWins">0</span> かち</span>
-            </a>
-        `;
-
-        // 牛の勝利数を取得
-        const usiWins = Number(localStorage.getItem("win_うし")) || 0;
-        document.getElementById("usiWins").textContent = usiWins;
-    }
-}*/
+    // からすの勝利数を取得
+    document.getElementById("karasuWins").textContent = karasuWins;
+}
+// からすに1勝以上していたら犬を表示
+if (karasuWins >= 1) {
+    document.getElementById("3ani").innerHTML = `
+        <a href="talk.html?character=いぬ" class="animal-button">
+            <img src="pic/inu.webp">
+            <span>いぬ<br/><span id="inuWins">0</span> かち</span>
+        </a>
+    `;
+     // いぬの勝利数を取得
+    document.getElementById("inuWins").textContent = inuWins;
+}
+// いぬに1勝以上していたら犬を表示
+if (inuWins >= 1) {
+    document.getElementById("4ani").innerHTML = `
+        <a href="talk.html?character=ひと" class="animal-button">
+            <img src="pic/hito.webp">
+            <span>ひと<br/><span id="hitoWins">0</span> かち</span>
+        </a>
+    `;
+     // ひとの勝利数を取得
+    document.getElementById("hitoWins").textContent = hitoWins;
+}
 
 </script>
 

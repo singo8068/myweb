@@ -281,5 +281,232 @@
     ],
 
     "returnPage": "nanaro.html"
-  }
+  },
+"からす": {
+  "name": "からす",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 7,
+  "maji": true,
+  "istuyo": 2,
+  "lvdif": 0,
+  "gazou": "karasu",
+  "kinge": "karaking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "このまちを ぶらぶらしてるんだ！",
+      "speaker": "image"
+    },
+    {
+      "text": "いろんなところを みてるんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ たかいところから みると おもしろいよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "どんなものが みえるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "おみせや いえや ひろい そらも みえるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "いいなあ。ぼくも そらを とんでみたいな。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "じゃあ そのまえに いごで しょうぶしようよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "いいよ。まけないからね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくも たのしかったよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "つぎは もっと たかいところから まちを みてみたいな！",
+      "speaker": "image"
+    },
+    {
+      "text": "また いごで しょうぶしようね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "returnPage": "nanaro.html"
+},
+
+"いぬ": {
+  "name": "いぬ",
+  "pimage": "kuroneko.webp",
+  "color": "black",
+  "size": 7,
+  "maji": true,
+  "istuyo": 3,
+  "lvdif": 1,
+  "gazou": "inu",
+  "kinge": "inuking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは！ きみは ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼく？ ぼくは まちを おさんぽしてるんだ！",
+      "speaker": "image"
+    },
+    {
+      "text": "おさんぽ すきなんだね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ いろんなところへ いくのが だいすき！",
+      "speaker": "image"
+    },
+    {
+      "text": "このまちには よく くるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ おもしろいものが いっぱい あるからね！",
+      "speaker": "image"
+    },
+    {
+      "text": "じゃあ いごを するのも すき？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "もちろん！ いっしょに しょうぶしようよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "いいよ！ ぼくも まけないよ！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくも たのしかったよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "つぎは どこまで おさんぽしようかな！",
+      "speaker": "image"
+    },
+    {
+      "text": "また いごで しょうぶしようね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "returnPage": "nanaro.html"
+},
+"ひと": {
+  "name": "ひと",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 7,
+  "maji": true,
+  "istuyo": 3,
+  "lvdif": 0,
+  "gazou": "hito",
+  "kinge": "hitoking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "まちを あるいてるんだよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "このまちには いろんなものが あるね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ おみせも たくさんあるし ひとも いっぱい いるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "どんな おみせが あるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "たべものの おみせや どうぐの おみせも あるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "それは おもしろそうだね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうだ！ きみ いごが できるんだよね？",
+      "speaker": "image"
+    },
+    {
+      "text": "うん！ じゃあ しょうぶしよう！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ いい しょうぶだったね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ とっても たのしかったよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "まちには まだまだ おもしろいところが ありそうだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうだね！ いろんなところを みて まわろうよ！",
+      "speaker": "image"
+    }
+  ],
+
+  "returnPage": "nanaro.html"
+}
+
 }
