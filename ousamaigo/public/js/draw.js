@@ -123,11 +123,11 @@ async function draw() {
             ? kurokingImg.src
             : sirokingImg.src;
 
-          img.style.width = `${CELL * 1.1}px`;
-          img.style.height = `${CELL * 1.1}px`;
+          img.style.width = `${CELL * 1.2}px`;
+          img.style.height = `${CELL * 1.2}px`;
 
-          img.style.left = `${cx - CELL * 0.55}px`;
-          img.style.top = `${cy - CELL * 0.55}px`;
+          img.style.left = `${cx - CELL * 0.60}px`;
+          img.style.top = `${cy - CELL * 0.60}px`;
 
         } else {
           img.src = (val === "black")
