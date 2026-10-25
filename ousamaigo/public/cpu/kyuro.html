@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<style>
+a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
+.animal-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+ font-size: 40px;
+  padding: 8px 10px;
+}
+.animal-button img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+body {
+    background-image: url("pic/yama.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="section">
+  <a href="mainstory.html" class="back">マップにもどる</a>
+</div>
+
+<h2>きゅうろやま</h2>
+
+<a href="talk.html?character=やぎ" class="animal-button">
+    <img src="pic/yagi.webp">
+    <span>やぎ<br/><span id="yagiWins">0</span> かち</span>
+</a>
+<br/>
+<br/>
+<!-- 次の動物 -->
+<div id="2ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<br/>
+<div id="3ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<br/>
+<div id="4ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<script>
+const yagiWins = Number(localStorage.getItem("win_やぎ")) || 0;
+const tanukiWins = Number(localStorage.getItem("win_たぬき")) || 0;
+const hebiWins = Number(localStorage.getItem("win_へび")) || 0;
+const manguWins = Number(localStorage.getItem("win_マングース")) || 0;
+
+document.getElementById("yagiWins").textContent = yagiWins;
+if (yagiWins >= 1) {
+    document.getElementById("2ani").innerHTML = `
+        <a href="talk.html?character=たぬき" class="animal-button">
+            <img src="pic/tanuki.webp">
+            <span>たぬき<br/><span id="tanukiWins">0</span> かち</span>
+        </a>
+    `;
+    document.getElementById("tanukiWins").textContent = tanukiWins;
+}
+if (tanukiWins >= 1) {
+    document.getElementById("3ani").innerHTML = `
+        <a href="talk.html?character=へび" class="animal-button">
+            <img src="pic/hebi.webp">
+            <span>へび<br/><span id="hebiWins">0</span> かち</span>
+        </a>
+    `;
+    document.getElementById("hebiWins").textContent = inuWins;
+}
+
+</script>
+
+
+
+</body>
+</html>

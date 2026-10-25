@@ -144,11 +144,9 @@ console.log("取得したcharacter:", character);
   }
 
 
-if (character.size === 7) {
-    document.body.style.backgroundImage = 'url("pic/mati.jpg")';
-} else {
-    document.body.style.backgroundImage = 'url("pic/sougen.jpeg")';
-}
+if (character.size === 6)document.body.style.backgroundImage = 'url("pic/sougen.jpeg")';
+if (character.size === 7)document.body.style.backgroundImage = 'url("pic/mati.jpg")';
+if (character.size === 9)document.body.style.backgroundImage = 'url("pic/yama.jpg")';
 
   // 左下：プレイヤー画像
   if (character.pimage) {

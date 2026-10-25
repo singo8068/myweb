@@ -40,31 +40,41 @@
 <h2>ストーリーモード</h2>
 
 <a href="rokuro.html">ろくろそうげん</a>
-
 <br/><br/>
-
-<!-- ななろのまち -->
 <div id="nanaroArea"></div>
+<br/>
+<div id="kyuroArea"></div>
+
 
 <script>
   // 牛の勝利数を取得
   const usiWins = Number(localStorage.getItem("win_うし")) || 0;
-
   // 牛に1勝以上していたら「ななろのまち」を表示
   if (usiWins >= 1) {
-
     document.getElementById("nanaroArea").innerHTML = `
       <a href="nanaro.html">ななろのまち</a>
     `;
-
   } else {
-
     // まだ牛に勝っていない場合
     document.getElementById("nanaroArea").innerHTML = `
       <span id="nanaroLocked">？？？</span>
     `;
-
   }
+  // いぬの勝利数を取得
+  const inuWins = Number(localStorage.getItem("win_いぬ")) || 0;
+  // いぬに1勝以上していたら「きゅうろやま」を表示
+  if (inuWins >= 1) {
+    document.getElementById("kyuroArea").innerHTML = `
+      <a href="kyuro.html">きゅうろやま</a>
+    `;
+  } else {
+    // まだいぬに勝っていない場合
+    document.getElementById("kyuroArea").innerHTML = `
+      <span id="kyuroLocked">？？？</span>
+    `;
+  }
+
+
 </script>
 
 </body>
