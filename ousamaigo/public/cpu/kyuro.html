@@ -43,8 +43,7 @@ body {
     <img src="pic/yagi.webp">
     <span>やぎ<br/><span id="yagiWins">0</span> かち</span>
 </a>
-<br/>
-<br/>
+
 <!-- 次の動物 -->
 <div id="2ani">
     <a href="">
@@ -52,15 +51,23 @@ body {
     </a>
 </div>
 
-<br/>
 <div id="3ani">
     <a href="">
         <span>？？？</span>
     </a>
 </div>
 
-<br/>
 <div id="4ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+<div id="5ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+<div id="6ani">
     <a href="">
         <span>？？？</span>
     </a>
@@ -71,6 +78,8 @@ const yagiWins = Number(localStorage.getItem("win_やぎ")) || 0;
 const tanukiWins = Number(localStorage.getItem("win_たぬき")) || 0;
 const hebiWins = Number(localStorage.getItem("win_へび")) || 0;
 const manguWins = Number(localStorage.getItem("win_マングース")) || 0;
+const saruWins = Number(localStorage.getItem("win_さる")) || 0;
+const kumaWins = Number(localStorage.getItem("win_くま")) || 0;
 
 document.getElementById("yagiWins").textContent = yagiWins;
 if (yagiWins >= 1) {
@@ -78,8 +87,7 @@ if (yagiWins >= 1) {
         <a href="talk.html?character=たぬき" class="animal-button">
             <img src="pic/tanuki.webp">
             <span>たぬき<br/><span id="tanukiWins">0</span> かち</span>
-        </a>
-    `;
+        </a>`;
     document.getElementById("tanukiWins").textContent = tanukiWins;
 }
 if (tanukiWins >= 1) {
@@ -87,9 +95,32 @@ if (tanukiWins >= 1) {
         <a href="talk.html?character=へび" class="animal-button">
             <img src="pic/hebi.webp">
             <span>へび<br/><span id="hebiWins">0</span> かち</span>
-        </a>
-    `;
+        </a>`;
     document.getElementById("hebiWins").textContent = hebiWins;
+}
+if (hebiWins >= 1) {
+    document.getElementById("4ani").innerHTML = `
+        <a href="talk.html?character=マングース" class="animal-button">
+            <img src="pic/mangu.webp">
+            <span>マングース<br/><span id="manguWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("manguWins").textContent = manguWins;
+}
+if (manguWins >= 1) {
+    document.getElementById("5ani").innerHTML = `
+        <a href="talk.html?character=さる" class="animal-button">
+            <img src="pic/saru.webp">
+            <span>さる<br/><span id="saruWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("saruWins").textContent = saruWins;
+}
+if (saruWins >= 1) {
+    document.getElementById("6ani").innerHTML = `
+        <a href="talk.html?character=くま" class="animal-button">
+            <img src="pic/kuma.webp">
+            <span>くま<br/><span id="kumaWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("kumaWins").textContent = kumaWins;
 }
 
 </script>

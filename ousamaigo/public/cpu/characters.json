@@ -761,6 +761,261 @@
   ],
 
   "returnPage": "kyuro.html"
+},
+"マングース": {
+  "name": "マングース",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 9,
+  "maji": true,
+  "istuyo": 3,
+  "lvdif": 0,
+  "gazou": "mangu",
+  "kinge": "manking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。きみは ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくは このやまを あるいてたんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "やまを あるくのが すきなの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ いろんな ところを たんけんするのが すきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "たんけんって わくわくするよね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうなんだ。きょうも おもしろいものを さがしてたんだよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "なにか みつかった？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "きみと であえたよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "それなら ぼくと いごも してみる？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いいね！ たんけんだけじゃなくて いごも だいすきなんだ！",
+      "speaker": "image"
+    },
+    {
+      "text": "じゃあ しょうぶだね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "まけちゃった！ さすがだね！",
+      "speaker": "image"
+    },
+    {
+      "text": "ありがとう！ いい しょうぶだったよ。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ ぼくも もっと れんしゅうするよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "また いっしょに いごを しようね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "returnPage": "kyuro.html"
+},
+
+"さる": {
+  "name": "さる",
+  "pimage": "kuroneko.webp",
+  "color": "black",
+  "size": 9,
+  "maji": true,
+  "istuyo": 4,
+  "lvdif": 1,
+  "gazou": "saru",
+  "kinge": "saruking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。きみは さるなの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうだよ！ ここで くらしてるんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "いつも なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "きのぼりしたり みんなと あそんだりしてるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "たのしそうだね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ でも いごも けっこう すきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "へえ！ いごも できるんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "もちろん！ あたまを つかうのも とくいなんだよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "それなら ぼくと しょうぶしてみようよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いいよ！ ぼくの すばやい うごきを みせてあげる！",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "あーあ。まけちゃった！",
+      "speaker": "image"
+    },
+    {
+      "text": "さるさんも つよかったよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ほんと？ ありがとう！",
+      "speaker": "image"
+    },
+    {
+      "text": "つぎは もっと すばやく かんがえるぞ！",
+      "speaker": "image"
+    }
+  ],
+
+  "returnPage": "kyuro.html"
+},
+
+"くま": {
+  "name": "くま",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 9,
+  "maji": true,
+  "istuyo": 4,
+  "lvdif": 0,
+  "gazou": "kuma",
+  "kinge": "kumaking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは。",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは！ ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくは ここで やすんでいたんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "つかれたの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん。やまを あるいていたら ちょっと つかれちゃってね。",
+      "speaker": "image"
+    },
+    {
+      "text": "それなら ゆっくり やすんでね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう。でも いごなら まだ できるよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "くまさんも いごが すきなんだ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん。じっくり かんがえるのが すきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "それじゃあ しょうぶしてみようよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いいとも。ぼくも ほんきで いくよ。",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "むう。まけてしまったな。",
+      "speaker": "image"
+    },
+    {
+      "text": "くまさん すごく つよかったよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう。ぼくも たのしかったよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "つぎは もっと じっくり かんがえるからね。",
+      "speaker": "image"
+    }
+  ],
+
+  "returnPage": "kyuro.html"
 }
 
 
