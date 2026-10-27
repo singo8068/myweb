@@ -44,7 +44,8 @@
 <div id="nanaroArea"></div>
 <br/>
 <div id="kyuroArea"></div>
-
+<br/>
+<div id="juitiArea"></div>
 
 <script>
   // 牛の勝利数を取得
@@ -73,7 +74,19 @@
       <span id="kyuroLocked">？？？</span>
     `;
   }
-
+  // さるの勝利数を取得
+  const saruWins = Number(localStorage.getItem("win_さる")) || 0;
+  // さるに1勝以上していたら「じゅういちろのうみ」を表示
+  if (saruWins >= 1) {
+    document.getElementById("juitiArea").innerHTML = `
+      <a href="juiti.html">じゅういちろのうみ</a>
+    `;
+  } else {
+    // まださるに勝っていない場合
+    document.getElementById("juitiArea").innerHTML = `
+      <span id="juitiLocked">？？？</span>
+    `;
+  }
 
 </script>
 

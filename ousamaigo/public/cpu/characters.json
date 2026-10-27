@@ -1016,6 +1016,510 @@
   ],
 
   "returnPage": "kyuro.html"
+},
+
+"いか": {
+  "name": "いか",
+  "pimage": "kuroneko.webp",
+  "color": "black",
+  "size": 11,
+  "maji": true,
+  "istuyo": 2,
+  "lvdif": 1,
+  "gazou": "ika",
+  "kinge": "ikaking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うみを およいで いたんだよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "いかさんは およぐのが すきなんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ すいすい およぐのは きもちいいよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "いかさんは うでが たくさん あるよね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうなんだ。うでを じょうずに つかえるんだよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "いごでも うでのように じょうずに うごけるのかな？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "もちろん！ いごも すいすい できるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "それじゃあ しょうぶしてみよう！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いいよ！ ぼくの うごきを みててね！",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "あーあ。まけちゃったよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "いかさんも すごかったよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう！ こんどは もっと うまく うでを つかうぞ！",
+      "speaker": "image"
+    },
+    {
+      "text": "また いごで しょうぶしようね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "returnPage": "juiti.html"
+},
+
+"ブラックバス": {
+  "name": "ブラックバス",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 11,
+  "maji": true,
+  "istuyo": 2,
+  "lvdif": 0,
+  "gazou": "basu",
+  "kinge": "basuking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。きみは ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくは びわこから きたんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "びわこから？ ここは うみだよね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうなんだよ。ちょっと うみに きてみたんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "うみは どう？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "それがさ……うみの みずって しょっぱいぜ！",
+      "speaker": "image"
+    },
+    {
+      "text": "あはは！ びわこの みずとは ちがうんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "やっぱり ぼくは びわこの ほうが いいなあ。",
+      "speaker": "image"
+    },
+    {
+      "text": "じゃあ いごで しょうぶしてから びわこに かえる？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いいぜ！ しょうぶがおわったら びわこに もどるぞ！",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "くそー！ まけちまったぜ！",
+      "speaker": "image"
+    },
+    {
+      "text": "いい しょうぶだったね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん。でも もう うみは いいや。",
+      "speaker": "image"
+    },
+    {
+      "text": "やっぱり びわこの みずが いちばんだぜ！ じゃあ かえるな！",
+      "speaker": "image"
+    }
+  ],
+
+  "returnPage": "juiti.html"
+},
+
+"あざらし": {
+  "name": "あざらし",
+  "pimage": "kuroneko.webp",
+  "color": "black",
+  "size": 11,
+  "maji": true,
+  "istuyo": 3,
+  "lvdif": 1,
+  "gazou": "azara",
+  "kinge": "azaking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。きみは ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくは うみで のんびり およいでたんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "あざらしは およぐのが とくいなんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ およぐのも ひなたぼっこも だいすきだよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "ひなたぼっこも するんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん。うみに うかびながら ひなたぼっこするのは きもちいいよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "なんだか たのしそうだね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いごも うみに うかぶくらい のんびり できるかな？",
+      "speaker": "image"
+    },
+    {
+      "text": "それなら ぼくと しょうぶしてみようよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いいよ！ のんびりしてても まけないよ！",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "あらら。まけちゃったよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "あざらしさんも つよかったよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう！ つぎは もっと がんばるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "しょうぶの あとは うみで のんびり しようっと！",
+      "speaker": "image"
+    }
+  ],
+
+  "returnPage": "juiti.html"
+},
+
+"かめ": {
+  "name": "かめ",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 11,
+  "maji": true,
+  "istuyo": 3,
+  "lvdif": 0,
+  "gazou": "kame",
+  "kinge": "kameking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは。",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは！ ここで なにしてるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくは うみの そこを ゆっくり あるいていたんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "かめさんは ゆっくりなんだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん。いそがずに ゆっくり いくのが すきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "でも いごは ゆっくり してると たいへんじゃない？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "だいじょうぶ。じっくり かんがえるのは とくいなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "なるほど！ それなら いごが つよそうだね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "じゃあ ためしてみる？",
+      "speaker": "image"
+    },
+    {
+      "text": "うん！ しょうぶしよう！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "それじゃあ ゆっくり しょうぶしようか。",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "まけちゃったなあ。",
+      "speaker": "image"
+    },
+    {
+      "text": "かめさん じっくり かんがえてたね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう。つぎは もっと じっくり かんがえるよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "また いごで しょうぶしようね。",
+      "speaker": "pimage"
+    }
+  ],
+
+  "returnPage": "juiti.html"
+},
+
+"マンタ": {
+  "name": "マンタ",
+  "pimage": "kuroneko.webp",
+  "color": "black",
+  "size": 11,
+  "maji": true,
+  "istuyo": 4,
+  "lvdif": 1,
+  "gazou": "manta",
+  "kinge": "mantaking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。うみを およいでたの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうだよ！ ぼくは ひろい うみを およぐのが だいすきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "マンタって おおきいよね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん！ おおきな からだで すーっと およぐんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "はやく およぐことも できるの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "できるよ。でも ゆっくり およぐのも すきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "いごでは どんな うごきを するのかな？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "おおきく ひろげて どーんと せめるよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "それは たのしみだね！ しょうぶしよう！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "よーし！ うみの おおきさを みせてあげるよ！",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "まけちゃったかあ！",
+      "speaker": "image"
+    },
+    {
+      "text": "マンタさんの およぎ すごかったよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう！ いごも おもしろかったよ！",
+      "speaker": "image"
+    },
+    {
+      "text": "また ひろい うみで しょうぶしようね！",
+      "speaker": "image"
+    }
+  ],
+
+  "returnPage": "juiti.html"
+},
+
+"シャチ": {
+  "name": "シャチ",
+  "pimage": "sironeko.webp",
+  "color": "white",
+  "size": 11,
+  "maji": true,
+  "istuyo": 4,
+  "lvdif": 0,
+  "gazou": "syachi",
+  "kinge": "syachiking",
+
+  "beforeTalk": [
+    {
+      "text": "こんにちは！",
+      "speaker": "image"
+    },
+    {
+      "text": "こんにちは。きみが このうみの おうなの？",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ははは！ そんなふうに よばれることも あるね。",
+      "speaker": "image"
+    },
+    {
+      "text": "シャチは つよそうだもんね。",
+      "speaker": "pimage"
+    },
+    {
+      "text": "うん。なかまと いっしょに およぐのが だいすきなんだ。",
+      "speaker": "image"
+    },
+    {
+      "text": "なかまと いっしょだと たのしそうだね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "そうだよ。でも きょうは ひとりで いごを してみようかな。",
+      "speaker": "image"
+    },
+    {
+      "text": "シャチと いごで しょうぶできるなんて たのしみだよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ぼくも たのしみだよ。もちろん ほんきで いくけどね。",
+      "speaker": "image"
+    },
+    {
+      "text": "それじゃあ しょうぶだね！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "いくよ！ うみの おうの ちからを みせてあげる！",
+      "speaker": "image"
+    }
+  ],
+
+  "afterTalk": [
+    {
+      "text": "やったー！ たのしかった！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "みごとだね。ぼくの まけだよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "シャチさん すごく つよかったよ！",
+      "speaker": "pimage"
+    },
+    {
+      "text": "ありがとう。きみも すごく つよかったよ。",
+      "speaker": "image"
+    },
+    {
+      "text": "また いつか このうみで しょうぶしようね！",
+      "speaker": "pimage"
+    }
+  ],
+
+  "returnPage": "juiti.html"
 }
 
 

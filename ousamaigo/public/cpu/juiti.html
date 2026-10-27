@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>おうさまいご</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<style>
+a { display: inline-block; width: auto; margin: 30px auto 0; padding: 10px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
+.animal-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+ font-size: 40px;
+  padding: 8px 10px;
+}
+.animal-button img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+body {
+    background-image: url("pic/umi.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="section">
+  <a href="mainstory.html" class="back">マップにもどる</a>
+</div>
+
+<h2>じゅういちろのうみ</h2>
+
+<a href="talk.html?character=いか" class="animal-button">
+    <img src="pic/ika.webp">
+    <span>いか<br/><span id="ikaWins">0</span> かち</span>
+</a>
+
+<!-- 次の動物 -->
+<div id="2ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+
+<div id="3ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+<!-- 
+<div id="4ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+<div id="5ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+<div id="6ani">
+    <a href="">
+        <span>？？？</span>
+    </a>
+</div>
+ -->
+
+<script>
+const ikaWins = Number(localStorage.getItem("win_いか")) || 0;
+const basuWins = Number(localStorage.getItem("win_ブラックバス")) || 0;
+const azaraWins = Number(localStorage.getItem("win_あざらし")) || 0;
+const kameWins = Number(localStorage.getItem("win_かめ")) || 0;
+const mantaWins = Number(localStorage.getItem("win_マンタ")) || 0;
+const syatiWins = Number(localStorage.getItem("win_シャチ")) || 0;
+
+document.getElementById("ikaWins").textContent = ikaWins;
+if (ikaWins >= 1) {
+    document.getElementById("2ani").innerHTML = `
+        <a href="talk.html?character=ブラックバス" class="animal-button">
+            <img src="pic/basu.webp">
+            <span>ブラックバス<br/><span id="basuWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("basuWins").textContent = basuWins;
+}
+if (basuWins >= 1) {
+    document.getElementById("3ani").innerHTML = `
+        <a href="talk.html?character=あざらし" class="animal-button">
+            <img src="pic/azara.webp">
+            <span>あざらし<br/><span id="azaraWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("azaraWins").textContent = azaraWins;
+}
+if (azaraWins >= 1) {
+    document.getElementById("4ani").innerHTML = `
+        <a href="talk.html?character=かめ" class="animal-button">
+            <img src="pic/kame.webp">
+            <span>かめ<br/><span id="kameWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("kameWins").textContent = kameWins;
+}
+if (kameWins >= 1) {
+    document.getElementById("5ani").innerHTML = `
+        <a href="talk.html?character=マンタ" class="animal-button">
+            <img src="pic/manta.webp">
+            <span>マンタ<br/><span id="mantaWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("mantaWins").textContent = mantaWins;
+}
+if (mantaWins >= 1) {
+    document.getElementById("6ani").innerHTML = `
+        <a href="talk.html?character=シャチ" class="animal-button">
+            <img src="pic/syati.webp">
+            <span>シャチ<br/><span id="syatiWins">0</span> かち</span>
+        </a>`;
+    document.getElementById("syatiWins").textContent = syatiWins;
+}
+
+</script>
+
+
+
+</body>
+</html>
