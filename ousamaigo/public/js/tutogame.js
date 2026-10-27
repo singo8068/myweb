@@ -30,11 +30,6 @@ async function placeStone(
   // =========================
   if (gameMode === "pawa") {
 if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
-
-    if (ISNET && fromNetwork) {
-      console.log("受信パワー", roomId, x, y);
-    }
-
     let extraStone = null;
     let singleCaptureCount = 0;
 
@@ -95,25 +90,10 @@ if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
   // =========================
   saveState();
 
-
-
   // =========================
   // パワー送信
   // =========================
   if (gameMode === "pawa") {
-
-    if (ISNET && !fromNetwork) {
-
-      console.log("ぱわ送信", roomId, x, y);
-
-      socket.emit("pawa", {
-        roomId,
-        x,
-        y,
-        color: stoneColor,
-        gameState: undoHistory[undoHistory.length - 1]
-      });
-    }
 
     if (!fromNetwork) {
       await showEffectText("パワーうち\nはつどう！", 1500);
@@ -190,9 +170,6 @@ if (point && gameMode === "main") {
         turnDisplay.appendChild(document.createTextNode(uemsg));
     } 
 }
-
-
-
   if (point && gameMode === "pawa" &&
      (drawBoard[point.y][point.x] === "kouho_black" || drawBoard[point.y][point.x] === "kouho_white")
   ) {
@@ -232,16 +209,6 @@ if (point && gameMode === "osero" &&
     // リバース後の状態を保存
     saveState();
 
-    if (ISNET) {
-        socket.emit("reverse", {
-            roomId,
-            x: point.x,
-            y: point.y,
-            color: reverseColor,
-            gameState: undoHistory[undoHistory.length - 1]
-        });
-    }
-
     // ネット対戦では playerChange() しない
     if (!ISNET) {
         playerChange();
@@ -263,6 +230,7 @@ function tekingka(x, y, playerColor = currentPlayer) {
 }
 
 passBtn.addEventListener("click", () => {
+  if (!enTa) return;
     passMove();
 });
 async function passMove(fromNetwork = false) {
@@ -302,16 +270,6 @@ async function passMove(fromNetwork = false) {
     // 手番変更後の状態を保存
     saveState();
 
-    if (ISNET && !fromNetwork) {
-        console.log("ためる送信", roomId);
-
-        socket.emit("tameru", {
-            roomId,
-            color: passColor,
-            gameState: undoHistory[undoHistory.length - 1]
-        });
-    }
-
     await showEffectText("パワーを\nためるよ！", 1000);
 　
     updateForbiddenPoints();
@@ -321,14 +279,7 @@ async function passMove(fromNetwork = false) {
 
 
 resetBtn.addEventListener("click", async function () {
-    if (ISNET) {
-        console.log("こうさん送信", roomId);
-        socket.emit("kousan", {
-    roomId,
-    color: currentPlayer,
- gameState: undoHistory[undoHistory.length - 1]
-        });
-    }
+  if (!enKo) return;
  syouhai(
     "こうさんで",
     currentPlayer === "white",
@@ -491,294 +442,6 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
 }
 
 	
-
-setInterval(() => {
- if(!MAJI)return;
- if(!gameNow)return;
-    if (currentPlayer === "black") {
-   blackTime -= 100;
- } else {
-   whiteTime -= 100;
- }
- blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
- whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
-if (blackTime <= 0) {
-    syouhai(
-        "じかんぎれで",
-        false,
-        true,
-        "time"
-    );
-}
-
-if (whiteTime <= 0) {
-    syouhai(
-        "じかんぎれで",
-        true,
-        true,
-        "time"
-    );
-}
-}, 100);
-
-
-if (ISNET) {
-socket.on("putStone", data => {
-    console.log("受信", data);
-
-    placeStone(data.x, data.y, true, false, data.color);
-
-updateTurnControls();
-
-    socket.emit("ack", {
-        messageId: data.messageId
-    });
-});
-
-socket.on("pawa", async data => {
-    console.log("ぱわ受信", data);
-
-    socket.emit("ack", {
-        messageId: data.messageId
-    });
-
-    if (data.color === "black") blackTame--;
-    if (data.color === "white") whiteTame--;
-
-    gameMode = "pawa";
-
-    placeStone(data.x, data.y, true, false, data.color);
-    await showEffectText("パワーうち\nはつどう！", 1500);
-
-    gameMode = "main";
-
-    updateForbiddenPoints();
-    updateDisplay();
-    draw();
-});
-
-
-const receivedMessages = new Set();
-socket.on("tameru", async data => {
-    console.log("受信ためる", data);
-
-    // 同じメッセージを2回受信しても、2回処理しない
-    if (receivedMessages.has(data.messageId)) {
-        console.log("ためる：重複受信なので無視", data.messageId);
-
-        socket.emit("ack", {
-            messageId: data.messageId
-        });
-
-        return;
-    }
-
-    receivedMessages.add(data.messageId);
-
-    socket.emit("ack", {
-        messageId: data.messageId
-    });
-
-    // =========================
-    // ためる
-    // =========================
-
-    if (data.color === "black") {
-        blackTame++;
-    } else {
-        whiteTame++;
-    }
-
-    // =========================
-    // ためた側の次の手番にする
-    // → 相手側の番になる
-    // =========================
-
-    currentPlayer =
-        data.color === "black"
-            ? "white"
-            : "black";
-
-    // =========================
-    // 状態保存
-    // =========================
-
-    saveState();
-
-    await showEffectText("パワーを\nためるよ！", 1000);
-
-    updateForbiddenPoints();
-    updateDisplay();
-    draw();
-});
-
-socket.on("reverse", async data => {
-
-    socket.emit("ack", {
-        messageId: data.messageId
-    });
-    await showEffectText("リバース\nはつどう！", 1500);
-
-    board[data.y][data.x] = data.color;
-    oseroGaesi(data.x, data.y, data.color);
-
-    if (data.color === "black") {
-        blackTame = blackTame - 2 - kaesisu * 2;
-    } else {
-        whiteTame = whiteTame - 2 - kaesisu * 2;
-    }
-
-    gameMode = "main";
-
-    // ネット対戦では手番を変更しない
-    // timeSyncのdata.turnを正とする
-
-    updateForbiddenPoints();
-    updateDisplay();
-    draw();
-saveState();
-});
-socket.on("kousan", async data => {
-    console.log("受信こうさん", data);
-
-    // こうさんの表示はgameEndで行う
-});
-socket.on("gameEnd", async data => {
-
-    console.log("★★ クライアントgameEnd受信 ★★", {
-        roomId,
-        myColor,
-        winner: data.winner,
-        reason: data.reason,
-        gameNow
-    });
-
-    // =========================
-    // 最終ゲーム状態を復元
-    // =========================
-
-    if (data.gameState) {
-
-        const state = data.gameState;
-
-        board =
-            state.board.map(row => [...row]);
-
-        drawBoard =
-            state.drawBoard.map(row => [...row]);
-
-        currentPlayer =
-            state.currentPlayer;
-
-        blackKing =
-            state.blackKing
-                ? { ...state.blackKing }
-                : null;
-
-        whiteKing =
-            state.whiteKing
-                ? { ...state.whiteKing }
-                : null;
-
-        blackTame =
-            state.blackTame;
-
-        whiteTame =
-            state.whiteTame;
-
-        if (typeof data.blackTime === "number") {
-            blackTime = data.blackTime;
-        }
-
-        if (typeof data.whiteTime === "number") {
-            whiteTime = data.whiteTime;
-        }
-
-        if (data.turn) {
-            currentPlayer = data.turn;
-        }
-
-        updateForbiddenPoints();
-        updateDisplay();
-        draw();
-    }
-
-    // =========================
-    // 勝敗表示
-    // =========================
-
-    if (gameNow) {
-
-        let endText = "しょうぶがおわったよ";
-
-        if (data.reason === "kousan") {
-            endText = "こうさんで";
-        }
-
-        if (data.reason === "time") {
-            endText = "じかんぎれで";
-        }
-
-        if (data.reason === "king") {
-            endText = "王様を取って";
-        }
-
-        if (data.reason === "hantei") {
-            endText = "しょうぶがおわったよ";
-        }
-
-        await syouhai(
-            endText,
-            data.winner === "black",
-            false
-        );
-    }
-});
-
-socket.on("timeSync", data => {
-    blackTime = data.blackTime;
-    whiteTime = data.whiteTime;
-    currentPlayer = data.turn;
-
-    updateTurnControls();
-
-    blackTimeLibsDisplay.textContent = Math.ceil(blackTime / 100);
-    whiteTimeLibsDisplay.textContent = Math.ceil(whiteTime / 100);
-});
-socket.on("restoreGame", data => {
-
-    const state = data.gameState;
-
-    board = state.board.map(row => [...row]);
-    drawBoard = state.drawBoard.map(row => [...row]);
-
-    // サーバーの手番を正とする
-    currentPlayer = data.turn;
-
-    blackKing = state.blackKing
-        ? { ...state.blackKing }
-        : null;
-
-    whiteKing = state.whiteKing
-        ? { ...state.whiteKing }
-        : null;
-
-    blackTame = state.blackTame;
-    whiteTame = state.whiteTame;
-
-    blackTime = data.blackTime;
-    whiteTime = data.whiteTime;
-
-    // ★これを追加
-    updateTurnControls();
-
-    updateForbiddenPoints();
-    updateDisplay();
-    draw();
-});
-}
-
-
 
 
 function saveState() {
