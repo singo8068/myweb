@@ -46,38 +46,58 @@
   <span id="turn"></span>
 </div>
 <div style="position: relative; display: inline-block;">
+
   <canvas id="goban" width="650" height="650"></canvas>
+
   <!-- 猫を表示する場所 -->
-  <div id="stoneLayer"
-       style="
-         position: absolute;
-         left: 0;
-         top: 0;
-         width: 650px;
-         height: 650px;
-         pointer-events: none;
+  <div id="stoneLayer"  
+       style="  
+         position: absolute;  
+         left: 0;  
+         top: 0;  
+         width: 650px;  
+         height: 650px;  
+         pointer-events: none;  
        ">
   </div>
-  <div id="effectText"
-    style="
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      font-size: 70px;
-      font-weight: bold;
-      color: black;
-      text-align: center;
-      pointer-events: none;
-      white-space: pre-line;
-      background-color: white;
-      opacity: 0.8;
-      padding: 20px;
-      border-radius: 10px;
+
+  <!-- チュートリアルの赤丸 -->
+  <div id="tutorialRedCircle"
+       style="
+         display: none;
+         position: absolute;
+         width: 110px;
+         height: 110px;
+         border: 10px solid red;
+         border-radius: 50%;
+
+         z-index: 1000;
+         pointer-events: none;
+         box-sizing: border-box;
+       ">
+  </div>
+
+  <div id="effectText" 
+    style=" 
+      display: none; 
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      width: 80%; 
+      font-size: 70px; 
+      font-weight: bold; 
+      color: black; 
+      text-align: center; 
+      pointer-events: none; 
+      white-space: pre-line; 
+      background-color: white; 
+      opacity: 0.8; 
+      padding: 20px; 
+      border-radius: 10px; 
     ">
   </div>
+
 </div>
 <div>
 あと<span id="tesuLibs">0</span>て　　
@@ -157,6 +177,7 @@ transform: translateX(-50%);
       z-index: 1;
       font-size: 28px;
       font-weight: bold;
+      padding: 50px;
     "
   >
     こんにちは！<br/>おうさまいごのせかいへようこそ
@@ -176,6 +197,47 @@ let enRv=false;
 let enTa=false;
 let enKo=false;
 
+// チュートリアルのセリフ
+const tutorialTexts = [
+  "こんにちは！<br/>おうさまいごのせかいへようこそ",
+  "今からこのゲームのルールをせつめいするよ。",
+  "まずはくろから、<br/>せんのこうてんにおうさまをだすよ",
+  "あかいまるのところを<br/>タップしてみよう"
+];
+
+// 今何番目のセリフか
+let tutorialIndex = 0;
+let akax=2;
+let akay=2;
+document.addEventListener("click", function () {
+
+  // 次のセリフへ
+  tutorialIndex++;
+
+  // セリフが最後まで行ったら止める
+  if (tutorialIndex >= tutorialTexts.length) {
+    tutorialIndex = tutorialTexts.length - 1;
+  }
+
+  // セリフを表示
+  document.getElementById("speechText").innerHTML =
+    tutorialTexts[tutorialIndex];
+
+  // 「あかいまるのところをタップしてみよう」
+  // が表示された瞬間
+  if (tutorialIndex === 3) {
+
+    // ゲーム開始
+    gameNow = true;
+    // 赤い丸を表示
+    const circle = document.getElementById("tutorialRedCircle");
+    circle.style.display = "block";
+    // 赤丸の位置
+circle.style.left = akax*CELL + "px";
+circle.style.top = akay*CELL + "px";
+
+  }
+});
 </script>
 </body>
 </html>
