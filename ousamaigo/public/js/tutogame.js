@@ -80,10 +80,18 @@ if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
     }
   }
 
+    // 赤丸を消す
+    document.getElementById("tutorialRedCircle").style.display = "none";
+
+    // 次のセリフへ
+    document.getElementById("speechText").innerHTML =
+        tutorialTexts[tutorialIndex];
+
   if (!gameNow && !fromNetwork) return false;
     if (changeTurn && !ISNET) {
       playerChange();
     }
+gameNow=false;
 
   // =========================
   // 状態保存
@@ -443,7 +451,19 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     }
 }
 
-	
+// チュートリアルのゲームを開始する
+function startTutorialGame() {
+  // ゲーム開始
+  gameNow = true;
+
+  // 赤い丸を表示
+  const circle = document.getElementById("tutorialRedCircle");
+  circle.style.display = "block";
+
+  // 赤丸の位置
+  circle.style.left = akax * CELL + "px";
+  circle.style.top = akay * CELL + "px";
+}
 
 
 function saveState() {
