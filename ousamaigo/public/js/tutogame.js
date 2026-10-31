@@ -163,6 +163,8 @@ canvas.addEventListener("click", async (e) => {
   if (!gameNow) return;
   const rect = canvas.getBoundingClientRect();
   const point = getClosest(e.clientX - rect.left, e.clientY - rect.top);
+  if (point.x!==akax) return;
+  if (point.y!==akay) return;
 
 if (point && gameMode === "main") {
     if (!placeStone(point.x, point.y,false)) {
