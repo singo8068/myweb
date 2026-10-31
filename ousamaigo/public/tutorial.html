@@ -202,7 +202,10 @@ const tutorialTexts = [
   "こんにちは！<br/>おうさまいごのせかいへようこそ",
   "今からこのゲームのルールをせつめいするよ。",
   "まずはくろから、<br/>せんのこうてんにおうさまをだすよ",
-  "あかいまるのところを<br/>タップしてみよう"
+  "あかいまるのところを<br/>タップしてみよう",
+  "つぎに、しろがおうさまをだすよ",
+  "そのあとは、ふつうのねこをだしていこう"
+
 ];
 
 // 今何番目のセリフか
@@ -210,7 +213,8 @@ let tutorialIndex = 0;
 let akax=2;
 let akay=2;
 document.addEventListener("click", function () {
-
+    // ゲーム中は、このクリックではセリフを進めない
+    if (gameNow) return;
   // 次のセリフへ
   tutorialIndex++;
 
@@ -225,19 +229,16 @@ document.addEventListener("click", function () {
 
   // 「あかいまるのところをタップしてみよう」
   // が表示された瞬間
-  if (tutorialIndex === 3) {
 
-    // ゲーム開始
-    gameNow = true;
-    // 赤い丸を表示
-    const circle = document.getElementById("tutorialRedCircle");
-    circle.style.display = "block";
-    // 赤丸の位置
-circle.style.left = akax*CELL + "px";
-circle.style.top = akay*CELL + "px";
+  if (tutorialIndex === 3)startTutorialGame();
+  if (tutorialIndex === 5){
+gameNow=true;
+placeStone(3,3);
+}
 
-  }
 });
+
+
 </script>
 </body>
 </html>
