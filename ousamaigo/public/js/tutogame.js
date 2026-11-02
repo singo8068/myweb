@@ -85,7 +85,7 @@ if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
 
     // 次のセリフへ
     document.getElementById("speechText").innerHTML =
-        tutorialTexts[tutorialIndex];
+        thai[ti][0];
 
   if (!gameNow && !fromNetwork) return false;
     if (changeTurn && !ISNET) {
@@ -452,7 +452,9 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
 }
 
 // チュートリアルのゲームを開始する
-function startTutorialGame() {
+function startTutorialGame(px,py) {
+  akax=px;
+  akay=py;
   // ゲーム開始
   gameNow = true;
 
@@ -464,7 +466,12 @@ function startTutorialGame() {
   circle.style.left = akax * CELL + "px";
   circle.style.top = akay * CELL + "px";
 }
-
+// チュートリアルで相手が打つ
+function aiteTutorialGame(px,py) {
+  // ゲーム開始
+  gameNow = true;
+  placeStone(px,py);
+}
 
 function saveState() {
     undoHistory.push({
