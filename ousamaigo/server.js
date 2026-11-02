@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
@@ -35,7 +36,9 @@ app.use(
     "/api/stripe-webhook",
     express.raw({ type: "application/json" })
 );
-
+app.use(cors({
+    origin: "https://singo8068.github.io"
+}));
 app.use(express.json());
 
 // =========================
