@@ -205,7 +205,7 @@ const thai = [
   ["あかいまるのところを<br/>タップしてみよう", "br",2,2],
   ["つぎに、しろがおうさまをだすよ", null],
   ["そのあとは、ふつうのねこをだしていこう", "wh",2,3, "br",3,3],
-  ["いいよ、そんなかんじ", null],
+  ["いいよ、そんなかんじ", "sm",null],
 ];
 
 let ti = 0;
@@ -217,7 +217,7 @@ document.addEventListener("click", function () {
 
     // 次のセリフへ
     ti++;
-
+    tj = 1;
     // セリフが最後まで行ったら止める
     if (ti >= thai.length) {
         ti = thai.length - 1;
@@ -228,6 +228,11 @@ document.addEventListener("click", function () {
         thai[ti][0];
 
     // セリフごとの処理
+    if (thai[ti][tj] === "sm") {
+        document.getElementById("playerImage").src = "bin/hitos.webp"
+        tj=tj+1;
+    }
+
     if (thai[ti][tj] === "wh") {
         aiteTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
         tj=tj+3;
