@@ -387,7 +387,7 @@ try {
     console.log("今回の勝利数:", newWins);
     console.log("保存結果:", localStorage.getItem(key));
 
-    // 全ユーザー合計のCPU撃破数をRenderへ送信
+// 全ユーザー合計のCPU撃破数をRenderへ送信
 fetch("https://myweb-qcr3.onrender.com/api/cpu-win", {
     method: "POST",
     headers: {
@@ -396,7 +396,16 @@ fetch("https://myweb-qcr3.onrender.com/api/cpu-win", {
     body: JSON.stringify({
         character: character
     })
-}).catch(error => {
+})
+.then(response => {
+    console.log("CPU撃破数送信レスポンス:", response.status);
+
+    return response.json();
+})
+.then(data => {
+    console.log("CPU撃破数送信結果:", data);
+})
+.catch(error => {
     console.error("CPU撃破数の送信に失敗:", error);
 });
 
