@@ -38,6 +38,51 @@ app.use(
 
 app.use(express.json());
 
+// =========================
+// CPU撃破数
+// =========================
+
+app.post("/api/cpu-win", async (req, res) => {
+
+    const { character } = req.body;
+
+    if (!character) {
+        return res.status(400).json({
+            success: false,
+            message: "CPUキャラクターが指定されていません"
+        });
+    }
+
+    try {
+
+        await pool.query(
+            `
+            INSERT INTO cpu_stats (character, wins)
+            VALUES ($1, 1)
+            ON CONFLICT (character)
+            DO UPDATE SET wins = cpu_stats.wins + 1
+            `,
+            [character]
+        );
+
+        console.log("CPU撃破:", character);
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        console.error(
+            "CPU撃破数保存エラー:",
+            err
+        );
+
+        res.status(500).json({
+            success: false
+        });
+    }
+});
 require("./stripe")(app, stripe, pool, sessions);
 require("./shop")(app, pool, sessions);
 require("./login")(app, pool, sessions);
