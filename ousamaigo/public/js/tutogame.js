@@ -80,12 +80,13 @@ if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
     }
   }
 
-    // 赤丸を消す
-    document.getElementById("tutorialRedCircle").style.display = "none";
+    
 
     // 次のセリフへ
-    document.getElementById("speechText").innerHTML =
-        thai[ti][0];
+    tutoAction();
+
+// 赤丸を消す
+    document.getElementById("tutorialRedCircle").style.display = "none";
 
   if (!gameNow && !fromNetwork) return false;
     if (changeTurn && !ISNET) {
