@@ -40,7 +40,6 @@ app.use(cors({
     origin: "https://singo8068.github.io"
 }));
 app.use(express.json());
-
 // =========================
 // CPU撃破数
 // =========================
@@ -58,6 +57,10 @@ app.post("/api/cpu-win", async (req, res) => {
 
     try {
 
+        // =========================
+        // キャラ別のCPU撃破数
+        // =========================
+
         await pool.query(
             `
             INSERT INTO cpu_stats (character, wins)
@@ -68,7 +71,24 @@ app.post("/api/cpu-win", async (req, res) => {
             [character]
         );
 
+
+        // =========================
+        // 日別の全CPU撃破数
+        // =========================
+
+        await pool.query(
+            `
+            INSERT INTO cpu_statsd (day, wins)
+            VALUES ((NOW() AT TIME ZONE 'Asia/Tokyo')::date, 1)
+            ON CONFLICT (day)
+            DO UPDATE SET wins = cpu_statsd.wins + 1
+            `
+        );
+
+
         console.log("CPU撃破:", character);
+        console.log("日別CPU撃破数も +1");
+
 
         res.json({
             success: true
