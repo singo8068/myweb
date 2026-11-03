@@ -245,12 +245,6 @@ passBtn.addEventListener("click", () => {
     passMove();
 });
 async function passMove(fromNetwork = false) {
-    console.log("passMove実行", {
-        ISNET,
-        fromNetwork,
-        roomId
-    });
-
     if (!blackKing || !whiteKing) {
         uemsg = "１てめはためれないよ";
         turnDisplay.removeChild(turnDisplay.lastChild);
@@ -286,6 +280,13 @@ async function passMove(fromNetwork = false) {
     updateForbiddenPoints();
     updateDisplay();
     draw();
+    // 次のセリフへ
+    tutoAction();
+
+// 赤丸を消す
+    document.getElementById("tutorialRedCircle").style.display = "none";
+enTa=false;
+gameNow=false;
 }
 
 
@@ -302,13 +303,7 @@ resetBtn2.addEventListener("click", async function () {
  document.getElementById("effectText").style.display = "none";
  initBoard()});
 
-document.getElementById("cancelBtn").addEventListener("click", function () {
-    document.getElementById("confirmControls").style.display = "none";
-    document.getElementById("mainControls").style.display = "block";
-    updateForbiddenPoints();
-    draw();
-    gameMode="main";
-  });
+
 
 async function showEffectText(text, duration) {
   gameNow=false;

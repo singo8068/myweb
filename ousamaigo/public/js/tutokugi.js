@@ -31,6 +31,13 @@ pawaBtn.addEventListener("click", () => {
    }
   }
   draw();
+    // 次のセリフへ
+    tutoAction();
+
+// 赤丸を消す
+    document.getElementById("tutorialRedCircle").style.display = "none";
+enPw=false;
+gameNow=false;
 });
 oseBtn.addEventListener("click", () => {
   if (!enRv) return;
