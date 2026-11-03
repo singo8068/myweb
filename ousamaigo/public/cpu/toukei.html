@@ -137,7 +137,8 @@ async function loadToukei() {
 
 
 // 日付
-const parts = String(item.day).split("-");
+const day = String(item.day).slice(0, 10);
+const parts = day.split("-");
 
 dateTd.textContent =
     parts[0] + "/" +
