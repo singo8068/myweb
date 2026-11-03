@@ -216,7 +216,13 @@ const thai = [
   ["くろの×のところはしろはねこをだせないよ",null],
   ["しろの×にはくろはねこをだせないし、あかの×はどちらもねこをだせないよ", "wh",1,0, "br",2,1],
   ["しろの×にはくろはねこをだせないし、あかの×はどちらもねこをだせないよ",null],
-  ["しろの×にはくろはねこをだせないし、あかの×はどちらもねこをだせないよ", "wh",3,4, "br",2,0]
+  ["しろの×にはくろはねこをだせないし、あかの×はどちらもねこをだせないよ", "wh",3,4, "br",2,0],
+  ["しろの×にはくろはねこをだせないし、あかの×はどちらもねこをだせないよ",null],
+  ["ためるボタンをおしてパワーをためよう", "wh",4,3,"tm"],
+  ["パワーをためるとパワーうちができるよ",null],
+  ["パワーをためるとパワーうちができるよ", "wh",1,3,"pw"],
+  ["あいてのねこをとれるなら、×のところにもだせるよ", "sm","br",0,0]
+
 
 
 ];
@@ -260,6 +266,26 @@ function tutoAction() {
     }
     if (thai[ti][tj] === "br") {
         startTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
+    }
+    if (thai[ti][tj] === "tm") {
+        gameNow=true;
+        enTa=true;
+        // 赤い丸を表示
+        const circle = document.getElementById("tutorialRedCircle");
+        circle.style.display = "block";
+        // 赤丸の位置
+        circle.style.left = 3.4 * CELL + "px";
+        circle.style.top = 6.4 * CELL + "px";
+    }
+    if (thai[ti][tj] === "pw") {
+        gameNow=true;
+        enPw=true;
+        // 赤い丸を表示
+        const circle = document.getElementById("tutorialRedCircle");
+        circle.style.display = "block";
+        // 赤丸の位置
+        circle.style.left = 0.4 * CELL + "px";
+        circle.style.top = 6.4 * CELL + "px";
     }
 }
 
