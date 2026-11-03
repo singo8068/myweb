@@ -136,16 +136,13 @@ async function loadToukei() {
                 document.createElement("td");
 
 
-            // 日付
-            const date =
-                new Date(item.day + "T00:00:00");
+// 日付
+const parts = String(item.day).split("-");
 
-            dateTd.textContent =
-                date.getFullYear() +
-                "/" +
-                (date.getMonth() + 1) +
-                "/" +
-                date.getDate();
+dateTd.textContent =
+    parts[0] + "/" +
+    Number(parts[1]) + "/" +
+    Number(parts[2]);
 
 
             // CPU勝利数
