@@ -277,6 +277,13 @@
       top: 76%;
     }
 
+    /* とうけい */
+    #toukeiArea {
+      position: absolute;
+
+      left: 10%;
+      top: 40%;
+    }
   </style>
 </head>
 
@@ -310,18 +317,16 @@
     ろくろそうげん
   </a>
 
-
   <!-- ななろのまち -->
   <div id="nanaroArea"></div>
-
 
   <!-- きゅうろやま -->
   <div id="kyuroArea"></div>
 
-
   <!-- じゅういちろのうみ -->
   <div id="juitiArea"></div>
-
+  <!-- とうけい -->
+  <div id="toukeiArea"></div>
 
 </div>
 
@@ -383,7 +388,6 @@
         ？？？
       </span>
     `;
-
   }
 
 
@@ -393,9 +397,7 @@
 
   const saruWins =
     Number(localStorage.getItem("win_さる")) || 0;
-
   if (saruWins >= 1) {
-
     document.getElementById("juitiArea").innerHTML = `
       <a
         class="map-button"
@@ -406,15 +408,35 @@
     `;
 
   } else {
-
     document.getElementById("juitiArea").innerHTML = `
       <span class="map-locked">
         ？？？
       </span>
     `;
-
   }
 
+  // =========================
+  // とうけい
+  // =========================
+  const syatiWins =
+    Number(localStorage.getItem("win_シャチ")) || 0;
+  if (syatiWins >= 1) {
+    document.getElementById("juitiArea").innerHTML = `
+      <a
+        class="map-button"
+        href="toukei.html"
+      >
+        とうけい
+      </a>
+    `;
+
+  } else {
+    document.getElementById("toukeiArea").innerHTML = `
+      <span class="map-locked">
+        ？？？
+      </span>
+    `;
+  }
 
 </script>
 
