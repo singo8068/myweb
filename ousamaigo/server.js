@@ -130,7 +130,27 @@ app.get("/api/ranking", async (req, res) => {
         res.status(500).json({ error: "ランキング取得に失敗しました" });
     }
 });
+app.get("/api/cpu-statsd", async (req, res) => {
 
+    try {
+
+        const result = await pool.query(`
+            SELECT day, wins
+            FROM cpu_statsd
+            ORDER BY day DESC
+        `);
+
+        res.json(result.rows);
+
+    } catch (err) {
+
+        console.error("CPU統計取得エラー:", err);
+
+        res.status(500).json({
+            success: false
+        });
+    }
+});
 // =========================
 // セッションからユーザーID取得
 // =========================
