@@ -204,14 +204,18 @@ if (point && gameMode === "osero" &&
     // リバース後の状態を保存
     saveState();
 
-    // ネット対戦では playerChange() しない
-    if (!ISNET) {
         playerChange();
-    }
 
     updateForbiddenPoints();
     updateDisplay();
     draw();
+
+     tutoAction();
+
+// 赤丸を消す
+    document.getElementById("tutorialRedCircle").style.display = "none";
+gameNow=false;
+
 }
 });
 
