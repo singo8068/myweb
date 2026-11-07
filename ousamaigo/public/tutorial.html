@@ -196,6 +196,8 @@ let enPw=false;
 let enRv=false;
 let enTa=false;
 let enKo=false;
+let showText=false;
+let tutosu=1;
 
 // チュートリアルのセリフ
 const thai = [
@@ -223,19 +225,37 @@ const thai = [
   ["パワーをためるとパワーうちができるよ", "wh",1,3,"pw"],
   ["あいてのねこをとれるなら、×のところにもだせるよ", "sm","br",0,0],
   ["いいね！","go",null],
-  ["しろは ごてで ふりだから、さいしょから１パワーあるよ", "wh",0,3,"br",5,3]
-
-
-
-
+  ["しろは ごてで ふりだから、さいしょから１パワーあるよ", "wh",0,3,"br",5,3],
+  ["しろは ごてで ふりだから、さいしょから１パワーあるよ",null],
+  ["パワーうちでとったねこが１つなら、そこをじぶんのねこでうめるよ", "ni","tepw",3,2],
+  ["パワーうちでとったねこが１つなら、そこをじぶんのねこでうめるよ", "br",4,1],
+  ["パワーうちでとったねこが１つなら、そこをじぶんのねこでうめるよ",null],
+  ["パワーうちでとったねこが１つなら、そこをじぶんのねこでうめるよ", "wh",4,0,"br",4,4],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ",null],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ", "wh",5,0,"br",3,5],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ",null],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ", "wh",5,1,"br",2,5],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ",null],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ", "wh",3,0],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ","br",5,2],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ",null],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ", "wh",4,0,"br",1,4],
+  ["じょうげさゆうにすきまなくかこめば いちどにたくさんとれるよ",null],
+  ["おうさまをとったら かちだよ！","go", "wh",5,0,"br",0,4],
+  ["おうさまをとったら かちだよ！",null],
+  ["つぎはきみがしろで プレイしてみよう","res"],
+  ["つぎはきみがしろで プレイしてみよう","ni","br",2,2, "wh",3,3],
 ];
 
-let ti = 0;
+//let ti = 0;
+let ti = 41;
+
 
 
 document.addEventListener("click", function () {
     // ゲーム中は、このクリックではセリフを進めない
     if (gameNow) return;
+    if (showText) return;
     // 次のセリフへ
     ti++;
     tutoAction();
@@ -263,6 +283,7 @@ function tutoAction() {
         document.getElementById("playerImage").src = "bin/ningen.webp"
         tj=tj+1;
     }
+  if(tutosu===1){
     if (thai[ti][tj] === "wh") {
         aiteTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
         tj=tj+3;
@@ -270,6 +291,15 @@ function tutoAction() {
     if (thai[ti][tj] === "br") {
         startTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
     }
+  }else{
+    if (thai[ti][tj] === "br") {
+        aiteTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
+        tj=tj+3;
+    }
+    if (thai[ti][tj] === "wh") {
+        startTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
+    }
+  }
     if (thai[ti][tj] === "tm") {
         gameNow=true;
         enTa=true;
@@ -289,6 +319,20 @@ function tutoAction() {
         // 赤丸の位置
         circle.style.left = 0.4 * CELL + "px";
         circle.style.top = 6.4 * CELL + "px";
+    }
+    if (thai[ti][tj] === "tepw") {
+        gameMode = "pawa";
+        aiteTutorialGame(thai[ti][tj+1], thai[ti][tj+2]);
+        tj=tj+3;
+        gameMode = "main";
+        whiteTame = 0;
+    }
+    if (thai[ti][tj] === "res") {
+document.getElementById("effectText").style.display = "none";
+        initBoard();
+tutosu=2;
+    gameNow = false;
+        gameMode = "main";
     }
 }
 
