@@ -52,13 +52,13 @@ if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
     if (singleCaptureCount === 1) {
       const [rx, ry] = extraStone;
       board[ry][rx] = stoneColor;
+//console.log("b");
   // 埋めた結果、自分の呼吸点がなくなるなら埋めない
   if (!hasLiberties(rx, ry, stoneColor, {})) {
     board[ry][rx] = null;
   }
  }
- }
-
+ }// パワーうちおわり
   // =========================
   // 自殺手チェック
   // =========================
@@ -79,11 +79,7 @@ if (!ISNET)await showEffectText("パワーうち\nはつどう！", 1500);
       removeDead(nx, ny, enemy);
     }
   }
-
-    
-
-    // 次のセリフへ
-    tutoAction();
+     tutoAction();
 
 // 赤丸を消す
     document.getElementById("tutorialRedCircle").style.display = "none";
@@ -99,25 +95,13 @@ gameNow=false;
   // =========================
   saveState();
 
-  // =========================
-  // パワー送信
-  // =========================
-  if (gameMode === "pawa") {
 
-    if (!fromNetwork) {
-      await showEffectText("パワーうち\nはつどう！", 1500);
-    }
-
-    if (changeTurn) {
-      if (!ISNET) {
-        playerChange();
-      }
-    }
-  }
 
   updateForbiddenPoints();
   updateDisplay();
   draw();
+    // 次のセリフへ
+
 
   return true;
 }
@@ -306,6 +290,7 @@ resetBtn2.addEventListener("click", async function () {
 
 
 async function showEffectText(text, duration) {
+  showText=true;
   gameNow=false;
   document.getElementById("confirmControls").style.display = "none";
   document.getElementById("mainControls").style.display = "none";
@@ -319,6 +304,7 @@ effectDiv.style.opacity = "0.7";
   await delay(duration);
 updateTurnControls();
 gameNow = true;
+showText=false;
 }
 
 function playerChange(addByoyomi = true) {
@@ -378,27 +364,11 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     turnDisplay.appendChild(winImg);
     turnDisplay.appendChild(winText);
 
-    if (ISNET) {
-
-        if (myColor === "black") {
-            winMessage =
-                isBlackWin
-                    ? "きみのかち！"
-                    : "きみのまけ";
-        } else {
-            winMessage =
-                isBlackWin
-                    ? "きみのまけ"
-                    : "きみのかち！";
-        }
-
-    } else {
-
         winMessage =
             isBlackWin
                 ? "くろのかち！"
                 : "しろのかち！";
-    }
+
 
     const effectDiv =
         document.getElementById("effectText");
@@ -409,45 +379,12 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     effectDiv.style.display = "block";
     effectDiv.style.opacity = "0.7";
 
-    document.getElementById("mainControls").style.display = "none";
-
-    if (ISNET) {
-        backMati.style.display = "block";
-    } else {
-        document.getElementById("saigoControls").style.display = "block";
-    }
-
     gameNow = false;
+    tutoAction();
 
-    // =========================
-    // ゲーム終了をサーバーへ送信
-    // =========================
-
-    if (ISNET && sendGameEnd) {
-
-        socket.emit("gameEnd", {
-
-            roomId,
-
-            winner:
-                isBlackWin
-                    ? "black"
-                    : "white",
-
-            reason,
-
-            gameState:
-                getGameState(),
-
-            blackTime,
-            whiteTime,
-
-            turn: currentPlayer
-        });
-    }
 }
 
-// チュートリアルのゲームを開始する
+// チュートリアルのゲームをでプレイヤが打つ
 function startTutorialGame(px,py) {
   akax=px;
   akay=py;
@@ -463,10 +400,10 @@ function startTutorialGame(px,py) {
   circle.style.top = akay * CELL + "px";
 }
 // チュートリアルで相手が打つ
-function aiteTutorialGame(px,py) {
+async function aiteTutorialGame(px,py) {
   // ゲーム開始
   gameNow = true;
-  placeStone(px,py);
+  await placeStone(px,py);
 }
 
 function saveState() {
