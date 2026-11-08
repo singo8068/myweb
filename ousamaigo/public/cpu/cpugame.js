@@ -321,10 +321,12 @@ gameNow=false;
     if(board[y][x]==="white")whiteCount++;
    }
   }
-  //await showEffectText(3000);
+let bKei=blackCount+blackTame;
+let wKei=whiteCount+whiteTame;
+
   syouhai(
-    "くろが"+blackCount+"ひき\nしろが"+whiteCount+"ひき\nねこがいるので",
-    blackCount > whiteCount,
+    "くろが"+blackCount+"+"+blackTame+"="+bKei+"\nしろが"+whiteCount+"+"+whiteTame+"="+wKei+"\nなので",    
+bKei >= wKei,
     true,
     "hantei"
 );
