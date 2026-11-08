@@ -279,13 +279,9 @@ gameNow=false;
 
 
 resetBtn.addEventListener("click", async function () {
-  if (!enKo) return;
- syouhai(
-    "こうさんで",
-    currentPlayer === "white",
-    true,
-    "kousan"
-);
+ti = thai.length-2;
+gameNow=false;
+    tutoAction();
  });
 resetBtn2.addEventListener("click", async function () {
  document.getElementById("effectText").style.display = "none";
