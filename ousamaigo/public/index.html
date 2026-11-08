@@ -22,7 +22,11 @@ a { display: inline-block; width: auto; margin: 100px auto 0; padding: 20px 40px
 </style>
 </head>
 <body>
-
+<script>
+if (localStorage.getItem("tutorialCompleted") !== "true") {
+    location.replace("tutorial.html");
+}
+</script>
 <h1>おうさまいご</h1>
 <br/>
 
