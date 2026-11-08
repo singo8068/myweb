@@ -296,6 +296,9 @@ document.addEventListener("click", function () {
 
     // セリフが最後まで終わったらストーリーモードへ
     if (ti >= thai.length) {
+        // チュートリアルを見終わったことを記録
+        localStorage.setItem("tutorialCompleted", "true");
+
         location.href = "cpu/mainstory.html";
         return;
     }
