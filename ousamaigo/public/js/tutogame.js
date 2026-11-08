@@ -384,8 +384,9 @@ async function syouhai(maetext, isBlackWin, sendGameEnd = true, reason = "other"
     effectDiv.style.opacity = "0.7";
 
     gameNow = false;
+ti=ti+1;
     tutoAction();
-
+    gameNow = false;
 }
 
 // チュートリアルのゲームをでプレイヤが打つ
@@ -408,6 +409,7 @@ async function aiteTutorialGame(px,py) {
   // ゲーム開始
   gameNow = true;
   await placeStone(px,py);
+
 }
 
 function saveState() {
