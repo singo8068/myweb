@@ -109,13 +109,13 @@
 <span id="blackTimeLibs" style="display:none;"></span>
 <span id="whiteTimeLibs" style="display:none;"></span>
 <div class="controls" id="mainControls">
-  <button id="pawaBtn">パワーうち</button>
-  <button id="oseBtn">リバース</button>
-  <button id="passBtn">ためる</button>
+ <button id="pawaBtn">パワーうち</button>
+ <button id="oseBtn">リバース</button>
+ <button id="passBtn">ためる</button>
 <div class="controls" id="mattab" style="display: none;">
   <button id="undoBtn">まった</button>
 </div>
-  <button id="resetBtn">こうさん</button>
+  　　<button id="resetBtn">スキップ</button>
 </div>
 <div class="controls" id="confirmControls" style="display: none;">
   <button id="cancelBtn">やめる</button>
@@ -195,7 +195,6 @@ gameNow=false;
 let enPw=false;
 let enRv=false;
 let enTa=false;
-let enKo=false;
 let showText=false;
 let tutosu=1;
 
@@ -277,7 +276,7 @@ const thai = [
   ["いいね！ちなみに、いっていすうねこをだしても けっちゃくがつかないときは はんていになるよ。","go",null],
   ["ねこのかずとパワーをたしたかずがおおいほうがかちだよ",null],
   ["おなじならくろのかちだよ","sm",null],
-  ["つぎはストーリーモードで いろんなどうぶつと たいせんしてみよう！",null]
+  ["ストーリーモードで いろんなどうぶつと たいせんしてみよう！","ni",null]
 
 ];
 
@@ -287,17 +286,21 @@ let ti = 0;
 
 
 document.addEventListener("click", function () {
+
     // ゲーム中は、このクリックではセリフを進めない
     if (gameNow) return;
     if (showText) return;
+
     // 次のセリフへ
     ti++;
 
-    tutoAction();
-    // セリフが最後まで行ったら止める
+    // セリフが最後まで終わったらストーリーモードへ
     if (ti >= thai.length) {
-        ti = thai.length - 1;
+        location.href = "cpu/mainstory.html";
+        return;
     }
+
+    tutoAction();
 });
 
 function tutoAction() {
@@ -343,7 +346,7 @@ function tutoAction() {
         const circle = document.getElementById("tutorialRedCircle");
         circle.style.display = "block";
         // 赤丸の位置
-        circle.style.left = 3.4 * CELL + "px";
+        circle.style.left = 3.1 * CELL + "px";
         circle.style.top = 6.4 * CELL + "px";
     }
     if (thai[ti][tj] === "pw") {
@@ -353,7 +356,7 @@ function tutoAction() {
         const circle = document.getElementById("tutorialRedCircle");
         circle.style.display = "block";
         // 赤丸の位置
-        circle.style.left = 0.4 * CELL + "px";
+        circle.style.left = 0 * CELL + "px";
         circle.style.top = 6.4 * CELL + "px";
     }
     if (thai[ti][tj] === "rv") {
@@ -363,7 +366,7 @@ function tutoAction() {
         const circle = document.getElementById("tutorialRedCircle");
         circle.style.display = "block";
         // 赤丸の位置
-        circle.style.left = 2.1 * CELL + "px";
+        circle.style.left = 1.8 * CELL + "px";
         circle.style.top = 6.4 * CELL + "px";
     }
 
