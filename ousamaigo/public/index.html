@@ -8,16 +8,49 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
 a { display: inline-block; width: auto; margin: 100px auto 0; padding: 20px 40px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 12px; transition: background-color 0.3s; }
-.x-link {
-  display: inline-block !important;
-  width: auto !important;
-  margin: 0 !important;
-  padding: 8px 16px !important;
-  background-color: #000 !important;
-  color: #fff !important;
-  text-decoration: none !important;
-  border: 2px solid #000 !important;
-  border-radius: 8px !important;
+
+.sns-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.sns-links a {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 8px 16px;
+  background-color: #000;
+  color: #fff;
+  text-decoration: none;
+  border: 2px solid #000;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.sns-links a:hover {
+  background-color: #444;
+}
+
+
+.title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.title-container h1 {
+  margin: 0;
+}
+
+.title-container img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
 }
 </style>
 </head>
@@ -27,8 +60,16 @@ if (localStorage.getItem("tutorialCompleted") !== "true") {
     location.replace("tutorial.html");
 }
 </script>
-<h1>おうさまいご</h1>
-<br/>
+
+<div class="title-container">
+
+  <img src="bin/siroking.webp" alt="白王">
+
+  <h1>おうさまいご</h1>
+
+  <img src="bin/kuroking.webp" alt="黒王">
+</div>
+
 
 <a href="setumei/setumei.html">せつめいしょ</a>　
 <br/>
@@ -47,11 +88,16 @@ if (localStorage.getItem("tutorialCompleted") !== "true") {
   <p>無許可でゲーム実況OKです</p>
   <p>制作：今中　心悟</p>
   <p>連絡先：singo8068@yahoo.co.jp</p>
-<p>
-  <a class="x-link" href="https://x.com/singo15hllwyh" target="_blank" rel="noopener noreferrer">
-    Xもフォローしてね！
-  </a>
-</p>
+
+  <div class="sns-links">
+    <a href="https://x.com/singo15hllwyh" target="_blank" rel="noopener noreferrer">X　　</a>
+
+    <a href="https://www.instagram.com/singo8068/" target="_blank" rel="noopener noreferrer">Instagram</a>
+
+    <a href="https://lite.tiktok.com/t/ZS9f4stsbCKss-Doosn/" target="_blank" rel="noopener noreferrer">TikTok</a>
+
+    <a href="https://youtube.com/channel/UCRXCSjrr2Lf72c12sbOxsNg" target="_blank" rel="noopener noreferrer">YouTube</a>
+  </div>
 </div>
 </body>
 </html>
