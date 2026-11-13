@@ -40,8 +40,8 @@ body {
 h1 {
   display: inline-block;
   margin: 25px 0 40px;
-  padding: 10px 40px;
-  font-size: 76px;
+  padding: 10px 10px;
+  font-size: 70px;
   font-weight: bold;
   color: #ffd700;
   background: linear-gradient(#2f2f2f, #111);
