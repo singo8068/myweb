@@ -81,7 +81,7 @@ async function placeStone(
   }
 
   if (!gameNow && !fromNetwork) return false;
-    if (changeTurn && !ISNET) {
+    if (changeTurn) {
       playerChange();
     }
 
@@ -145,9 +145,8 @@ if (currentPlayer === "white") whiteTame = whiteTame - 1;
 
 gameMode = "main";
 
-if (!ISNET) {
+
     playerChange();
-}
 
 updateDisplay();
   }
@@ -195,11 +194,6 @@ passBtn.addEventListener("click", () => {
     passMove();
 });
 async function passMove(fromNetwork = false) {
-    console.log("passMove実行", {
-        ISNET,
-        fromNetwork,
-        roomId
-    });
 
     if (!blackKing || !whiteKing) {
         uemsg = "１てめはためれないよ";
@@ -230,14 +224,7 @@ async function passMove(fromNetwork = false) {
 
 
 resetBtn.addEventListener("click", async function () {
-    if (ISNET) {
-        console.log("こうさん送信", roomId);
-        socket.emit("kousan", {
-    roomId,
-    color: currentPlayer,
- gameState: undoHistory[undoHistory.length - 1]
-        });
-    }
+
  syouhai(
     "こうさんで",
     currentPlayer === "white",
